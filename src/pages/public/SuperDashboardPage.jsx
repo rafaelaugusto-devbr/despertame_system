@@ -1,147 +1,284 @@
-// src/pages/SuperDashboardPage.js (Versão Corrigida - Sem AdminLayout)
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { db } from '../../services/firebase';
-import { collection, getDocs, query, orderBy, limit, where, Timestamp, getCountFromServer } from 'firebase/firestore';
-
-// Layout e Componentes
-// A importação do AdminLayout foi removida daqui
+import { useDashboardData } from '../../hooks/useDashboardData';
 import Header from '../../components/layout/Header';
 import FinanceChart from '../financeiro/components/FinanceChart';
 import LeadsChart from '../marketing/components/LeadsChart';
+import {
+  FiUsers,
+  FiDollarSign,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiArrowRight,
+  FiCalendar,
+  FiFileText,
+} from 'react-icons/fi';
+import './SuperDashboard.css';
 
-// Ícones para os KPIs
-import { FiUsers, FiDollarSign, FiTrendingUp, FiTrendingDown, FiArrowRight, FiCalendar, FiFileText } from 'react-icons/fi';
-
-// Componente reutilizável para os cartões de KPI
-const StatCard = ({ title, value, icon, color, loading }) => (
-    <div className="summary-card-dash" style={{ background: color }}>
-        {icon}
-        <div>
-            <h4>{title}</h4>
-            <span>{loading ? '...' : value}</span>
-        </div>
+// Componente StatCard melhorado
+const StatCard = ({ title, value, icon: Icon, trend, color, loading, link }) => {
+  const CardContent = () => (
+    <div className={`stat-card stat-card--${color}`}>
+      <div className="stat-card__icon">
+        <Icon size={28} />
+      </div>
+      <div className="stat-card__content">
+        <h4 className="stat-card__title">{title}</h4>
+        <p className="stat-card__value">
+          {loading ? (
+            <span className="skeleton skeleton--text"></span>
+          ) : (
+            value
+          )}
+        </p>
+        {trend && (
+          <span className={`stat-card__trend stat-card__trend--${trend.type}`}>
+            {trend.type === 'up' ? '↑' : '↓'} {trend.value}
+          </span>
+        )}
+      </div>
     </div>
+  );
+
+  return link ? (
+    <Link to={link} className="stat-card-link">
+      <CardContent />
+    </Link>
+  ) : (
+    <CardContent />
+  );
+};
+
+// Skeleton Loading Component
+const SkeletonCard = () => (
+  <div className="skeleton-card">
+    <div className="skeleton skeleton--circle"></div>
+    <div className="skeleton skeleton--text"></div>
+    <div className="skeleton skeleton--title"></div>
+  </div>
 );
 
 const SuperDashboardPage = () => {
-    // Estado para os KPIs
-    const [kpiData, setKpiData] = useState({
-        totalLeads: 0,
-        saldo: 0,
-        entradas: 0,
-        saidas: 0,
-    });
-    const [proximosEventos, setProximosEventos] = useState([]);
-    const [ultimosPosts, setUltimosPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const { kpiData, proximosEventos, ultimosPosts, loading } = useDashboardData();
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                // 1. Buscar KPIs Financeiros
-                const lancamentosSnapshot = await getDocs(collection(db, 'fluxoCaixaLancamentos'));
-                let entradas = 0;
-                let saidas = 0;
-                lancamentosSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.tipo === 'entrada') entradas += data.valor;
-                    else saidas += data.valor;
-                });
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
-                // 2. Buscar Total de Leads
-                const leadsSnapshot = await getCountFromServer(collection(db, 'leads'));
-                const totalLeads = leadsSnapshot.data().count;
+  const formatDate = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    try {
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+      });
+    } catch (e) {
+      return 'N/A';
+    }
+  };
 
-                // 3. Buscar Próximos Eventos
-                const hoje = Timestamp.now();
-                const eventosQuery = query(collection(db, 'calendarioEventos'), where('start', '>=', hoje), orderBy('start', 'asc'), limit(3));
-                const eventosSnapshot = await getDocs(eventosQuery);
-                setProximosEventos(eventosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+  const formatRelativeDate = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    try {
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      const now = new Date();
+      const diff = date - now;
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
-                // 4. Buscar Últimos Posts
-                const postsQuery = query(collection(db, 'posts'), orderBy('data', 'desc'), limit(3));
-                const postsSnapshot = await getDocs(postsQuery);
-                setUltimosPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      if (days === 0) return 'Hoje';
+      if (days === 1) return 'Amanhã';
+      if (days < 7) return `Em ${days} dias`;
+      return formatDate(timestamp);
+    } catch (e) {
+      return 'N/A';
+    }
+  };
 
-                // Atualiza o estado de uma só vez
-                setKpiData({ totalLeads, saldo: entradas - saidas, entradas, saidas });
+  return (
+    <div className="super-dashboard">
+      <Header
+        title="Dashboard Geral"
+        subtitle="Visão completa e em tempo real das atividades do sistema."
+      />
 
-            } catch (error) {
-                console.error("Erro ao carregar dados do dashboard:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+      {/* KPI Cards Grid */}
+      <section className="dashboard-section">
+        <div className="kpi-grid">
+          <StatCard
+            title="Saldo Financeiro"
+            value={formatCurrency(kpiData.saldo)}
+            icon={FiDollarSign}
+            color="blue"
+            loading={loading}
+            link="/financeiro/dashboard"
+          />
+          <StatCard
+            title="Total de Entradas"
+            value={formatCurrency(kpiData.entradas)}
+            icon={FiTrendingUp}
+            color="green"
+            loading={loading}
+            link="/financeiro/fluxo"
+          />
+          <StatCard
+            title="Total de Saídas"
+            value={formatCurrency(kpiData.saidas)}
+            icon={FiTrendingDown}
+            color="red"
+            loading={loading}
+            link="/financeiro/fluxo"
+          />
+          <StatCard
+            title="Total de Leads"
+            value={kpiData.totalLeads.toLocaleString('pt-BR')}
+            icon={FiUsers}
+            color="orange"
+            loading={loading}
+            link="/marketing/leads"
+          />
+        </div>
+        <p className="kpi-period-note">* Dados financeiros dos últimos 30 dias</p>
+      </section>
 
-        fetchDashboardData();
-    }, []);
-
-    const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-    const formatDate = (timestamp) => timestamp ? timestamp.toDate().toLocaleDateString('pt-BR') : 'N/A';
-
-    return (
-        // A tag <AdminLayout> foi removida. Usamos um Fragment <> em seu lugar.
-        <>
-            <Header 
-                title="Dashboard Geral" 
-                subtitle="Visão completa e em tempo real das atividades do sistema." 
-            />
-
-            {/* --- Seção de KPIs --- */}
-            <div className="dashboard-grid kpi-grid">
-                <StatCard title="Saldo Financeiro" value={formatCurrency(kpiData.saldo)} icon={<FiDollarSign size={24} />} color="linear-gradient(135deg, #3b82f6, #60a5fa)" loading={loading} />
-                <StatCard title="Total de Entradas" value={formatCurrency(kpiData.entradas)} icon={<FiTrendingUp size={24} />} color="linear-gradient(135deg, #56ab2f, #a8e063)" loading={loading} />
-                <StatCard title="Total de Saídas" value={formatCurrency(kpiData.saidas)} icon={<FiTrendingDown size={24} />} color="linear-gradient(135deg, #ff6b6b, #d9534f)" loading={loading} />
-                <StatCard title="Total de Leads" value={kpiData.totalLeads} icon={<FiUsers size={24} />} color="linear-gradient(135deg, #ff8c00, #ff4500)" loading={loading} />
+      {/* Charts Section */}
+      <section className="dashboard-section">
+        <div className="charts-grid">
+          <div className="chart-card">
+            <div className="chart-card__header">
+              <h2 className="chart-card__title">Resumo Financeiro Mensal</h2>
+              <Link to="/financeiro/relatorios" className="chart-card__link">
+                Ver detalhes <FiArrowRight />
+              </Link>
             </div>
-
-            {/* --- Seção de Gráficos --- */}
-            <div className="dashboard-grid chart-grid">
-                <div className="link-card">
-                    <h2 className="link-title">Resumo Financeiro Mensal</h2>
-                    <FinanceChart />
+            <div className="chart-card__body">
+              {loading ? (
+                <div className="chart-skeleton">
+                  <div className="skeleton skeleton--chart"></div>
                 </div>
-                <div className="link-card">
-                    <h2 className="link-title">Aquisição de Leads por Dia</h2>
-                    <LeadsChart />
-                </div>
+              ) : (
+                <FinanceChart />
+              )}
             </div>
+          </div>
 
-            {/* --- Seção de Informações Adicionais --- */}
-            <div className="dashboard-grid info-grid">
-                <div className="list-card">
-                    <div className="list-card-header">
-                        <h3><FiCalendar /> Próximos Eventos</h3>
-                        <Link to="/calendario" className="see-all-link">Ver todos <FiArrowRight /></Link>
+          <div className="chart-card">
+            <div className="chart-card__header">
+              <h2 className="chart-card__title">Aquisição de Leads por Dia</h2>
+              <Link to="/marketing/leads" className="chart-card__link">
+                Ver detalhes <FiArrowRight />
+              </Link>
+            </div>
+            <div className="chart-card__body">
+              {loading ? (
+                <div className="chart-skeleton">
+                  <div className="skeleton skeleton--chart"></div>
+                </div>
+              ) : (
+                <LeadsChart />
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Activity Section */}
+      <section className="dashboard-section">
+        <div className="activity-grid">
+          {/* Próximos Eventos */}
+          <div className="activity-card">
+            <div className="activity-card__header">
+              <div className="activity-card__title">
+                <FiCalendar className="activity-card__icon" />
+                <h3>Próximos Eventos</h3>
+              </div>
+              <Link to="/calendario" className="activity-card__link">
+                Ver todos <FiArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="activity-card__body">
+              {loading ? (
+                <div className="activity-list">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="activity-item">
+                      <div className="skeleton skeleton--text" style={{ width: '60%' }}></div>
+                      <div className="skeleton skeleton--text" style={{ width: '30%' }}></div>
                     </div>
-                    <ul>
-                        {loading ? <li>Carregando...</li> : proximosEventos.length > 0 ? proximosEventos.map(evento => (
-                            <li key={evento.id}>
-                                <span>{evento.title}</span>
-                                <span className="date">{formatDate(evento.start)}</span>
-                            </li>
-                        )) : <p className="empty-message" style={{padding: '1rem 0'}}>Nenhum evento futuro.</p>}
-                    </ul>
+                  ))}
                 </div>
-                <div className="list-card">
-                    <div className="list-card-header">
-                        <h3><FiFileText /> Últimos Posts do Blog</h3>
-                        <Link to="/blog-manager" className="see-all-link">Ver todos <FiArrowRight /></Link>
-                    </div>
-                    <ul>
-                        {loading ? <li>Carregando...</li> : ultimosPosts.length > 0 ? ultimosPosts.map(post => (
-                            <li key={post.id}>
-                                <span>{post.titulo}</span>
-                                <span className="date">{formatDate(post.data)}</span>
-                            </li>
-                        )) : <p className="empty-message" style={{padding: '1rem 0'}}>Nenhum post no blog.</p>}
-                    </ul>
+              ) : proximosEventos.length > 0 ? (
+                <ul className="activity-list">
+                  {proximosEventos.map((evento) => (
+                    <li key={evento.id} className="activity-item">
+                      <div className="activity-item__content">
+                        <span className="activity-item__title">{evento.title}</span>
+                        {evento.local && (
+                          <span className="activity-item__subtitle">{evento.local}</span>
+                        )}
+                      </div>
+                      <span className="activity-item__date">
+                        {formatRelativeDate(evento.start)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="empty-state">
+                  <FiCalendar size={48} />
+                  <p>Nenhum evento futuro</p>
                 </div>
+              )}
             </div>
-        </> // A tag de fechamento </AdminLayout> foi substituída por um Fragment.
-    );
+          </div>
+
+          {/* Últimos Posts */}
+          <div className="activity-card">
+            <div className="activity-card__header">
+              <div className="activity-card__title">
+                <FiFileText className="activity-card__icon" />
+                <h3>Últimos Posts do Blog</h3>
+              </div>
+              <Link to="/marketing/blog" className="activity-card__link">
+                Ver todos <FiArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="activity-card__body">
+              {loading ? (
+                <div className="activity-list">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="activity-item">
+                      <div className="skeleton skeleton--text" style={{ width: '70%' }}></div>
+                      <div className="skeleton skeleton--text" style={{ width: '25%' }}></div>
+                    </div>
+                  ))}
+                </div>
+              ) : ultimosPosts.length > 0 ? (
+                <ul className="activity-list">
+                  {ultimosPosts.map((post) => (
+                    <li key={post.id} className="activity-item">
+                      <div className="activity-item__content">
+                        <span className="activity-item__title">{post.titulo}</span>
+                        {post.status && (
+                          <span className={`activity-item__badge activity-item__badge--${post.status}`}>
+                            {post.status}
+                          </span>
+                        )}
+                      </div>
+                      <span className="activity-item__date">{formatDate(post.data)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="empty-state">
+                  <FiFileText size={48} />
+                  <p>Nenhum post no blog</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 };
 
 export default SuperDashboardPage;
