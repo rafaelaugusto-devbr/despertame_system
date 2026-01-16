@@ -7,7 +7,7 @@ import { useAuth } from './hooks/useAuth';
 import PageGuard from './components/guards/PageGuard';
 import AdminRoute from './components/guards/AdminRoute';
 
-import { PAGE_PASSWORDS } from './config-senha/passwords';
+import { PANELS } from './config-senha/panels';
 
 /* Layout universal */
 import UniversalLayout from './components/layout/UniversalLayout';
@@ -88,9 +88,9 @@ function App() {
             element={
               <AdminRoute>
                 <PageGuard
-                  pageKey="tesouraria"
-                  correctPassword={PAGE_PASSWORDS.ADMIN_MASTER}
-                  pageName="Painel Tesouraria"
+                  pageKey={PANELS.TESOURARIA.key}
+                  correctPassword={PANELS.TESOURARIA.password}
+                  pageName={PANELS.TESOURARIA.label}
                 >
                   <UniversalLayout Sidebar={TesourariaSidebar} />
                 </PageGuard>
@@ -108,9 +108,9 @@ function App() {
             element={
               <AdminRoute>
                 <PageGuard
-                  pageKey="financeiro"
-                  correctPassword={PAGE_PASSWORDS.FINANCEIRO_MASTER}
-                  pageName="Painel Financeiro"
+                  pageKey={PANELS.FINANCEIRO.key}
+                  correctPassword={PANELS.FINANCEIRO.password}
+                  pageName={PANELS.FINANCEIRO.label}
                 >
                   <UniversalLayout Sidebar={FinanceiroSidebar} />
                 </PageGuard>
@@ -133,9 +133,9 @@ function App() {
             element={
               <AdminRoute>
                 <PageGuard
-                  pageKey="marketing"
-                  correctPassword={PAGE_PASSWORDS.ADMIN_MASTER}
-                  pageName="Painel Marketing"
+                  pageKey={PANELS.MARKETING.key}
+                  correctPassword={PANELS.MARKETING.password}
+                  pageName={PANELS.MARKETING.label}
                 >
                   <UniversalLayout Sidebar={MarketingSidebar} />
                 </PageGuard>
@@ -155,9 +155,9 @@ function App() {
             element={
               <AdminRoute>
                 <PageGuard
-                  pageKey="config"
-                  correctPassword={PAGE_PASSWORDS.ADMIN_MASTER}
-                  pageName="Painel Config"
+                  pageKey={PANELS.CONFIG.key}
+                  correctPassword={PANELS.CONFIG.password}
+                  pageName={PANELS.CONFIG.label}
                 >
                   <UniversalLayout Sidebar={ConfigSidebar} />
                 </PageGuard>
