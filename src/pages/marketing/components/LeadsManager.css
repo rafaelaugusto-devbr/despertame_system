@@ -1,0 +1,29 @@
+/* src/components/LeadsManager.css */
+
+.leads-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--spacing-lg);
+}
+
+.leads-table th, 
+.leads-table td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.leads-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.copyable {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.copyable:hover {
+    background-color: #eef2f5;
+}

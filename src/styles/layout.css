@@ -1,0 +1,176 @@
+/* =========================================================
+   SIDEBAR (ADMIN)
+   ========================================================= */
+
+
+   .admin-layout {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .admin-content-wrapper {
+    margin-left: 260px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-content {
+    padding: 1.5rem;
+  }
+   .sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+  
+    background-color: var(--color-sidebar-bg);
+    color: var(--color-text-light);
+  
+    display: flex;
+    flex-direction: column;
+  
+    padding: 1.25rem 1rem;
+    z-index: 1000;
+  }
+  
+  /* Header da Sidebar */
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+  
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  
+  .sidebar-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  /* Navegação */
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+  }
+  
+  /* Link padrão */
+  .sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+  
+    text-decoration: none;
+    color: #cbd5e1;
+  
+    font-size: 0.95rem;
+    font-weight: 500;
+  
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  /* Ícones */
+  .sidebar-nav a svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  
+  /* Hover */
+  .sidebar-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+  }
+  
+  /* Ativo */
+  .sidebar-nav a.active {
+    background: var(--gradient-primary);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.35);
+  }
+  
+  /* Rodapé */
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  
+  /* Botões do rodapé */
+  .logout-button,
+  .collapse-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+  
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+  
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    font-weight: 500;
+  
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .logout-button:hover,
+  .collapse-button:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+  }
+  
+  .logout-button svg,
+  .collapse-button svg {
+    width: 20px;
+    height: 20px;
+  }
+  .admin-content-wrapper {
+    margin-left: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+.sidebar.collapsed {
+  width: 80px;
+  padding: 1.25rem 0.75rem;
+}
+
+.sidebar.collapsed .sidebar-header h3 {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-nav a span,
+.sidebar.collapsed .sidebar-footer span {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-nav a {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.sidebar.collapsed .sidebar-footer button {
+  justify-content: center;
+}
+
+/* Ajuste do conteúdo principal */
+.admin-layout.sidebar-collapsed .admin-content-wrapper {
+  margin-left: 80px;
+}
