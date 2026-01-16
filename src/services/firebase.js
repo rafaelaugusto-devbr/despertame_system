@@ -5,13 +5,13 @@ import { getFunctions } from "firebase/functions";
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyA8nykV5bBkk2SflhOjnt3IbqVHKO-qTcE",
+  authDomain: "despertame-8b932.firebaseapp.com",
+  projectId: "despertame-8b932",
+  storageBucket: "despertame-8b932.firebasestorage.app",
+  messagingSenderId: "436618938431",
+  appId: "1:436618938431:web:7635e3bd59182c82dc108a",
+  measurementId: "G-TH8XGQ1JMP"
 };
 
 // Inicializa os serviços do Firebase
