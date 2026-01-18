@@ -17,6 +17,7 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './BlogManager.css';
+import BlockEditor from './BlockEditor';
 
 import {
   FiEdit2,
@@ -25,7 +26,9 @@ import {
   FiX,
   FiImage,
   FiSearch,
-  FiFileText
+  FiFileText,
+  FiGrid,
+  FiType
 } from 'react-icons/fi';
 
 const BlogManager = () => {
@@ -35,6 +38,7 @@ const BlogManager = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
+  const [editorType, setEditorType] = useState('blocks'); // 'blocks' ou 'rich'
 
   const [currentPost, setCurrentPost] = useState({
     id: null,
@@ -43,6 +47,7 @@ const BlogManager = () => {
     imagemUrl: '',
     videoUrl: '',
     conteudo: '',
+    blocks: [], // Para o editor de blocos
     status: 'rascunho' // publicado ou rascunho
   });
 
@@ -103,6 +108,7 @@ const BlogManager = () => {
       imagemUrl: '',
       videoUrl: '',
       conteudo: '',
+      blocks: [],
       status: 'rascunho'
     });
     setIsEditorOpen(false);
@@ -116,6 +122,7 @@ const BlogManager = () => {
       imagemUrl: post.imagemUrl || '',
       videoUrl: post.videoUrl || '',
       conteudo: post.conteudo || '',
+      blocks: post.blocks || [],
       status: post.status || 'publicado',
       data: post.data
     });
@@ -145,6 +152,7 @@ const BlogManager = () => {
       imagemUrl: currentPost.imagemUrl,
       videoUrl: currentPost.videoUrl,
       conteudo: currentPost.conteudo,
+      blocks: currentPost.blocks,
       status: currentPost.status,
       data: currentPost.id ? currentPost.data : serverTimestamp()
     };
@@ -408,18 +416,44 @@ const BlogManager = () => {
                 </div>
 
                 <div className="post-editor__field">
-                  <label className="post-editor__label post-editor__label--required">
-                    Conteúdo do Post
-                  </label>
-                  <div className="post-editor__quill">
-                    <ReactQuill
-                      theme="snow"
-                      value={currentPost.conteudo}
-                      onChange={(content) => setCurrentPost({...currentPost, conteudo: content})}
-                      modules={quillModules}
-                      placeholder="Escreva o conteúdo do seu post aqui..."
-                    />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <label className="post-editor__label post-editor__label--required">
+                      Conteúdo do Post
+                    </label>
+                    <div className="post-editor__editor-toggle">
+                      <button
+                        type="button"
+                        className={`post-editor__toggle-btn ${editorType === 'blocks' ? 'active' : ''}`}
+                        onClick={() => setEditorType('blocks')}
+                      >
+                        <FiGrid size={16} /> Blocos
+                      </button>
+                      <button
+                        type="button"
+                        className={`post-editor__toggle-btn ${editorType === 'rich' ? 'active' : ''}`}
+                        onClick={() => setEditorType('rich')}
+                      >
+                        <FiType size={16} /> Texto Rico
+                      </button>
+                    </div>
                   </div>
+
+                  {editorType === 'blocks' ? (
+                    <BlockEditor
+                      initialBlocks={currentPost.blocks}
+                      onChange={(blocks) => setCurrentPost({...currentPost, blocks})}
+                    />
+                  ) : (
+                    <div className="post-editor__quill">
+                      <ReactQuill
+                        theme="snow"
+                        value={currentPost.conteudo}
+                        onChange={(content) => setCurrentPost({...currentPost, conteudo: content})}
+                        modules={quillModules}
+                        placeholder="Escreva o conteúdo do seu post aqui..."
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="post-editor__field">

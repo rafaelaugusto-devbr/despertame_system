@@ -9,7 +9,9 @@ const UniversalLayout = ({ Sidebar }) => {
     <div className={`admin-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
       <Sidebar />
       <main className="admin-content-wrapper">
-        <Outlet />
+        <div className="admin-content">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
