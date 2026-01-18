@@ -51,13 +51,15 @@ const BlockEditor = ({ initialBlocks = [], onChange }) => {
   const getDefaultSettings = (type) => {
     switch (type) {
       case BLOCK_TYPES.HEADING:
-        return { level: 'h2' };
+        return { level: 'h2', size: 'normal' };
       case BLOCK_TYPES.LIST:
         return { ordered: false };
       case BLOCK_TYPES.IMAGE:
-        return { url: '', alt: '', caption: '' };
+        return { url: '', alt: '', caption: '', size: 'medium' };
       case BLOCK_TYPES.VIDEO:
-        return { url: '' };
+        return { url: '', size: 'medium' };
+      case BLOCK_TYPES.PARAGRAPH:
+        return { size: 'normal' };
       default:
         return {};
     }
@@ -88,33 +90,53 @@ const BlockEditor = ({ initialBlocks = [], onChange }) => {
     switch (block.type) {
       case BLOCK_TYPES.PARAGRAPH:
         return (
-          <textarea
-            className="block-editor__textarea"
-            placeholder="Escreva seu parágrafo aqui..."
-            value={block.content}
-            onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-            rows={4}
-          />
+          <div className="block-editor__paragraph">
+            <div className="block-editor__size-control">
+              <label>Tamanho do texto:</label>
+              <select
+                className="block-editor__select block-editor__select--inline"
+                value={block.settings?.size || 'normal'}
+                onChange={(e) => updateBlock(block.id, {
+                  settings: { ...block.settings, size: e.target.value }
+                })}
+              >
+                <option value="small">Pequeno</option>
+                <option value="normal">Normal</option>
+                <option value="large">Grande</option>
+              </select>
+            </div>
+            <textarea
+              className={`block-editor__textarea block-editor__textarea--${block.settings?.size || 'normal'}`}
+              placeholder="Escreva seu parágrafo aqui..."
+              value={block.content}
+              onChange={(e) => updateBlock(block.id, { content: e.target.value })}
+              rows={4}
+            />
+          </div>
         );
 
       case BLOCK_TYPES.HEADING:
         return (
           <div className="block-editor__heading">
-            <select
-              className="block-editor__select"
-              value={block.settings.level}
-              onChange={(e) => updateBlock(block.id, {
-                settings: { ...block.settings, level: e.target.value }
-              })}
-            >
-              <option value="h1">Título 1</option>
-              <option value="h2">Título 2</option>
-              <option value="h3">Título 3</option>
-              <option value="h4">Título 4</option>
-            </select>
+            <div className="block-editor__heading-controls">
+              <select
+                className="block-editor__select"
+                value={block.settings.level}
+                onChange={(e) => updateBlock(block.id, {
+                  settings: { ...block.settings, level: e.target.value }
+                })}
+              >
+                <option value="h1">Título 1 (Maior)</option>
+                <option value="h2">Título 2</option>
+                <option value="h3">Título 3</option>
+                <option value="h4">Título 4</option>
+                <option value="h5">Título 5</option>
+                <option value="h6">Título 6 (Menor)</option>
+              </select>
+            </div>
             <input
               type="text"
-              className="block-editor__input"
+              className={`block-editor__input block-editor__input--${block.settings.level}`}
               placeholder="Digite o título..."
               value={block.content}
               onChange={(e) => updateBlock(block.id, { content: e.target.value })}
@@ -152,11 +174,26 @@ const BlockEditor = ({ initialBlocks = [], onChange }) => {
                 settings: { ...block.settings, caption: e.target.value }
               })}
             />
+            <div className="block-editor__size-control">
+              <label>Tamanho da imagem:</label>
+              <select
+                className="block-editor__select block-editor__select--inline"
+                value={block.settings.size || 'medium'}
+                onChange={(e) => updateBlock(block.id, {
+                  settings: { ...block.settings, size: e.target.value }
+                })}
+              >
+                <option value="small">Pequena (400px)</option>
+                <option value="medium">Média (600px)</option>
+                <option value="large">Grande (800px)</option>
+                <option value="full">Tela Cheia (100%)</option>
+              </select>
+            </div>
             {block.settings.url && (
               <img
                 src={block.settings.url}
                 alt={block.settings.alt}
-                className="block-editor__image-preview"
+                className={`block-editor__image-preview block-editor__image-preview--${block.settings.size || 'medium'}`}
               />
             )}
           </div>
@@ -174,8 +211,23 @@ const BlockEditor = ({ initialBlocks = [], onChange }) => {
                 settings: { ...block.settings, url: e.target.value }
               })}
             />
+            <div className="block-editor__size-control">
+              <label>Tamanho do vídeo:</label>
+              <select
+                className="block-editor__select block-editor__select--inline"
+                value={block.settings.size || 'medium'}
+                onChange={(e) => updateBlock(block.id, {
+                  settings: { ...block.settings, size: e.target.value }
+                })}
+              >
+                <option value="small">Pequeno</option>
+                <option value="medium">Médio</option>
+                <option value="large">Grande</option>
+                <option value="full">Tela Cheia</option>
+              </select>
+            </div>
             {block.settings.url && (
-              <div className="block-editor__video-preview">
+              <div className={`block-editor__video-preview block-editor__video-preview--${block.settings.size || 'medium'}`}>
                 <iframe
                   src={block.settings.url.replace('watch?v=', 'embed/')}
                   frameBorder="0"
@@ -262,7 +314,7 @@ const BlockEditor = ({ initialBlocks = [], onChange }) => {
   const renderBlockPreview = (block) => {
     switch (block.type) {
       case BLOCK_TYPES.PARAGRAPH:
-        return <p>{block.content}</p>;
+        return <p className={`preview-text--${block.settings?.size || 'normal'}`}>{block.content}</p>;
 
       case BLOCK_TYPES.HEADING:
         const HeadingTag = block.settings.level;
@@ -270,7 +322,7 @@ const BlockEditor = ({ initialBlocks = [], onChange }) => {
 
       case BLOCK_TYPES.IMAGE:
         return (
-          <figure>
+          <figure className={`preview-image--${block.settings.size || 'medium'}`}>
             <img src={block.settings.url} alt={block.settings.alt} />
             {block.settings.caption && <figcaption>{block.settings.caption}</figcaption>}
           </figure>
