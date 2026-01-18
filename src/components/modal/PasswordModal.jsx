@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiEye, FiEyeOff, FiLock, FiShield } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiEye, FiEyeOff, FiLock, FiShield, FiX } from 'react-icons/fi';
 import './PasswordModal.css';
 
 const PasswordModal = ({ onSubmit, error, pageName = 'Área Protegida' }) => {
@@ -7,6 +8,7 @@ const PasswordModal = ({ onSubmit, error, pageName = 'Área Protegida' }) => {
   const [show, setShow] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const inputRef = useRef(null);
+  const navigate = useNavigate();
 
   // Auto-focus input on mount
   useEffect(() => {
@@ -32,6 +34,15 @@ const PasswordModal = ({ onSubmit, error, pageName = 'Área Protegida' }) => {
   return (
     <div className="password-modal-overlay">
       <div className={`password-modal ${isShaking ? 'password-modal--shake' : ''}`}>
+        <button
+          type="button"
+          className="password-modal__close"
+          onClick={() => navigate(-1)}
+          aria-label="Fechar e voltar"
+        >
+          <FiX size={24} />
+        </button>
+
         <div className="password-modal__icon">
           <div className="password-modal__icon-circle">
             <FiShield size={32} />

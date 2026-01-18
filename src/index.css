@@ -16,6 +16,20 @@
   --gradient-warning: linear-gradient(135deg, #f59e0b, #fcd34d);
   --gradient-info: linear-gradient(135deg, #6366f1, #818cf8);
 
+  /* Cores Sólidas para Cards KPI */
+  --color-blue: #3b82f6;
+  --color-green: #10b981;
+  --color-red: #ef4444;
+  --color-orange: #f59e0b;
+  --color-purple: #8b5cf6;
+
+  /* Gradientes para Barras de Progresso */
+  --gradient-bar-green: linear-gradient(90deg, #10b981, #34d399);
+  --gradient-bar-red: linear-gradient(90deg, #ef4444, #f87171);
+  --gradient-bar-blue: linear-gradient(90deg, #3b82f6, #60a5fa);
+  --gradient-bar-orange: linear-gradient(90deg, #f59e0b, #fbbf24);
+  --gradient-bar-purple: linear-gradient(90deg, #8b5cf6, #a78bfa);
+
   /* Espaçamento e Bordas */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -184,7 +198,7 @@ body {
 /* 5. CARDS E GRIDS */
 .links-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: var(--spacing-lg);
 }
 
@@ -1158,20 +1172,26 @@ body {
 }
 
 .kpi-grid {
-  grid-template-columns: repeat(4, 1fr);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 .chart-grid {
-  grid-template-columns: repeat(2, 1fr);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 .info-grid {
-  grid-template-columns: repeat(2, 1fr);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 @media (max-width: 1024px) {
   .kpi-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
   .chart-grid,
   .info-grid {

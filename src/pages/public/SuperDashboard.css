@@ -112,23 +112,23 @@
 
 /* Color variants */
 .stat-card--blue {
-  color: #3b82f6;
+  color: var(--color-blue);
 }
 
 .stat-card--green {
-  color: #10b981;
+  color: var(--color-green);
 }
 
 .stat-card--red {
-  color: #ef4444;
+  color: var(--color-red);
 }
 
 .stat-card--orange {
-  color: #f59e0b;
+  color: var(--color-orange);
 }
 
 .stat-card--purple {
-  color: #8b5cf6;
+  color: var(--color-purple);
 }
 
 .kpi-period-note {
