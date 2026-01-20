@@ -8,6 +8,7 @@ import {
   PlusIcon,
   TagIcon,
   ChartIcon,
+  ShoppingCartIcon,
   HomeIcon,
   LogoutIcon,
   CollapseIcon,
@@ -47,6 +48,11 @@ const FinanceiroSidebar = () => {
         <NavLink to="/financeiro/categorias">
           <TagIcon />
           <span>Categorias</span>
+        </NavLink>
+
+        <NavLink to="/financeiro/vendas">
+          <ShoppingCartIcon />
+          <span>Vendas</span>
         </NavLink>
 
         <NavLink to="/financeiro/relatorios">
