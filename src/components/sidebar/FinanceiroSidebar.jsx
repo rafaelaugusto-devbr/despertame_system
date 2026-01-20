@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
-import './sidebar.css';
+import './Sidebar.css';
 
 import {
   FinanceIcon,
