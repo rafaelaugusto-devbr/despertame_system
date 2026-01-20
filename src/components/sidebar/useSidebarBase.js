@@ -1,31 +1,14 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/useAuth';
 import { useModal } from '../../contexts/ModalContext';
+import { useSidebar } from '../../contexts/SidebarContext';
 
 export function useSidebarBase() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { showModal } = useModal();
-
-  useEffect(() => {
-    const sidebar = document.querySelector('.sidebar');
-    if (!sidebar) return;
-
-    sidebar.classList.toggle('open', mobileOpen);
-  }, [mobileOpen]);
-
-  const toggleCollapse = () => {
-    setCollapsed(prev => !prev);
-  };
-
-  const toggleMobile = () => {
-    setMobileOpen(prev => !prev);
-  };
+  const { collapsed, toggleCollapse, toggleMobile, mobileOpen } = useSidebar();
 
   const handleLogout = () => {
     showModal({

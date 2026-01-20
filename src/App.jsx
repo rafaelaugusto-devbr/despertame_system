@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import { ModalProvider } from './contexts/ModalContext';
+import { SidebarProvider } from './contexts/SidebarContext';
 import { useAuth } from './hooks/useAuth';
 
 import PageGuard from './components/guards/PageGuard';
@@ -63,8 +64,9 @@ const AuthGuard = ({ children }) => {
 function App() {
   return (
     <ModalProvider>
-      <Router>
-        <Routes>
+      <SidebarProvider>
+        <Router>
+          <Routes>
 
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
@@ -172,8 +174,9 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
 
-        </Routes>
-      </Router>
+          </Routes>
+        </Router>
+      </SidebarProvider>
     </ModalProvider>
   );
 }
