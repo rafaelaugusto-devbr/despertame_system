@@ -33,7 +33,6 @@ import CalendarioPage from './pages/tesouraria/CalendarioPage';
 /* Financeiro */
 import FinanceiroDashboardPage from './pages/financeiro/FinanceiroDashboardPage';
 import RelatoriosVendasPage from './pages/financeiro/RelatoriosVendasPage';
-import ListaFluxoPage from './pages/financeiro/ListaFluxoPage';
 import FluxoCaixaPage from './pages/financeiro/FluxoCaixaPage';
 import CategoriasTiposPage from './pages/financeiro/CategoriasTiposPage';
 import CampanhasListPage from './pages/financeiro/CampanhasListPage';
@@ -120,7 +119,6 @@ function App() {
             }
           >
             <Route path="dashboard" element={<FinanceiroDashboardPage />} />
-            <Route path="fluxo" element={<ListaFluxoPage />} />
             <Route path="adicionar" element={<FluxoCaixaPage />} />
             <Route path="categorias" element={<CategoriasTiposPage />} />
             <Route path="vendas" element={<CampanhasListPage />} />

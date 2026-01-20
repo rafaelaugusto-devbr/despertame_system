@@ -4,7 +4,6 @@ import './Sidebar.css';
 
 import {
   FinanceIcon,
-  ListIcon,
   PlusIcon,
   TagIcon,
   ChartIcon,
@@ -33,11 +32,6 @@ const FinanceiroSidebar = () => {
         <NavLink to="/financeiro/dashboard">
           <FinanceIcon />
           <span>Dashboard</span>
-        </NavLink>
-
-        <NavLink to="/financeiro/fluxo">
-          <ListIcon />
-          <span>Fluxo de Caixa</span>
         </NavLink>
 
         <NavLink to="/financeiro/adicionar">
