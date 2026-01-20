@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button';
 import { FiFilter, FiDownload, FiBarChart2, FiPieChart } from 'react-icons/fi';
 import { LineChart, Line, AreaChart, Area, Pie, PieChart as RePieChart, Cell, Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import * as XLSX from 'xlsx';
+import './Financeiro.css';
 
 const KpiCard = ({ title, value }) => (
     <div className="summary-card-dash" style={{ background: 'var(--color-background-light)', border: '1px solid var(--color-border)' }}>

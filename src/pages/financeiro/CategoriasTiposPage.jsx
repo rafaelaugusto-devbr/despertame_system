@@ -1,7 +1,8 @@
 // src/pages/financeiro/CategoriasTiposPage.jsx (Versão Final Corrigida)
 import React from 'react';
-import Header from '../../components/layout/Header'; 
+import Header from '../../components/layout/Header';
 import CategoriasManager from './components/CategoriasManager';
+import './Financeiro.css';
 
 const CategoriasTiposPage = () => {
   return (
