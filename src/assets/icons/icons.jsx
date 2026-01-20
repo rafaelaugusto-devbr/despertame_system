@@ -24,3 +24,4 @@ export { default as ListIcon } from './ListIcon';
 export { default as TagIcon } from './TagIcon';
 export { default as ChartIcon } from './ChartIcon';
 export { default as HomeIcon} from './HomeIcon';
+export { default as ShoppingCartIcon } from './ShoppingCartIcon';
