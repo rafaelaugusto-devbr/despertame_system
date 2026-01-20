@@ -134,9 +134,9 @@ const FinanceiroDashboardPage = () => {
       {/* KPI Cards */}
       <section className="dashboard-section">
         <div className="kpi-grid">
-          <StatCard title="Saldo Geral" value={formatCurrency(dashboardData.saldoGeral)} icon={FiDollarSign} color="blue" loading={loading} link="/financeiro/fluxo" />
-          <StatCard title="Total de Entradas" value={formatCurrency(dashboardData.totalEntradas)} icon={FiTrendingUp} color="green" loading={loading} link="/financeiro/fluxo" />
-          <StatCard title="Total de Saídas" value={formatCurrency(dashboardData.totalSaidas)} icon={FiTrendingDown} color="red" loading={loading} link="/financeiro/fluxo" />
+          <StatCard title="Saldo Geral" value={formatCurrency(dashboardData.saldoGeral)} icon={FiDollarSign} color="blue" loading={loading} />
+          <StatCard title="Total de Entradas" value={formatCurrency(dashboardData.totalEntradas)} icon={FiTrendingUp} color="green" loading={loading} />
+          <StatCard title="Total de Saídas" value={formatCurrency(dashboardData.totalSaidas)} icon={FiTrendingDown} color="red" loading={loading} />
           <StatCard title="Lucro de Vendas" value={formatCurrency(dashboardData.lucroVendas)} icon={FiShoppingCart} color="orange" loading={loading} link="/financeiro/vendas" />
         </div>
       </section>
