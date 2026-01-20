@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
 import { DashboardIcon } from '../../assets/icons/icons';
-import './sidebar.css';
+import './Sidebar.css';
 
 import {
   ChartIcon,
