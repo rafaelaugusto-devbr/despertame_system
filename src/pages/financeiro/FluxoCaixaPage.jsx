@@ -4,6 +4,7 @@ import React from 'react';
 import Header from '../../components/layout/Header';
 import FluxoCaixaForm from './components/FluxoCaixaForm';
 import ListaFluxoManager from './components/ListaFluxoManager'; // Reutilizando o componente da lista
+import './Financeiro.css';
 
 const FluxoCaixaPage = () => {
   return (

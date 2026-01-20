@@ -7,6 +7,7 @@ import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import Header from '../../components/layout/Header';
 import { FiDollarSign, FiTrendingUp, FiTrendingDown, FiArrowRight, FiTag } from 'react-icons/fi';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import './Financeiro.css';
 
 // --- Componentes Reutilizáveis ---
 const KpiCard = ({ title, value, icon, color }) => (

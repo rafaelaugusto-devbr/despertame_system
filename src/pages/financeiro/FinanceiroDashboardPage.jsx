@@ -6,8 +6,7 @@ import { useNotification } from '../../hooks/useNotification';
 import { handleError } from '../../utils/errorHandler';
 import Header from '../../components/layout/Header';
 import { FiDollarSign, FiTrendingUp, FiTrendingDown, FiPieChart, FiShoppingCart, FiArrowRight } from 'react-icons/fi';
-import '../public/SuperDashboard.css';
-import './FinanceiroDashboard.css';
+import './Financeiro.css';
 
 const FinanceiroDashboardPage = () => {
   const [dashboardData, setDashboardData] = useState({
