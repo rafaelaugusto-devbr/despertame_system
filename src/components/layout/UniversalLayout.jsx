@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { useSidebarBase } from '../sidebar/useSidebarBase';
+import { useSidebar } from '../../contexts/SidebarContext';
 
 const UniversalLayout = ({ Sidebar }) => {
-  const { collapsed } = useSidebarBase();
+  const { collapsed } = useSidebar();
 
   return (
     <div className={`admin-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
