@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, setDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
-import { FiPlus, FiEdit2, FiTrash2, FiUsers, FiCheckCircle, FiXCircle, FiDollarSign } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiUsers, FiCheckCircle, FiXCircle, FiDollarSign, FiRefreshCw, FiSettings, FiDownload } from 'react-icons/fi';
 import '../financeiro/Financeiro.css';
 
 const InscritosPage = () => {
   const [inscritos, setInscritos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [syncing, setSyncing] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
     telefone: '',
@@ -19,10 +21,104 @@ const InscritosPage = () => {
     valorPago: '',
     observacoes: '',
   });
+  const [sheetConfig, setSheetConfig] = useState({
+    spreadsheetId: '',
+    range: 'Respostas!A2:F',
+    ano: new Date().getFullYear(),
+  });
 
   useEffect(() => {
     fetchInscritos();
+    loadSheetConfig();
   }, []);
+
+  const loadSheetConfig = async () => {
+    try {
+      const configRef = doc(db, 'configuracoes', 'googleSheets');
+      const configSnap = await getDocs(collection(db, 'configuracoes'));
+      const config = configSnap.docs.find(d => d.id === 'googleSheets');
+      if (config) {
+        setSheetConfig(config.data());
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configuração:', error);
+    }
+  };
+
+  const saveSheetConfig = async () => {
+    try {
+      const configRef = doc(db, 'configuracoes', 'googleSheets');
+      await setDoc(configRef, sheetConfig, { merge: true });
+      alert('Configuração salva com sucesso!');
+      setIsConfigOpen(false);
+    } catch (error) {
+      console.error('Erro ao salvar configuração:', error);
+      alert('Erro ao salvar configuração');
+    }
+  };
+
+  const syncWithGoogleSheets = async () => {
+    if (!sheetConfig.spreadsheetId) {
+      alert('Configure o ID da planilha primeiro!');
+      setIsConfigOpen(true);
+      return;
+    }
+
+    setSyncing(true);
+    try {
+      // IMPORTANTE: Para usar a API do Google Sheets, você precisa:
+      // 1. Criar um projeto no Google Cloud Console
+      // 2. Ativar a Google Sheets API
+      // 3. Criar credenciais (API Key ou Service Account)
+      // 4. Tornar a planilha pública OU usar Service Account
+
+      const API_KEY = 'SUA_API_KEY_AQUI'; // Substitua pela sua API Key
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetConfig.spreadsheetId}/values/${sheetConfig.range}?key=${API_KEY}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.values) {
+        // Mapear dados da planilha para o formato do sistema
+        // Assumindo colunas: Nome | Telefone | Email | Pago | Valor Pago | Observações
+        const inscritosFromSheet = data.values.map((row, index) => ({
+          nome: row[0] || '',
+          telefone: row[1] || '',
+          email: row[2] || '',
+          pago: row[3]?.toLowerCase() === 'sim' || row[3]?.toLowerCase() === 'pago',
+          valorPago: parseFloat(row[4]) || 0,
+          observacoes: row[5] || '',
+          fromSheet: true,
+          sheetRow: index + 2, // +2 porque linha 1 é header e API começa do 0
+        }));
+
+        // Salvar no Firestore
+        for (const inscrito of inscritosFromSheet) {
+          await addDoc(collection(db, 'retiroInscritos'), {
+            ...inscrito,
+            createdAt: serverTimestamp(),
+            syncedAt: serverTimestamp(),
+          });
+        }
+
+        await fetchInscritos();
+        alert(`${inscritosFromSheet.length} inscritos sincronizados com sucesso!`);
+      }
+    } catch (error) {
+      console.error('Erro ao sincronizar:', error);
+      alert('Erro ao sincronizar com Google Sheets. Verifique a configuração e permissões da planilha.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const exportToGoogleSheets = async () => {
+    alert('Esta funcionalidade requer autenticação OAuth2 do Google. Configure um Service Account para habilitar a escrita na planilha.');
+    // Para implementar a escrita, você precisará:
+    // 1. Service Account no Google Cloud
+    // 2. Compartilhar a planilha com o email do Service Account
+    // 3. Usar biblioteca google-auth-library no backend
+  };
 
   const fetchInscritos = async () => {
     try {
@@ -125,7 +221,7 @@ const InscritosPage = () => {
     <>
       <Header
         title="Gestão de Inscritos do Retiro"
-        subtitle="Gerencie os inscritos e pagamentos do retiro"
+        subtitle="Gerencie os inscritos e sincronize com Google Sheets"
       />
 
       {/* KPI Cards */}
@@ -173,10 +269,38 @@ const InscritosPage = () => {
 
       <div className="section-header">
         <h2 className="link-title">Lista de Inscritos</h2>
-        <Button className="btn-primary" onClick={() => handleOpenModal()}>
-          <FiPlus /> Novo Inscrito
-        </Button>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <Button
+            className="btn-secondary"
+            onClick={() => setIsConfigOpen(true)}
+          >
+            <FiSettings /> Configurar Planilha
+          </Button>
+          <Button
+            className="btn-secondary"
+            onClick={syncWithGoogleSheets}
+            disabled={syncing}
+          >
+            <FiRefreshCw className={syncing ? 'spinning' : ''} />
+            {syncing ? 'Sincronizando...' : 'Sincronizar Sheets'}
+          </Button>
+          <Button className="btn-primary" onClick={() => handleOpenModal()}>
+            <FiPlus /> Novo Inscrito
+          </Button>
+        </div>
       </div>
+
+      {/* Instrução para Google Sheets */}
+      {!sheetConfig.spreadsheetId && (
+        <div className="link-card" style={{ marginBottom: '1.5rem', background: '#FFF9F0', border: '2px solid #FFD700' }}>
+          <h3 style={{ margin: '0 0 0.5rem', color: '#1e293b', fontSize: '1rem', fontWeight: 700 }}>
+            📊 Configure a integração com Google Sheets
+          </h3>
+          <p style={{ margin: 0, color: '#64748b', fontSize: '0.9375rem' }}>
+            Clique em "Configurar Planilha" para conectar sua planilha do Google Forms e sincronizar automaticamente os inscritos.
+          </p>
+        </div>
+      )}
 
       {loading ? (
         <p>Carregando inscritos...</p>
@@ -205,7 +329,22 @@ const InscritosPage = () => {
                 ) : (
                   inscritos.map((inscrito) => (
                     <tr key={inscrito.id}>
-                      <td data-label="Nome">{inscrito.nome}</td>
+                      <td data-label="Nome">
+                        {inscrito.nome}
+                        {inscrito.fromSheet && (
+                          <span style={{
+                            marginLeft: '0.5rem',
+                            padding: '0.125rem 0.5rem',
+                            background: '#d1fae5',
+                            color: '#065f46',
+                            borderRadius: '4px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600
+                          }}>
+                            Sheets
+                          </span>
+                        )}
+                      </td>
                       <td data-label="Telefone">{inscrito.telefone || '-'}</td>
                       <td data-label="Email">{inscrito.email || '-'}</td>
                       <td data-label="Status Pagamento">
@@ -258,7 +397,7 @@ const InscritosPage = () => {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Modal de Edição */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -365,6 +504,103 @@ const InscritosPage = () => {
           </div>
         </div>
       )}
+
+      {/* Modal de Configuração Google Sheets */}
+      {isConfigOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '700px' }}>
+            <div className="modal-header">
+              <h3>Configurar Google Sheets</h3>
+              <button type="button" onClick={() => setIsConfigOpen(false)} className="modal-close-btn">
+                &times;
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div style={{ marginBottom: '1.5rem', padding: '1rem', background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '8px' }}>
+                <h4 style={{ margin: '0 0 0.5rem', color: '#0369A1', fontSize: '0.9375rem', fontWeight: 600 }}>
+                  📋 Como configurar:
+                </h4>
+                <ol style={{ margin: 0, paddingLeft: '1.5rem', color: '#075985', fontSize: '0.875rem', lineHeight: '1.6' }}>
+                  <li>Abra sua planilha do Google Sheets</li>
+                  <li>Copie o ID da planilha da URL (parte entre /d/ e /edit)</li>
+                  <li>Exemplo: docs.google.com/spreadsheets/d/<strong>ABC123XYZ</strong>/edit</li>
+                  <li>Cole o ID no campo abaixo</li>
+                  <li>Certifique-se que a planilha está compartilhada com "Qualquer pessoa com o link"</li>
+                </ol>
+              </div>
+
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                <div>
+                  <label htmlFor="spreadsheetId">ID da Planilha *</label>
+                  <input
+                    id="spreadsheetId"
+                    type="text"
+                    className="input-field"
+                    placeholder="Exemplo: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+                    value={sheetConfig.spreadsheetId}
+                    onChange={(e) => setSheetConfig({ ...sheetConfig, spreadsheetId: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="range">Intervalo de Células</label>
+                  <input
+                    id="range"
+                    type="text"
+                    className="input-field"
+                    placeholder="Exemplo: Respostas!A2:F"
+                    value={sheetConfig.range}
+                    onChange={(e) => setSheetConfig({ ...sheetConfig, range: e.target.value })}
+                  />
+                  <small style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '0.25rem', display: 'block' }}>
+                    Nome da aba e intervalo (A2:F ignora o cabeçalho)
+                  </small>
+                </div>
+
+                <div>
+                  <label htmlFor="ano">Ano do Retiro</label>
+                  <input
+                    id="ano"
+                    type="number"
+                    className="input-field"
+                    placeholder="2025"
+                    value={sheetConfig.ano}
+                    onChange={(e) => setSheetConfig({ ...sheetConfig, ano: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#FEF3C7', border: '1px solid #FDE047', borderRadius: '8px' }}>
+                <p style={{ margin: 0, color: '#854D0E', fontSize: '0.875rem', lineHeight: '1.6' }}>
+                  <strong>⚠️ Importante:</strong> Para usar esta funcionalidade, você precisa de uma API Key do Google.
+                  Substitua 'SUA_API_KEY_AQUI' no código pela sua chave real.
+                </p>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <Button type="button" className="btn-secondary" onClick={() => setIsConfigOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="button" className="btn-primary" onClick={saveSheetConfig}>
+                Salvar Configuração
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .spinning {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   );
 };

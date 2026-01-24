@@ -1,4 +1,4 @@
-// src/pages/financeiro/CampanhaDetalhesPage.jsx (Com Edição Funcional)
+// src/pages/tesouraria/CampanhaDetalhesPage.jsx (Com Edição Funcional)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -158,7 +158,7 @@ const CampanhaDetalhesPage = () => {
              <div className="link-card" style={{ borderColor: '#d9534f', background: 'rgba(217, 83, 79, 0.05)' }}>
                  <h2 className="link-title" style={{ color: '#d9534f' }}><FiAlertCircle /> Erro</h2>
                  <p style={{ color: '#d9534f' }}>{error}</p>
-                 <Link to="/financeiro/vendas" className="btn btn-primary" style={{ marginTop: '1rem' }}>Voltar para Campanhas</Link>
+                 <Link to="/tesouraria/vendas" className="btn btn-primary" style={{ marginTop: '1rem' }}>Voltar para Campanhas</Link>
              </div>
          );
      }
@@ -170,7 +170,7 @@ const CampanhaDetalhesPage = () => {
          <>
              <Header title={campanha.nome} subtitle={`Detalhes e transações da campanha: ${campanha.produto}`} />
              <div style={{ marginBottom: 'var(--spacing-lg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                 <Link to="/financeiro/vendas" className="btn btn-secondary"><FiArrowLeft /> Voltar</Link>
+                 <Link to="/tesouraria/vendas" className="btn btn-secondary"><FiArrowLeft /> Voltar</Link>
                  <Button className="btn-primary" onClick={() => setIsVendaModalOpen(true)}><FiPlus /> Registrar Venda</Button>
              </div>
  

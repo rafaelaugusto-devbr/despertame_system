@@ -223,12 +223,10 @@ const SenhasPage = () => {
         <h3 style={{ margin: '0 0 1rem', color: '#1e293b', fontSize: '1.125rem', fontWeight: 700 }}>
           Informações Importantes
         </h3>
-        <ul style={{ margin: 0, paddingLeft: '1.5rem', color: '#64748b', lineHeight: '1.8' }}>
-          <li>As senhas são armazenadas no arquivo <code style={{ background: '#e2e8f0', padding: '0.125rem 0.5rem', borderRadius: '4px', fontFamily: 'monospace', color: '#FF8C00' }}>panels.jsx</code></li>
-          <li>Apenas usuários com acesso ao painel de Configurações podem visualizar essas senhas</li>
-          <li>Para alterar uma senha, edite o arquivo <code style={{ background: '#e2e8f0', padding: '0.125rem 0.5rem', borderRadius: '4px', fontFamily: 'monospace', color: '#FF8C00' }}>src/config-senha/panels.jsx</code></li>
-          <li>Recomendamos usar senhas fortes com letras, números e caracteres especiais</li>
-        </ul>
+        <p style={{ margin: 0, color: '#64748b', lineHeight: '1.8', fontSize: '0.9375rem' }}>
+          <strong>⚠️ Aviso:</strong> As senhas exibidas nesta página <strong>não podem ser compartilhadas sem autorização</strong>.
+          Mantenha essas informações em sigilo e compartilhe apenas com pessoas devidamente autorizadas.
+        </p>
       </div>
     </>
   );

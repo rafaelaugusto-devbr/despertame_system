@@ -16,7 +16,6 @@ import UniversalLayout from './components/layout/UniversalLayout';
 /* Sidebars */
 import PublicSidebar from './components/sidebar/PublicSidebar';
 import TesourariaSidebar from './components/sidebar/TesourariaSidebar';
-import FinanceiroSidebar from './components/sidebar/FinanceiroSidebar';
 import MarketingSidebar from './components/sidebar/MarketingSidebar';
 import ConfigSidebar from './components/sidebar/ConfigSidebar';
 
@@ -31,13 +30,13 @@ import InscritosPage from './pages/tesouraria/InscritosPage';
 import CalendarioPage from './pages/tesouraria/CalendarioPage';
 import DocumentosPage from './pages/tesouraria/DocumentosPage';
 
-/* Financeiro */
-import FinanceiroDashboardPage from './pages/financeiro/FinanceiroDashboardPage';
-import RelatoriosVendasPage from './pages/financeiro/RelatoriosVendasPage';
-import FluxoCaixaPage from './pages/financeiro/FluxoCaixaPage';
-import CategoriasTiposPage from './pages/financeiro/CategoriasTiposPage';
-import CampanhasListPage from './pages/financeiro/CampanhasListPage';
-import CampanhaDetalhesPage from './pages/financeiro/CampanhaDetalhesPage';
+/* Financeiro (agora em Tesouraria) */
+import FinanceiroDashboardPage from './pages/tesouraria-financeiro/FinanceiroDashboardPage';
+import RelatoriosVendasPage from './pages/tesouraria-financeiro/RelatoriosVendasPage';
+import FluxoCaixaPage from './pages/tesouraria-financeiro/FluxoCaixaPage';
+import CategoriasTiposPage from './pages/tesouraria-financeiro/CategoriasTiposPage';
+import CampanhasListPage from './pages/tesouraria-financeiro/CampanhasListPage';
+import CampanhaDetalhesPage from './pages/tesouraria-financeiro/CampanhaDetalhesPage';
 
 /* Marketing */
 import AdminDashboard from './pages/marketing/AdminDashboard';
@@ -103,34 +102,16 @@ function App() {
             <Route path="inscritos" element={<InscritosPage />} />
             <Route path="calendario" element={<CalendarioPage />} />
             <Route path="documentos" element={<DocumentosPage />} />
-            <Route index element={<Navigate to="inscritos" replace />} />
-          </Route>
-
-          {/* Painel Financeiro */}
-          <Route
-            path="/financeiro"
-            element={
-              <AdminRoute>
-                <PageGuard
-                  pageKey={PANELS.FINANCEIRO.key}
-                  correctPassword={PANELS.FINANCEIRO.password}
-                  pageName={PANELS.FINANCEIRO.label}
-                >
-                  <UniversalLayout Sidebar={FinanceiroSidebar} />
-                </PageGuard>
-              </AdminRoute>
-            }
-          >
             <Route path="dashboard" element={<FinanceiroDashboardPage />} />
             <Route path="adicionar" element={<FluxoCaixaPage />} />
             <Route path="categorias" element={<CategoriasTiposPage />} />
             <Route path="vendas" element={<CampanhasListPage />} />
             <Route path="vendas/:campanhaId" element={<CampanhaDetalhesPage />} />
             <Route path="relatorios" element={<RelatoriosVendasPage />} />
-            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route index element={<Navigate to="inscritos" replace />} />
           </Route>
 
-          {/* Painel Marketing */}
+{/* Painel Marketing */}
           <Route
             path="/marketing"
             element={
