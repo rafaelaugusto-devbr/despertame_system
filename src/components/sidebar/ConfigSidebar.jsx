@@ -8,6 +8,7 @@ import {
   HomeIcon,
   LogoutIcon,
   CollapseIcon,
+  LockIcon,
 } from '../../assets/icons/icons';
 
 const ConfigSidebar = () => {
@@ -29,6 +30,11 @@ const ConfigSidebar = () => {
         <NavLink to="/config/usuarios">
           <UsersIcon />
           <span>Usuários</span>
+        </NavLink>
+
+        <NavLink to="/config/senhas">
+          <LockIcon />
+          <span>Senhas</span>
         </NavLink>
       </nav>
 

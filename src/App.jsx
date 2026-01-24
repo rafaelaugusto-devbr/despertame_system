@@ -47,6 +47,7 @@ import LeadsPage from './pages/marketing/LeadsPage';
 
 /* Config */
 import UserManagementPage from './pages/config/UserManagementPage';
+import SenhasPage from './pages/config/SenhasPage';
 
 /* Guarda simples de login */
 const AuthGuard = ({ children }) => {
@@ -167,6 +168,7 @@ function App() {
             }
           >
             <Route path="usuarios" element={<UserManagementPage />} />
+            <Route path="senhas" element={<SenhasPage />} />
             <Route index element={<Navigate to="usuarios" replace />} />
           </Route>
 
