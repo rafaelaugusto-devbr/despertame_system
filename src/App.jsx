@@ -27,8 +27,9 @@ import CalendarioVisualizacao from './pages/public/CalendarioVisualizacao';
 import LinksPage from './pages/public/LinksPage';
 
 /* Tesouraria */
-import TesourariaDashboardPage from './pages/tesouraria/TesourariaDashboardPage';
+import InscritosPage from './pages/tesouraria/InscritosPage';
 import CalendarioPage from './pages/tesouraria/CalendarioPage';
+import DocumentosPage from './pages/tesouraria/DocumentosPage';
 
 /* Financeiro */
 import FinanceiroDashboardPage from './pages/financeiro/FinanceiroDashboardPage';
@@ -98,9 +99,10 @@ function App() {
               </AdminRoute>
             }
           >
-            <Route path="dashboard" element={<TesourariaDashboardPage />} />
+            <Route path="inscritos" element={<InscritosPage />} />
             <Route path="calendario" element={<CalendarioPage />} />
-            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="documentos" element={<DocumentosPage />} />
+            <Route index element={<Navigate to="inscritos" replace />} />
           </Route>
 
           {/* Painel Financeiro */}

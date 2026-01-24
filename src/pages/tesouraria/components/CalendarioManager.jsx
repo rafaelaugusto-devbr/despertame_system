@@ -247,7 +247,7 @@ const CalendarioManager = () => {
                 <p style={{color: 'var(--color-text-secondary)', marginBottom: 'var(--spacing-md)'}}>
                     Clique em uma data para adicionar um novo evento. Clique em um evento existente para editar.
                 </p>
-                <div className="calendario-container">
+                <div className="calendario-container calendario-container--compact">
                     {loading ? <p>Carregando calendário e feriados...</p> : (
                         <FullCalendar
                             plugins={[dayGridPlugin, interactionPlugin, multiMonthPlugin]}
@@ -256,10 +256,12 @@ const CalendarioManager = () => {
                             locale="pt-br"
                             buttonText={{ today: 'Hoje', month: 'Mês', year: 'Ano' }}
                             multiMonthMaxColumns={3}
+                            height="auto"
+                            contentHeight="auto"
                             events={events}
                             dateClick={handleDateClick}
                             eventClick={handleEventClick}
-                            
+
                             ref={calendarRef}
                             datesSet={handleDatesSet}
                             eventContent={renderEventContent}
@@ -289,7 +291,7 @@ const CalendarioManager = () => {
                 </div>
             </div>
 
-            <EventModal 
+            <EventModal
                 eventInfo={eventModalInfo}
                 categories={categories}
                 onClose={handleCloseEventModal}

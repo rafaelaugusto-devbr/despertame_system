@@ -3,11 +3,12 @@ import { useSidebarBase } from './useSidebarBase';
 import './Sidebar.css';
 
 import {
-  WalletIcon,
   CalendarIcon,
   HomeIcon,
   LogoutIcon,
   CollapseIcon,
+  FileIcon,
+  UsersIcon,
 } from '../../assets/icons/icons';
 
 const TesourariaSidebar = () => {
@@ -26,14 +27,19 @@ const TesourariaSidebar = () => {
 </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/tesouraria/dashboard">
-          <WalletIcon />
-          <span>Dashboard</span>
+        <NavLink to="/tesouraria/inscritos">
+          <UsersIcon />
+          <span>Inscritos do Retiro</span>
         </NavLink>
 
         <NavLink to="/tesouraria/calendario">
           <CalendarIcon />
           <span>Calendário</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/documentos">
+          <FileIcon />
+          <span>Documentos</span>
         </NavLink>
       </nav>
 
