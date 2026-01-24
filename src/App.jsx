@@ -31,12 +31,12 @@ import CalendarioPage from './pages/tesouraria/CalendarioPage';
 import DocumentosPage from './pages/tesouraria/DocumentosPage';
 
 /* Financeiro (agora em Tesouraria) */
-import FinanceiroDashboardPage from './pages/tesouraria-financeiro/FinanceiroDashboardPage';
-import RelatoriosVendasPage from './pages/tesouraria-financeiro/RelatoriosVendasPage';
-import FluxoCaixaPage from './pages/tesouraria-financeiro/FluxoCaixaPage';
-import CategoriasTiposPage from './pages/tesouraria-financeiro/CategoriasTiposPage';
-import CampanhasListPage from './pages/tesouraria-financeiro/CampanhasListPage';
-import CampanhaDetalhesPage from './pages/tesouraria-financeiro/CampanhaDetalhesPage';
+import FinanceiroDashboardPage from './pages/tesouraria/FinanceiroDashboardPage';
+import RelatoriosVendasPage from './pages/tesouraria/RelatoriosVendasPage';
+import FluxoCaixaPage from './pages/tesouraria/FluxoCaixaPage';
+import CategoriasTiposPage from './pages/tesouraria/CategoriasTiposPage';
+import CampanhasListPage from './pages/tesouraria/CampanhasListPage';
+import CampanhaDetalhesPage from './pages/tesouraria/CampanhaDetalhesPage';
 
 /* Marketing */
 import AdminDashboard from './pages/marketing/AdminDashboard';

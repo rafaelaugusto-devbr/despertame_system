@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDashboardData } from '../../hooks/useDashboardData';
 import Header from '../../components/layout/Header';
-import FinanceChart from '../tesouraria-financeiro/components/FinanceChart';
+import FinanceChart from '../tesouraria/components/FinanceChart';
 import LeadsChart from '../marketing/components/LeadsChart';
 import {
   FiUsers,
