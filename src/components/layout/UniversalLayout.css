@@ -1,0 +1,107 @@
+/* ==================== Layout Base ==================== */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.admin-content-wrapper {
+  flex: 1;
+  width: 100%;
+  margin-left: 260px;
+  transition: margin-left 0.25s ease;
+}
+
+.admin-layout.sidebar-collapsed .admin-content-wrapper {
+  margin-left: 80px;
+}
+
+.admin-content {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ==================== Mobile Menu Button ==================== */
+.mobile-menu-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1100;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #ff7a00, #ff9500);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(255, 122, 0, 0.4);
+}
+
+.mobile-menu-btn:active {
+  transform: scale(0.95);
+}
+
+/* ==================== Sidebar Overlay ==================== */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1150;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==================== Responsive Mobile ==================== */
+@media (max-width: 1024px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .admin-content-wrapper {
+    margin-left: 0;
+  }
+
+  .admin-layout.sidebar-collapsed .admin-content-wrapper {
+    margin-left: 0;
+  }
+
+  .admin-content {
+    padding: 5rem 1.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-content {
+    padding: 5rem 1rem 1rem;
+  }
+
+  .mobile-menu-btn {
+    top: 0.75rem;
+    left: 0.75rem;
+    width: 44px;
+    height: 44px;
+  }
+}

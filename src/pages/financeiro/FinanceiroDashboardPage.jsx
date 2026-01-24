@@ -32,47 +32,63 @@ const FinanceiroDashboardPage = () => {
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      // Buscar lançamentos do mês
-      const [lancamentosSnap, categoriasSnap, campanhasSnap, vendasSnap] = await Promise.all([
-        getDocs(query(collection(db, 'fluxoCaixaLancamentos'), where('data', '>=', Timestamp.fromDate(startOfMonth)), orderBy('data', 'desc'))),
+      // Buscar todos os dados necessários
+      const [lancamentosSnap, categoriasSnap, campanhasSnap] = await Promise.all([
+        getDocs(collection(db, 'fluxoCaixaLancamentos')),
         getDocs(collection(db, 'fluxoCaixaCategorias')),
-        getDocs(query(collection(db, 'vendasCampanhas'), limit(5))),
-        getDocs(collection(db, 'vendasTransacoes')),
+        getDocs(query(collection(db, 'vendasCampanhas'), orderBy('createdAt', 'desc'), limit(5))),
       ]);
+
+      // Criar mapa de categorias por ID
+      const categoriasById = {};
+      categoriasSnap.forEach((doc) => {
+        categoriasById[doc.id] = doc.data().name;
+      });
 
       let totalEntradas = 0;
       let totalSaidas = 0;
       const categoriasMap = { entradas: {}, saidas: {} };
 
+      // Processar lançamentos
       lancamentosSnap.forEach((doc) => {
         const data = doc.data();
         const valor = Number(data.valor) || 0;
 
+        // Buscar nome da categoria usando categoriaId
+        const categoriaNome = categoriasById[data.categoriaId] || 'Outros';
+
         if (data.tipo === 'entrada') {
           totalEntradas += valor;
-          const cat = data.categoria || 'Outros';
-          categoriasMap.entradas[cat] = (categoriasMap.entradas[cat] || 0) + valor;
+          categoriasMap.entradas[categoriaNome] = (categoriasMap.entradas[categoriaNome] || 0) + valor;
         } else if (data.tipo === 'saida') {
           totalSaidas += valor;
-          const cat = data.categoria || 'Outros';
-          categoriasMap.saidas[cat] = (categoriasMap.saidas[cat] || 0) + valor;
+          categoriasMap.saidas[categoriaNome] = (categoriasMap.saidas[categoriaNome] || 0) + valor;
         }
       });
 
+      // Calcular lucro total de vendas (arrecadado - custo)
       let lucroVendas = 0;
-      vendasSnap.forEach((doc) => {
+      campanhasSnap.forEach((doc) => {
         const data = doc.data();
-        lucroVendas += Number(data.valor) || 0;
+        const arrecadado = Number(data.arrecadado) || 0;
+        const custoTotal = Number(data.custoTotal) || 0;
+        lucroVendas += (arrecadado - custoTotal);
       });
 
+      // Preparar lista de campanhas
       const campanhasList = campanhasSnap.docs.map((doc) => {
         const data = doc.data();
+        const vendidos = Number(data.vendidos) || 0;
+        const estoqueInicial = Number(data.estoqueInicial) || 1;
+        const arrecadado = Number(data.arrecadado) || 0;
+        const metaVendas = Number(data.estoqueInicial) * Number(data.precoVenda) || 0;
+
         return {
           id: doc.id,
           nome: data.nome,
-          metaVendas: data.metaVendas || 0,
-          vendasAtuais: data.vendasAtuais || 0,
-          progresso: ((data.vendasAtuais || 0) / (data.metaVendas || 1)) * 100,
+          metaVendas,
+          vendasAtuais: arrecadado,
+          progresso: (vendidos / estoqueInicial) * 100,
         };
       });
 
@@ -97,6 +113,7 @@ const FinanceiroDashboardPage = () => {
 
       setCampanhas(campanhasList);
     } catch (error) {
+      console.error('Erro ao buscar dados:', error);
       handleError(error, showError);
     } finally {
       setLoading(false);

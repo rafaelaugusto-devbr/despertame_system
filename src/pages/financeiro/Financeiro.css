@@ -598,37 +598,63 @@
   .charts-grid {
     grid-template-columns: 1fr;
   }
+
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
+  /* Layout adjustments */
+  .financeiro-dashboard,
+  .financeiro-page {
+    padding: 0;
+  }
+
   .kpi-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .summary-cards {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
+  /* Stat cards */
   .stat-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
+    flex-direction: row;
   }
 
   .stat-card__icon {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
   }
 
   .stat-card__value {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
+  .stat-card__title {
+    font-size: 0.75rem;
+  }
+
+  /* Category items */
   .category-item {
     flex-direction: column;
     align-items: flex-start;
+    padding: 1rem;
   }
 
   .category-item__value {
     align-self: flex-end;
+    margin-top: 0.5rem;
+  }
+
+  /* Campaign items */
+  .campaign-item {
+    padding: 1rem;
   }
 
   .campaign-item__info {
@@ -637,13 +663,42 @@
     gap: 0.5rem;
   }
 
+  /* Tables */
   .lancamentos-table {
     font-size: 0.875rem;
   }
 
   .lancamentos-table th,
   .lancamentos-table td {
-    padding: 0.875rem 0.75rem;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Cards */
+  .link-card {
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .link-title {
+    font-size: 1.125rem;
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-small {
+    width: auto;
+    padding: 0.5rem 0.875rem;
+  }
+
+  /* Charts */
+  .chart-grid {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -11,6 +11,39 @@
     --fc-today-bg-color: rgba(255, 215, 0, 0.15); /* Cor de fundo para o dia de hoje */
 }
 
+.calendario-container--compact .fc {
+    max-height: 600px;
+}
+
+.calendario-container--compact .fc-daygrid-day {
+    height: 80px !important;
+}
+
+.calendario-container--compact .fc-col-header-cell {
+    padding: 8px 4px !important;
+    font-size: 0.875rem;
+}
+
+.calendario-container--compact .fc-daygrid-day-number {
+    font-size: 0.875rem;
+    padding: 4px;
+}
+
+.calendario-container--compact .fc-event {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+}
+
+@media (max-width: 768px) {
+    .calendario-container--compact .fc {
+        max-height: none;
+    }
+
+    .calendario-container--compact .fc-daygrid-day {
+        height: 60px !important;
+    }
+}
+
 /* Ajusta as fontes para combinar com seu painel */
 .fc {
     font-family: 'Inter', sans-serif;
