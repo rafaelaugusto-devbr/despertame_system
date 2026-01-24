@@ -1,4 +1,4 @@
-// src/pages/financeiro/ListaFluxoPage.jsx (Versão com Cálculos Corrigidos)
+// src/pages/tesouraria/ListaFluxoPage.jsx (Versão com Cálculos Corrigidos)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
@@ -193,7 +193,7 @@ const ListaFluxoPage = () => {
             <div className="link-card user-table-container" style={{ marginTop: 'var(--spacing-lg)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 className="link-title">Últimos Lançamentos</h2>
-                    <Link to="/financeiro/adicionar" className="btn btn-secondary btn-small">Ver Todos <FiArrowRight /></Link>
+                    <Link to="/tesouraria/adicionar" className="btn btn-secondary btn-small">Ver Todos <FiArrowRight /></Link>
                 </div>
                 <table className="lancamentos-table">
                     <thead>

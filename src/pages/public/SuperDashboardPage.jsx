@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDashboardData } from '../../hooks/useDashboardData';
 import Header from '../../components/layout/Header';
-import FinanceChart from '../financeiro/components/FinanceChart';
+import FinanceChart from '../tesouraria-financeiro/components/FinanceChart';
 import LeadsChart from '../marketing/components/LeadsChart';
 import {
   FiUsers,
@@ -110,7 +110,7 @@ const SuperDashboardPage = () => {
             icon={FiDollarSign}
             color="blue"
             loading={loading}
-            link="/financeiro/dashboard"
+            link="/tesouraria/dashboard"
           />
           <StatCard
             title="Total de Entradas"
@@ -118,7 +118,7 @@ const SuperDashboardPage = () => {
             icon={FiTrendingUp}
             color="green"
             loading={loading}
-            link="/financeiro/fluxo"
+            link="/tesouraria/fluxo"
           />
           <StatCard
             title="Total de Saídas"
@@ -126,7 +126,7 @@ const SuperDashboardPage = () => {
             icon={FiTrendingDown}
             color="red"
             loading={loading}
-            link="/financeiro/fluxo"
+            link="/tesouraria/fluxo"
           />
           <StatCard
             title="Total de Leads"
@@ -146,7 +146,7 @@ const SuperDashboardPage = () => {
           <div className="chart-card">
             <div className="chart-card__header">
               <h2 className="chart-card__title">Resumo Financeiro Mensal</h2>
-              <Link to="/financeiro/relatorios" className="chart-card__link">
+              <Link to="/tesouraria/relatorios" className="chart-card__link">
                 Ver detalhes <FiArrowRight />
               </Link>
             </div>

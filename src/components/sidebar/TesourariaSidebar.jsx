@@ -9,6 +9,11 @@ import {
   CollapseIcon,
   FileIcon,
   UsersIcon,
+  FinanceIcon,
+  PlusIcon,
+  TagIcon,
+  ChartIcon,
+  ShoppingCartIcon,
 } from '../../assets/icons/icons';
 
 const TesourariaSidebar = () => {
@@ -40,6 +45,31 @@ const TesourariaSidebar = () => {
         <NavLink to="/tesouraria/documentos">
           <FileIcon />
           <span>Documentos</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/dashboard">
+          <FinanceIcon />
+          <span>Dashboard Financeiro</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/adicionar">
+          <PlusIcon />
+          <span>Novo Lançamento</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/categorias">
+          <TagIcon />
+          <span>Categorias</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/vendas">
+          <ShoppingCartIcon />
+          <span>Vendas</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/relatorios">
+          <ChartIcon />
+          <span>Relatórios</span>
         </NavLink>
       </nav>
 

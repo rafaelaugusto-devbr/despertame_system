@@ -55,11 +55,6 @@ const PublicSidebar = () => {
           {!collapsed && <span>Painel Tesouraria</span>}
         </NavLink>
 
-        <NavLink to="/financeiro">
-          <FinanceIcon />
-          {!collapsed && <span>Painel Financeiro</span>}
-        </NavLink>
-
         <NavLink to="/marketing">
           <MarketingIcon />
           {!collapsed && <span>Painel Marketing</span>}

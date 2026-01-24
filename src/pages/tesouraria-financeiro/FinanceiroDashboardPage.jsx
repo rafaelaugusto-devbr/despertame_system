@@ -154,7 +154,7 @@ const FinanceiroDashboardPage = () => {
           <StatCard title="Saldo Geral" value={formatCurrency(dashboardData.saldoGeral)} icon={FiDollarSign} color="blue" loading={loading} />
           <StatCard title="Total de Entradas" value={formatCurrency(dashboardData.totalEntradas)} icon={FiTrendingUp} color="green" loading={loading} />
           <StatCard title="Total de Saídas" value={formatCurrency(dashboardData.totalSaidas)} icon={FiTrendingDown} color="red" loading={loading} />
-          <StatCard title="Lucro de Vendas" value={formatCurrency(dashboardData.lucroVendas)} icon={FiShoppingCart} color="orange" loading={loading} link="/financeiro/vendas" />
+          <StatCard title="Lucro de Vendas" value={formatCurrency(dashboardData.lucroVendas)} icon={FiShoppingCart} color="orange" loading={loading} link="/tesouraria/vendas" />
         </div>
       </section>
 
@@ -165,7 +165,7 @@ const FinanceiroDashboardPage = () => {
           <div className="category-card">
             <div className="category-card__header">
               <h3>Top 5 Categorias - Entradas</h3>
-              <Link to="/financeiro/categorias" className="category-card__link">
+              <Link to="/tesouraria/categorias" className="category-card__link">
                 Ver todas <FiArrowRight />
               </Link>
             </div>
@@ -206,7 +206,7 @@ const FinanceiroDashboardPage = () => {
           <div className="category-card">
             <div className="category-card__header">
               <h3>Top 5 Categorias - Saídas</h3>
-              <Link to="/financeiro/categorias" className="category-card__link">
+              <Link to="/tesouraria/categorias" className="category-card__link">
                 Ver todas <FiArrowRight />
               </Link>
             </div>
@@ -250,7 +250,7 @@ const FinanceiroDashboardPage = () => {
         <div className="campaigns-card">
           <div className="campaigns-card__header">
             <h3>Campanhas Ativas</h3>
-            <Link to="/financeiro/vendas" className="campaigns-card__link">
+            <Link to="/tesouraria/vendas" className="campaigns-card__link">
               Ver todas <FiArrowRight />
             </Link>
           </div>
@@ -267,7 +267,7 @@ const FinanceiroDashboardPage = () => {
             ) : campanhas.length > 0 ? (
               <div className="campaigns-list">
                 {campanhas.map((camp) => (
-                  <Link key={camp.id} to={`/financeiro/vendas/${camp.id}`} className="campaign-item">
+                  <Link key={camp.id} to={`/tesouraria/vendas/${camp.id}`} className="campaign-item">
                     <div className="campaign-item__info">
                       <span className="campaign-item__name">{camp.nome}</span>
                       <span className="campaign-item__stats">
