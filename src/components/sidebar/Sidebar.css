@@ -127,20 +127,66 @@
   /* ===============================
      MOBILE
      =============================== */
-  
+
   @media (max-width: 1024px) {
     .sidebar {
       transform: translateX(-100%);
-      width: 260px;
+      width: 280px;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
     }
-  
+
     .sidebar.open {
       transform: translateX(0);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
     }
-  
+
     /* No mobile NÃO colapsa, vira overlay */
     .sidebar.collapsed {
-      width: 260px;
+      width: 280px;
+      transform: translateX(-100%);
+    }
+
+    .sidebar.collapsed.open {
+      transform: translateX(0);
+    }
+
+    /* Mostrar todos os textos no mobile */
+    .sidebar.collapsed .sidebar-nav span,
+    .sidebar.collapsed .sidebar-header h3,
+    .sidebar.collapsed .sidebar-footer span {
+      display: inline;
+    }
+
+    .sidebar.collapsed .sidebar-nav a,
+    .sidebar.collapsed .sidebar-footer button {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sidebar {
+      width: 85vw;
+      max-width: 300px;
+    }
+
+    .sidebar.collapsed {
+      width: 85vw;
+      max-width: 300px;
+    }
+
+    .sidebar-nav {
+      padding: 1rem;
+      gap: 0.5rem;
+    }
+
+    .sidebar-nav a {
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+    }
+
+    .sidebar-footer button {
+      padding: 0.875rem 1rem;
+      font-size: 0.95rem;
     }
   }
   
