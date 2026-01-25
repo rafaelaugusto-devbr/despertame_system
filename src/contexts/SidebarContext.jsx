@@ -6,13 +6,8 @@ export const SidebarProvider = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Bloquear scroll do body quando sidebar está aberto no mobile
   useEffect(() => {
-    const sidebar = document.querySelector('.sidebar');
-    if (!sidebar) return;
-
-    sidebar.classList.toggle('open', mobileOpen);
-
-    // Bloquear scroll do body quando sidebar está aberto no mobile
     if (window.innerWidth <= 1024) {
       if (mobileOpen) {
         document.body.style.overflow = 'hidden';
@@ -20,44 +15,15 @@ export const SidebarProvider = ({ children }) => {
         document.body.style.overflow = '';
       }
     }
-  }, [mobileOpen]);
-
-  // Close sidebar when clicking outside on mobile
-  useEffect(() => {
-    if (!mobileOpen) return;
-
-    const handleClickOutside = (e) => {
-      const sidebar = document.querySelector('.sidebar');
-      const menuBtn = document.querySelector('.mobile-menu-btn');
-
-      if (sidebar && !sidebar.contains(e.target) && !menuBtn?.contains(e.target)) {
-        setMobileOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
+      document.body.style.overflow = '';
     };
   }, [mobileOpen]);
 
-  // Close sidebar on route change (mobile)
-  useEffect(() => {
-    const handleRouteChange = () => {
-      if (window.innerWidth <= 1024) {
-        setMobileOpen(false);
-      }
-    };
+  // Não precisa de click-outside detection - o overlay já faz isso
 
-    window.addEventListener('popstate', handleRouteChange);
-
-    return () => {
-      window.removeEventListener('popstate', handleRouteChange);
-    };
-  }, []);
+  // Close sidebar on route change is handled by handleNavClick in each sidebar component
 
   const toggleCollapse = () => {
     setCollapsed(prev => !prev);
