@@ -28,3 +28,4 @@ export { default as ShoppingCartIcon } from './ShoppingCartIcon';
 export { default as FileIcon } from './FileIcon';
 export { default as LockIcon } from './LockIcon';
 export { default as TicketIcon } from './TicketIcon';
+export { default as ClockIcon } from './ClockIcon';

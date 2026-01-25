@@ -17,7 +17,7 @@ const CampanhaCard = ({ campanha }) => {
     const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
     return (
-        <Link to={`/financeiro/vendas/${campanha.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={`/tesouraria/vendas/${campanha.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="link-card hover-effect">
                 <h3 className="link-title" style={{ border: 'none', padding: 0, marginBottom: '0.5rem' }}>{campanha.nome}</h3>
                 <p style={{ color: 'var(--color-text-secondary)', marginTop: '-0.5rem', marginBottom: '1rem' }}>Produto: {campanha.produto}</p>

@@ -15,6 +15,7 @@ import {
   ChartIcon,
   ShoppingCartIcon,
   TicketIcon,
+  ClockIcon,
 } from '../../assets/icons/icons';
 
 const TesourariaSidebar = () => {
@@ -41,6 +42,11 @@ const TesourariaSidebar = () => {
         <NavLink to="/tesouraria/adicionar">
           <PlusIcon />
           <span>Novo Lançamento</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/contas-pagar">
+          <ClockIcon />
+          <span>Contas a Pagar</span>
         </NavLink>
 
         <NavLink to="/tesouraria/categorias">

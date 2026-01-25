@@ -38,6 +38,7 @@ import FluxoCaixaPage from './pages/tesouraria/FluxoCaixaPage';
 import CategoriasTiposPage from './pages/tesouraria/CategoriasTiposPage';
 import CampanhasListPage from './pages/tesouraria/CampanhasListPage';
 import CampanhaDetalhesPage from './pages/tesouraria/CampanhaDetalhesPage';
+import ContasPagarPage from './pages/tesouraria/ContasPagarPage';
 
 /* Marketing */
 import AdminDashboard from './pages/marketing/AdminDashboard';
@@ -105,6 +106,7 @@ function App() {
             <Route path="documentos" element={<DocumentosPage />} />
             <Route path="dashboard" element={<FinanceiroDashboardPage />} />
             <Route path="adicionar" element={<FluxoCaixaPage />} />
+            <Route path="contas-pagar" element={<ContasPagarPage />} />
             <Route path="categorias" element={<CategoriasTiposPage />} />
             <Route path="vendas" element={<CampanhasListPage />} />
             <Route path="vendas/:campanhaId" element={<CampanhaDetalhesPage />} />
