@@ -78,3 +78,11 @@ export async function resetUserPassword(uid) {
     method: 'POST'
   });
 }
+
+// Atualizar senha de usuário diretamente (admin)
+export async function updateUserPassword(uid, newPassword) {
+  return await apiRequest('/api/users/update-password', {
+    method: 'POST',
+    body: JSON.stringify({ uid, newPassword })
+  });
+}

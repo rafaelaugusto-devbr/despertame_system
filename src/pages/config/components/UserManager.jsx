@@ -1,7 +1,7 @@
 // src/components/UserManager.jsx
 
 import React, { useState, useEffect } from 'react';
-import { createUser, listUsers, toggleUser, deleteUser, inviteUser, resetUserPassword } from '../../../services/userApi';
+import { createUser, listUsers, toggleUser, deleteUser, inviteUser, resetUserPassword, updateUserPassword } from '../../../services/userApi';
 import { useModal } from '../../../contexts/ModalContext';
 
 // Ícones (mantive os seus)
@@ -46,12 +46,20 @@ const IconKey = () => (
   </svg>
 );
 
+const IconEdit = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+
 const UserManager = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -61,6 +69,12 @@ const UserManager = () => {
   });
 
   const [inviteEmail, setInviteEmail] = useState('');
+  const [passwordData, setPasswordData] = useState({
+    uid: '',
+    userEmail: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
 
   const { showModal } = useModal();
 
@@ -232,6 +246,74 @@ const UserManager = () => {
     });
   };
 
+  const handleOpenPasswordModal = (user) => {
+    setPasswordData({
+      uid: user.uid,
+      userEmail: user.email,
+      newPassword: '',
+      confirmPassword: ''
+    });
+    setShowPasswordModal(true);
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+
+    if (!passwordData.newPassword || !passwordData.confirmPassword) {
+      showModal({
+        title: 'Atenção',
+        message: 'Por favor, preencha todos os campos.',
+        type: 'danger',
+      });
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      showModal({
+        title: 'Atenção',
+        message: 'A senha deve ter no mínimo 6 caracteres.',
+        type: 'danger',
+      });
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showModal({
+        title: 'Atenção',
+        message: 'As senhas não coincidem.',
+        type: 'danger',
+      });
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await updateUserPassword(passwordData.uid, passwordData.newPassword);
+
+      setShowPasswordModal(false);
+      setPasswordData({
+        uid: '',
+        userEmail: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+
+      showModal({
+        title: 'Sucesso',
+        message: 'Senha atualizada com sucesso.',
+        type: 'info',
+      });
+    } catch (e) {
+      showModal({
+        title: 'Erro ao atualizar senha',
+        message: e?.message || 'Não foi possível atualizar a senha.',
+        type: 'danger',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="admin-content">
       {/* HEADER PADRÃO */}
@@ -289,7 +371,15 @@ const UserManager = () => {
                     <div className="action-buttons">
                       <button
                         className="icon-btn"
-                        title="Redefinir Senha"
+                        title="Alterar Senha"
+                        onClick={() => handleOpenPasswordModal(user)}
+                      >
+                        <IconEdit />
+                      </button>
+
+                      <button
+                        className="icon-btn"
+                        title="Enviar Email de Reset"
                         onClick={() => handleResetPassword(user)}
                       >
                         <IconKey />
@@ -436,6 +526,86 @@ const UserManager = () => {
 
                 <button className="btn btn-primary" type="submit" disabled={saving}>
                   {saving ? 'Enviando...' : 'Enviar Convite'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL ALTERAR SENHA */}
+      {showPasswordModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Alterar Senha</h3>
+              <button
+                className="modal-close-btn"
+                onClick={() => {
+                  setShowPasswordModal(false);
+                  setPasswordData({
+                    uid: '',
+                    userEmail: '',
+                    newPassword: '',
+                    confirmPassword: ''
+                  });
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdatePassword}>
+              <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1rem' }}>
+                Alterando senha para: <strong>{passwordData.userEmail}</strong>
+              </p>
+
+              <label>Nova Senha *</label>
+              <input
+                className="input-field"
+                type="password"
+                required
+                value={passwordData.newPassword}
+                onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                placeholder="Mínimo 6 caracteres"
+                minLength={6}
+              />
+
+              <label>Confirmar Nova Senha *</label>
+              <input
+                className="input-field"
+                type="password"
+                required
+                value={passwordData.confirmPassword}
+                onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                placeholder="Digite a senha novamente"
+                minLength={6}
+              />
+
+              <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.5rem' }}>
+                A senha será atualizada imediatamente sem necessidade de confirmação por email.
+              </p>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setPasswordData({
+                      uid: '',
+                      userEmail: '',
+                      newPassword: '',
+                      confirmPassword: ''
+                    });
+                  }}
+                  disabled={saving}
+                >
+                  Cancelar
+                </button>
+
+                <button className="btn btn-primary" type="submit" disabled={saving}>
+                  {saving ? 'Atualizando...' : 'Atualizar Senha'}
                 </button>
               </div>
             </form>
