@@ -16,11 +16,17 @@ import {
 } from '../../assets/icons/icons';
 
 const PublicSidebar = () => {
-  const { collapsed, toggleCollapse, handleLogout } = useSidebarBase();
+  const { collapsed, toggleCollapse, handleLogout, mobileOpen, closeMobile } = useSidebarBase();
   const navigate = useNavigate();
 
+  const handleNavClick = () => {
+    if (window.innerWidth <= 1024) {
+      closeMobile();
+    }
+  };
+
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
   <img
     src="/src/assets/logo_despertame.jpg"
@@ -32,17 +38,17 @@ const PublicSidebar = () => {
 
       <nav className="sidebar-nav">
         {/* Público */}
-        <NavLink to="/dashboard">
+        <NavLink to="/dashboard" onClick={handleNavClick}>
           <DashboardIcon />
           {!collapsed && <span>Dashboard Geral</span>}
         </NavLink>
 
-        <NavLink to="/calendario">
+        <NavLink to="/calendario" onClick={handleNavClick}>
           <CalendarIcon />
           {!collapsed && <span>Calendário</span>}
         </NavLink>
 
-        <NavLink to="/links">
+        <NavLink to="/links" onClick={handleNavClick}>
           <LinkIcon />
           {!collapsed && <span>Links</span>}
         </NavLink>
@@ -50,17 +56,17 @@ const PublicSidebar = () => {
         <div className="sidebar-divider" />
 
         {/* Entradas para painéis */}
-        <NavLink to="/tesouraria">
+        <NavLink to="/tesouraria" onClick={handleNavClick}>
           <TreasuryIcon />
           {!collapsed && <span>Painel Tesouraria</span>}
         </NavLink>
 
-        <NavLink to="/marketing">
+        <NavLink to="/marketing" onClick={handleNavClick}>
           <MarketingIcon />
           {!collapsed && <span>Painel Marketing</span>}
         </NavLink>
 
-        <NavLink to="/config">
+        <NavLink to="/config" onClick={handleNavClick}>
           <ConfigIcon />
           {!collapsed && <span>Painel Config</span>}
         </NavLink>

@@ -15,11 +15,17 @@ import {
 import { FiImage } from 'react-icons/fi';
 
 const MarketingSidebar = () => {
-  const { collapsed, toggleCollapse, handleLogout } = useSidebarBase();
+  const { collapsed, toggleCollapse, handleLogout, mobileOpen, closeMobile } = useSidebarBase();
   const navigate = useNavigate();
 
+  const handleNavClick = () => {
+    if (window.innerWidth <= 1024) {
+      closeMobile();
+    }
+  };
+
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
   <img
     src="/src/assets/logo_despertame.jpg"
@@ -30,27 +36,27 @@ const MarketingSidebar = () => {
 </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/marketing/dashboard">
+        <NavLink to="/marketing/dashboard" onClick={handleNavClick}>
           <ChartIcon />
           <span>Dashboard</span>
         </NavLink>
 
-        <NavLink to="/marketing/blog">
+        <NavLink to="/marketing/blog" onClick={handleNavClick}>
           <BlogIcon />
           <span>Blog</span>
         </NavLink>
 
-        <NavLink to="/marketing/midia">
+        <NavLink to="/marketing/midia" onClick={handleNavClick}>
           <FiImage />
           <span>Galeria de Mídia</span>
         </NavLink>
 
-        <NavLink to="/marketing/emails">
+        <NavLink to="/marketing/emails" onClick={handleNavClick}>
           <EmailIcon />
           <span>E-mails</span>
         </NavLink>
 
-        <NavLink to="/marketing/leads">
+        <NavLink to="/marketing/leads" onClick={handleNavClick}>
           <LeadsIcon />
           <span>Leads</span>
         </NavLink>

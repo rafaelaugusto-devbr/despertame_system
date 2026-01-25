@@ -19,11 +19,17 @@ import {
 } from '../../assets/icons/icons';
 
 const TesourariaSidebar = () => {
-  const { collapsed, toggleCollapse, handleLogout } = useSidebarBase();
+  const { collapsed, toggleCollapse, handleLogout, mobileOpen, closeMobile } = useSidebarBase();
   const navigate = useNavigate();
 
+  const handleNavClick = () => {
+    if (window.innerWidth <= 1024) {
+      closeMobile();
+    }
+  };
+
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
   <img
     src="/src/assets/logo_despertame.jpg"
@@ -34,54 +40,54 @@ const TesourariaSidebar = () => {
 </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/tesouraria/dashboard">
+        <NavLink to="/tesouraria/dashboard" onClick={handleNavClick}>
           <FinanceIcon />
           <span>Dashboard Financeiro</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/adicionar">
+        <NavLink to="/tesouraria/adicionar" onClick={handleNavClick}>
           <PlusIcon />
           <span>Novo Lançamento</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/contas-pagar">
+        <NavLink to="/tesouraria/contas-pagar" onClick={handleNavClick}>
           <ClockIcon />
           <span>Contas a Pagar</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/categorias">
+        <NavLink to="/tesouraria/categorias" onClick={handleNavClick}>
           <TagIcon />
           <span>Categorias</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/vendas">
+        <NavLink to="/tesouraria/vendas" onClick={handleNavClick}>
           <ShoppingCartIcon />
           <span>Vendas</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/rifas">
+        <NavLink to="/tesouraria/rifas" onClick={handleNavClick}>
           <TicketIcon />
           <span>Rifas</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/relatorios">
+        <NavLink to="/tesouraria/relatorios" onClick={handleNavClick}>
           <ChartIcon />
           <span>Relatórios</span>
         </NavLink>
 
         <div className="sidebar-divider" />
 
-        <NavLink to="/tesouraria/inscritos">
+        <NavLink to="/tesouraria/inscritos" onClick={handleNavClick}>
           <UsersIcon />
           <span>Inscritos do Retiro</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/calendario">
+        <NavLink to="/tesouraria/calendario" onClick={handleNavClick}>
           <CalendarIcon />
           <span>Calendário</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/documentos">
+        <NavLink to="/tesouraria/documentos" onClick={handleNavClick}>
           <FileIcon />
           <span>Documentos</span>
         </NavLink>
