@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useSidebar } from '../../contexts/SidebarContext';
-import { FiMenu } from 'react-icons/fi';
+import { FiMenu, FiX } from 'react-icons/fi';
 import './UniversalLayout.css';
 
 const UniversalLayout = ({ Sidebar }) => {
@@ -11,11 +11,11 @@ const UniversalLayout = ({ Sidebar }) => {
     <div className={`admin-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Mobile hamburger button */}
       <button
-        className="mobile-menu-btn"
+        className={`mobile-menu-btn ${mobileOpen ? 'open' : ''}`}
         onClick={toggleMobile}
         aria-label="Toggle menu"
       >
-        <FiMenu size={24} />
+        {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
       </button>
 
       {/* Overlay for mobile when sidebar is open */}
