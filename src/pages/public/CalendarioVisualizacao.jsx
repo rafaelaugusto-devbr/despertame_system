@@ -12,6 +12,14 @@ import { FiCalendar, FiClock, FiMapPin } from 'react-icons/fi';
 import '../tesouraria/components/CalendarioManager.css';
 import './CalendarioVisualizacao.css';
 
+const CATEGORIA_FERIADO = {
+  backgroundColor: '#c1c1c1',
+  borderColor: '#c1c1c1',
+  display: 'background',
+  editable: false,
+  className: 'evento-feriado'
+};
+
 const CalendarioVisualizacao = () => {
   const calendarRef = useRef(null);
   const [eventos, setEventos] = useState([]);
@@ -20,10 +28,39 @@ const CalendarioVisualizacao = () => {
   const { showError } = useNotification();
 
   useEffect(() => {
-    fetchEventos();
+    fetchEventosEFeriados();
   }, []);
 
-  const fetchEventos = async () => {
+  const buscarFeriados = async (anoInicial, anoFinal) => {
+    const promessas = [];
+    for (let ano = anoInicial; ano <= anoFinal; ano++) {
+      promessas.push(fetch(`https://brasilapi.com.br/api/feriados/v1/${ano}`));
+    }
+
+    try {
+      const respostas = await Promise.all(promessas);
+      for (const resposta of respostas) {
+        if (!resposta.ok) throw new Error("Falha ao buscar feriados.");
+      }
+      const dadosAnuais = await Promise.all(respostas.map(r => r.json()));
+      return dadosAnuais.flat().map(feriado => ({
+        id: `feriado-${feriado.date}`,
+        title: feriado.name,
+        start: feriado.date,
+        allDay: true,
+        ...CATEGORIA_FERIADO,
+        extendedProps: {
+          tipo: 'feriado',
+          descricao: `Feriado Nacional: ${feriado.name}`,
+        },
+      }));
+    } catch (err) {
+      console.error("Erro ao buscar feriados:", err);
+      return [];
+    }
+  };
+
+  const fetchEventosEFeriados = async () => {
     try {
       setLoading(true);
       const eventosQuery = query(
@@ -50,7 +87,11 @@ const CalendarioVisualizacao = () => {
         };
       });
 
-      setEventos(eventosData);
+      // Buscar feriados do ano atual até 2035
+      const anoAtual = new Date().getFullYear();
+      const feriados = await buscarFeriados(anoAtual, 2035);
+
+      setEventos([...eventosData, ...feriados]);
     } catch (error) {
       handleError(error, showError);
     } finally {
