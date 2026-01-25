@@ -45,6 +45,7 @@ import AdminDashboard from './pages/marketing/AdminDashboard';
 import BlogManagerPage from './pages/marketing/BlogManagerPage';
 import EmailDashboardPage from './pages/marketing/EmailDashboardPage';
 import LeadsPage from './pages/marketing/LeadsPage';
+import MediaManagerPage from './pages/marketing/MediaManagerPage';
 
 /* Config */
 import UserManagementPage from './pages/config/UserManagementPage';
@@ -134,6 +135,7 @@ function App() {
             <Route path="blog" element={<BlogManagerPage />} />
             <Route path="emails" element={<EmailDashboardPage />} />
             <Route path="leads" element={<LeadsPage />} />
+            <Route path="midia" element={<MediaManagerPage />} />
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
 

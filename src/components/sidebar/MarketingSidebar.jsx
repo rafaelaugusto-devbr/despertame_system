@@ -12,6 +12,7 @@ import {
   LogoutIcon,
   CollapseIcon,
 } from '../../assets/icons/icons';
+import { FiImage } from 'react-icons/fi';
 
 const MarketingSidebar = () => {
   const { collapsed, toggleCollapse, handleLogout } = useSidebarBase();
@@ -37,6 +38,11 @@ const MarketingSidebar = () => {
         <NavLink to="/marketing/blog">
           <BlogIcon />
           <span>Blog</span>
+        </NavLink>
+
+        <NavLink to="/marketing/midia">
+          <FiImage />
+          <span>Galeria de Mídia</span>
         </NavLink>
 
         <NavLink to="/marketing/emails">
