@@ -13,7 +13,7 @@
     left: 0;
     top: 0;
     transition: width 0.25s ease, transform 0.3s ease;
-    z-index: 1200;
+    z-index: 1000;
   }
   
   /* ===============================
@@ -135,6 +135,7 @@
       box-shadow: none;
       max-height: 100vh;
       overflow: hidden;
+      z-index: 1100;
     }
 
     .sidebar.open {
