@@ -48,23 +48,39 @@ export const useDashboardData = () => {
         // Executar queries em paralelo para melhor performance
         const [
           lancamentosSnapshot,
+          vendasSnapshot,
+          rifasSnapshot,
+          inscritosSnapshot,
           leadsSnapshot,
           eventosSnapshot,
           postsSnapshot,
         ] = await Promise.all([
-          // 1. Buscar lançamentos dos últimos 30 dias (otimizado)
+          // 1. Buscar todos os lançamentos pagos
           getDocs(
             query(
               collection(db, 'fluxoCaixaLancamentos'),
-              where('data', '>=', thirtyDaysAgo),
-              orderBy('data', 'desc')
+              where('pago', '==', true)
             )
           ),
 
-          // 2. Buscar total de leads (apenas contagem)
+          // 2. Buscar vendas de campanhas
+          getDocs(collection(db, 'vendasCampanhas')),
+
+          // 3. Buscar rifas
+          getDocs(collection(db, 'rifas')),
+
+          // 4. Buscar inscritos pagos
+          getDocs(
+            query(
+              collection(db, 'retiroInscritos'),
+              where('pago', '==', true)
+            )
+          ),
+
+          // 5. Buscar total de leads (apenas contagem)
           getCountFromServer(collection(db, 'leads')),
 
-          // 3. Buscar próximos 3 eventos
+          // 6. Buscar próximos 3 eventos
           getDocs(
             query(
               collection(db, 'calendarioEventos'),
@@ -74,7 +90,7 @@ export const useDashboardData = () => {
             )
           ),
 
-          // 4. Buscar últimos 3 posts
+          // 7. Buscar últimos 3 posts
           getDocs(
             query(
               collection(db, 'posts'),
@@ -84,7 +100,7 @@ export const useDashboardData = () => {
           ),
         ]);
 
-        // Calcular totais financeiros
+        // Calcular totais financeiros dos lançamentos
         let entradas = 0;
         let saidas = 0;
 
@@ -99,13 +115,42 @@ export const useDashboardData = () => {
           }
         });
 
+        // Somar lucro de vendas
+        let lucroVendas = 0;
+        vendasSnapshot.forEach((doc) => {
+          const data = doc.data();
+          const arrecadado = Number(data.arrecadado) || 0;
+          const custoTotal = Number(data.custoTotal) || 0;
+          lucroVendas += (arrecadado - custoTotal);
+        });
+
+        // Somar arrecadação de rifas
+        let arrecadacaoRifas = 0;
+        for (const rifaDoc of rifasSnapshot.docs) {
+          const vendasRifaSnap = await getDocs(
+            collection(db, 'rifas', rifaDoc.id, 'vendas')
+          );
+          vendasRifaSnap.forEach((vendaDoc) => {
+            arrecadacaoRifas += Number(vendaDoc.data().valorPago) || 0;
+          });
+        }
+
+        // Somar arrecadação de inscritos
+        let arrecadacaoInscritos = 0;
+        inscritosSnapshot.forEach((doc) => {
+          arrecadacaoInscritos += Number(doc.data().valorPago) || 0;
+        });
+
+        // Saldo total consolidado
+        const saldoTotal = entradas - saidas + lucroVendas + arrecadacaoRifas + arrecadacaoInscritos;
+
         const totalLeads = leadsSnapshot.data().count;
 
         // Atualizar estados
         setKpiData({
           totalLeads,
-          saldo: entradas - saidas,
-          entradas,
+          saldo: saldoTotal,
+          entradas: entradas + lucroVendas + arrecadacaoRifas + arrecadacaoInscritos,
           saidas,
         });
 
@@ -125,7 +170,12 @@ export const useDashboardData = () => {
 
         // Cache dos dados (válido por 5 minutos)
         const cacheData = {
-          kpiData: { totalLeads, saldo: entradas - saidas, entradas, saidas },
+          kpiData: {
+            totalLeads,
+            saldo: saldoTotal,
+            entradas: entradas + lucroVendas + arrecadacaoRifas + arrecadacaoInscritos,
+            saidas
+          },
           timestamp: Date.now(),
         };
         sessionStorage.setItem('dashboard_cache', JSON.stringify(cacheData));

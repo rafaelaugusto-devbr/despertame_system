@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { useNotification } from '../../hooks/useNotification';
 import { handleError } from '../../utils/errorHandler';
@@ -15,9 +15,6 @@ import {
   FiBook,
   FiMail,
   FiVideo,
-  FiAlertCircle,
-  FiCheckCircle,
-  FiCalendar,
 } from 'react-icons/fi';
 import './LinksPage.css';
 
@@ -38,16 +35,10 @@ const LinksPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('todos');
-  const [stats, setStats] = useState({
-    inscricoesAtivas: 0,
-    proximosRetiros: [],
-    linksAjuda: []
-  });
   const { showError } = useNotification();
 
   useEffect(() => {
     fetchLinks();
-    fetchStats();
   }, []);
 
   const fetchLinks = async () => {
@@ -70,52 +61,6 @@ const LinksPage = () => {
       handleError(error, showError);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      // Buscar inscritos não pagos (inscrições ativas)
-      const inscritosSnap = await getDocs(
-        query(collection(db, 'retiroInscritos'), where('pago', '==', false))
-      );
-      const inscricoesAtivas = inscritosSnap.size;
-
-      // Buscar próximos eventos
-      const agora = new Date();
-      const eventosSnap = await getDocs(
-        query(
-          collection(db, 'calendarioEventos'),
-          orderBy('data', 'asc')
-        )
-      );
-
-      const proximosRetiros = eventosSnap.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          data: doc.data().data?.toDate()
-        }))
-        .filter(evento => {
-          return evento.data && evento.data >= agora &&
-                 evento.titulo?.toLowerCase().includes('retiro');
-        })
-        .slice(0, 3);
-
-      // Filtrar links de ajuda
-      const linksAjuda = links.filter(link =>
-        link.categoria === 'ajuda' ||
-        link.titulo?.toLowerCase().includes('ajuda') ||
-        link.titulo?.toLowerCase().includes('suporte')
-      ).slice(0, 4);
-
-      setStats({
-        inscricoesAtivas,
-        proximosRetiros,
-        linksAjuda
-      });
-    } catch (error) {
-      console.error('Erro ao buscar estatísticas:', error);
     }
   };
 
@@ -173,44 +118,6 @@ const LinksPage = () => {
         title="Links Rápidos"
         subtitle="Acesso rápido a recursos, ferramentas e páginas importantes."
       />
-
-      {/* Cards de Informação Rápida */}
-      <div className="links-quick-info">
-        <div className="quick-info-card quick-info-card--primary">
-          <div className="quick-info-card__icon">
-            <FiUsers size={28} />
-          </div>
-          <div className="quick-info-card__content">
-            <h3 className="quick-info-card__title">Inscrições Ativas</h3>
-            <p className="quick-info-card__value">{stats.inscricoesAtivas}</p>
-            <p className="quick-info-card__subtitle">Aguardando confirmação</p>
-          </div>
-        </div>
-
-        <div className="quick-info-card quick-info-card--success">
-          <div className="quick-info-card__icon">
-            <FiCalendar size={28} />
-          </div>
-          <div className="quick-info-card__content">
-            <h3 className="quick-info-card__title">Próximos Retiros</h3>
-            <p className="quick-info-card__value">{stats.proximosRetiros.length}</p>
-            <p className="quick-info-card__subtitle">
-              {stats.proximosRetiros[0]?.titulo || 'Nenhum programado'}
-            </p>
-          </div>
-        </div>
-
-        <div className="quick-info-card quick-info-card--warning">
-          <div className="quick-info-card__icon">
-            <FiAlertCircle size={28} />
-          </div>
-          <div className="quick-info-card__content">
-            <h3 className="quick-info-card__title">Links de Ajuda</h3>
-            <p className="quick-info-card__value">{stats.linksAjuda.length}</p>
-            <p className="quick-info-card__subtitle">Recursos disponíveis</p>
-          </div>
-        </div>
-      </div>
 
       {/* Search and Filter Bar */}
       <div className="links-toolbar">
