@@ -11,6 +11,15 @@ export const SidebarProvider = ({ children }) => {
     if (!sidebar) return;
 
     sidebar.classList.toggle('open', mobileOpen);
+
+    // Bloquear scroll do body quando sidebar está aberto no mobile
+    if (window.innerWidth <= 1024) {
+      if (mobileOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
   }, [mobileOpen]);
 
   // Close sidebar when clicking outside on mobile

@@ -133,8 +133,8 @@
       transform: translateX(-100%);
       width: 280px;
       box-shadow: none;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      max-height: 100vh;
+      overflow: hidden;
     }
 
     .sidebar.open {
@@ -162,6 +162,19 @@
     .sidebar.collapsed .sidebar-nav a,
     .sidebar.collapsed .sidebar-footer button {
       justify-content: flex-start;
+    }
+
+    /* Sidebar nav com scroll */
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Footer fixo no bottom */
+    .sidebar-footer {
+      flex-shrink: 0;
     }
   }
 
