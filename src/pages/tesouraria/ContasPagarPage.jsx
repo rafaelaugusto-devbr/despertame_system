@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
 import {
@@ -10,11 +11,13 @@ import {
   FiDollarSign,
   FiTrendingUp,
   FiTrendingDown,
-  FiClock
+  FiClock,
+  FiPlus
 } from 'react-icons/fi';
 import './Financeiro.css';
 
 const ContasPagarPage = () => {
+  const navigate = useNavigate();
   const [contas, setContas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('todas'); // todas, vencidas, proximas
@@ -120,6 +123,16 @@ const ContasPagarPage = () => {
         title="Contas a Pagar e Receber"
         subtitle="Gerencie seus compromissos financeiros futuros"
       />
+
+      {/* Botão de Novo Lançamento */}
+      <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          className="btn-primary"
+          onClick={() => navigate('/tesouraria/adicionar')}
+        >
+          <FiPlus /> Novo Lançamento
+        </Button>
+      </div>
 
       {/* KPIs */}
       <div className="kpi-grid" style={{ marginBottom: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>

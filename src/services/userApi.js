@@ -63,3 +63,18 @@ export async function toggleUser({ uid, disabled }) {
 export async function deleteUser({ uid }) {
   return await apiRequest(`/api/users/${uid}`, { method: 'DELETE' });
 }
+
+// Enviar convite para usuário
+export async function inviteUser(email) {
+  return await apiRequest('/api/users/invite', {
+    method: 'POST',
+    body: JSON.stringify({ email })
+  });
+}
+
+// Reset de senha de usuário
+export async function resetUserPassword(uid) {
+  return await apiRequest(`/api/users/${uid}/reset-password`, {
+    method: 'POST'
+  });
+}

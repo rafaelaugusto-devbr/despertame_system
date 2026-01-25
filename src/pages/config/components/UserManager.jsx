@@ -1,7 +1,7 @@
 // src/components/UserManager.jsx
 
 import React, { useState, useEffect } from 'react';
-import { createUser, listUsers, toggleUser, deleteUser } from '../../../services/userApi';
+import { createUser, listUsers, toggleUser, deleteUser, inviteUser, resetUserPassword } from '../../../services/userApi';
 import { useModal } from '../../../contexts/ModalContext';
 
 // Ícones (mantive os seus)
@@ -33,11 +33,25 @@ const IconUnlock = () => (
   </svg>
 );
 
+const IconMail = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+    <polyline points="22,6 12,13 2,6" />
+  </svg>
+);
+
+const IconKey = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+  </svg>
+);
+
 const UserManager = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -45,6 +59,8 @@ const UserManager = () => {
     password: '',
     displayName: '',
   });
+
+  const [inviteEmail, setInviteEmail] = useState('');
 
   const { showModal } = useModal();
 
@@ -157,6 +173,65 @@ const UserManager = () => {
     });
   };
 
+  const handleInviteUser = async (e) => {
+    e.preventDefault();
+
+    if (!inviteEmail) {
+      showModal({
+        title: 'Atenção',
+        message: 'E-mail é obrigatório.',
+        type: 'danger',
+      });
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await inviteUser(inviteEmail);
+
+      setShowInviteModal(false);
+      setInviteEmail('');
+
+      showModal({
+        title: 'Sucesso',
+        message: `Convite enviado para ${inviteEmail}`,
+        type: 'info',
+      });
+    } catch (e) {
+      showModal({
+        title: 'Erro ao enviar convite',
+        message: e?.message || 'Não foi possível enviar o convite.',
+        type: 'danger',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleResetPassword = (user) => {
+    showModal({
+      title: 'Redefinir Senha',
+      message: `Deseja enviar um e-mail de redefinição de senha para "${user.displayName || user.email}"?`,
+      type: 'info',
+      onConfirm: async () => {
+        try {
+          await resetUserPassword(user.uid);
+          showModal({
+            title: 'Sucesso',
+            message: 'E-mail de redefinição de senha enviado com sucesso.',
+            type: 'info',
+          });
+        } catch (e) {
+          showModal({
+            title: 'Erro',
+            message: e?.message || 'Falha ao enviar e-mail de redefinição.',
+            type: 'danger',
+          });
+        }
+      },
+    });
+  };
+
   return (
     <div className="admin-content">
       {/* HEADER PADRÃO */}
@@ -169,9 +244,14 @@ const UserManager = () => {
       <div className="list-card">
         <div className="list-card-header">
           <h3>Administradores</h3>
-          <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
-            <IconPlus /> Novo Admin
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button className="btn btn-secondary" onClick={() => setShowInviteModal(true)}>
+              <IconMail /> Enviar Convite
+            </button>
+            <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+              <IconPlus /> Novo Admin
+            </button>
+          </div>
         </div>
 
         <div className="user-table-container">
@@ -207,6 +287,14 @@ const UserManager = () => {
                   </td>
                   <td>
                     <div className="action-buttons">
+                      <button
+                        className="icon-btn"
+                        title="Redefinir Senha"
+                        onClick={() => handleResetPassword(user)}
+                      >
+                        <IconKey />
+                      </button>
+
                       <button
                         className="icon-btn"
                         title="Ativar/Bloquear"
@@ -294,6 +382,60 @@ const UserManager = () => {
 
                 <button className="btn btn-primary" type="submit" disabled={saving}>
                   {saving ? 'Criando...' : 'Criar'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL ENVIAR CONVITE */}
+      {showInviteModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Enviar Convite</h3>
+              <button
+                className="modal-close-btn"
+                onClick={() => {
+                  setShowInviteModal(false);
+                  setInviteEmail('');
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleInviteUser}>
+              <label>E-mail do Usuário</label>
+              <input
+                className="input-field"
+                type="email"
+                required
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="email@dominio.com"
+              />
+
+              <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.5rem' }}>
+                Um e-mail de convite será enviado para este endereço com instruções para criar uma conta.
+              </p>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowInviteModal(false);
+                    setInviteEmail('');
+                  }}
+                  disabled={saving}
+                >
+                  Cancelar
+                </button>
+
+                <button className="btn btn-primary" type="submit" disabled={saving}>
+                  {saving ? 'Enviando...' : 'Enviar Convite'}
                 </button>
               </div>
             </form>
