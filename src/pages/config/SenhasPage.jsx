@@ -26,7 +26,15 @@ const SenhasPage = () => {
     }
   };
 
-  const panelsList = Object.entries(PANELS).filter(([_, panel]) => panel.password);
+  // Lista de painéis com senha, ordenada para mostrar Exclusão de Arquivos primeiro
+  const panelsList = Object.entries(PANELS)
+    .filter(([_, panel]) => panel.password)
+    .sort((a, b) => {
+      // Exclusão de Arquivos aparece primeiro
+      if (a[0] === 'EXCLUSAO_ARQUIVOS') return -1;
+      if (b[0] === 'EXCLUSAO_ARQUIVOS') return 1;
+      return 0;
+    });
 
   return (
     <>
@@ -53,6 +61,7 @@ const SenhasPage = () => {
         {panelsList.map(([key, panel]) => {
           const isVisible = visiblePasswords[key];
           const isCopied = copiedKey === key;
+          const isExclusao = key === 'EXCLUSAO_ARQUIVOS';
 
           return (
             <div
@@ -60,10 +69,10 @@ const SenhasPage = () => {
               className="link-card"
               style={{
                 padding: '2rem',
-                background: 'white',
+                background: isExclusao ? 'linear-gradient(135deg, #FFF9F0, #FFF5E6)' : 'white',
                 borderRadius: '16px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                border: '2px solid #e2e8f0',
+                boxShadow: isExclusao ? '0 6px 24px rgba(255, 140, 0, 0.2)' : '0 4px 20px rgba(0, 0, 0, 0.08)',
+                border: isExclusao ? '2px solid #FFD700' : '2px solid #e2e8f0',
                 transition: 'all 0.3s ease'
               }}
             >
