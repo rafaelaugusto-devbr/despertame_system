@@ -12,11 +12,17 @@ import {
 } from '../../assets/icons/icons';
 
 const ConfigSidebar = () => {
-  const { collapsed, toggleCollapse, handleLogout } = useSidebarBase();
+  const { collapsed, toggleCollapse, handleLogout, mobileOpen, closeMobile } = useSidebarBase();
   const navigate = useNavigate();
 
+  const handleNavClick = () => {
+    if (window.innerWidth <= 1024) {
+      closeMobile();
+    }
+  };
+
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
   <img
     src="/src/assets/logo_despertame.jpg"
@@ -27,12 +33,12 @@ const ConfigSidebar = () => {
 </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/config/usuarios">
+        <NavLink to="/config/usuarios" onClick={handleNavClick}>
           <UsersIcon />
           <span>Usuários</span>
         </NavLink>
 
-        <NavLink to="/config/senhas">
+        <NavLink to="/config/senhas" onClick={handleNavClick}>
           <LockIcon />
           <span>Senhas</span>
         </NavLink>
