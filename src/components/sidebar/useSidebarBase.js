@@ -8,7 +8,7 @@ export function useSidebarBase() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { showModal } = useModal();
-  const { collapsed, toggleCollapse, toggleMobile, mobileOpen } = useSidebar();
+  const { collapsed, toggleCollapse, toggleMobile, mobileOpen, closeMobile } = useSidebar();
 
   const handleLogout = () => {
     showModal({
@@ -23,11 +23,21 @@ export function useSidebarBase() {
     });
   };
 
+  // Close sidebar on navigation (mobile only)
+  const handleNavigate = (path) => {
+    if (window.innerWidth <= 1024) {
+      closeMobile();
+    }
+    navigate(path);
+  };
+
   return {
     collapsed,
     toggleCollapse,
     toggleMobile,
     mobileOpen,
+    closeMobile,
     handleLogout,
+    handleNavigate,
   };
 }

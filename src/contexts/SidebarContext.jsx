@@ -13,12 +13,53 @@ export const SidebarProvider = ({ children }) => {
     sidebar.classList.toggle('open', mobileOpen);
   }, [mobileOpen]);
 
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const handleClickOutside = (e) => {
+      const sidebar = document.querySelector('.sidebar');
+      const menuBtn = document.querySelector('.mobile-menu-btn');
+
+      if (sidebar && !sidebar.contains(e.target) && !menuBtn?.contains(e.target)) {
+        setMobileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [mobileOpen]);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (window.innerWidth <= 1024) {
+        setMobileOpen(false);
+      }
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  }, []);
+
   const toggleCollapse = () => {
     setCollapsed(prev => !prev);
   };
 
   const toggleMobile = () => {
     setMobileOpen(prev => !prev);
+  };
+
+  const closeMobile = () => {
+    setMobileOpen(false);
   };
 
   return (
@@ -30,6 +71,7 @@ export const SidebarProvider = ({ children }) => {
         mobileOpen,
         setMobileOpen,
         toggleMobile,
+        closeMobile,
       }}
     >
       {children}
