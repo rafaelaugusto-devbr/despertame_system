@@ -38,12 +38,14 @@ import FluxoCaixaPage from './pages/tesouraria/FluxoCaixaPage';
 import CategoriasTiposPage from './pages/tesouraria/CategoriasTiposPage';
 import CampanhasListPage from './pages/tesouraria/CampanhasListPage';
 import CampanhaDetalhesPage from './pages/tesouraria/CampanhaDetalhesPage';
+import ContasPagarPage from './pages/tesouraria/ContasPagarPage';
 
 /* Marketing */
 import AdminDashboard from './pages/marketing/AdminDashboard';
 import BlogManagerPage from './pages/marketing/BlogManagerPage';
 import EmailDashboardPage from './pages/marketing/EmailDashboardPage';
 import LeadsPage from './pages/marketing/LeadsPage';
+import MediaManagerPage from './pages/marketing/MediaManagerPage';
 
 /* Config */
 import UserManagementPage from './pages/config/UserManagementPage';
@@ -105,6 +107,7 @@ function App() {
             <Route path="documentos" element={<DocumentosPage />} />
             <Route path="dashboard" element={<FinanceiroDashboardPage />} />
             <Route path="adicionar" element={<FluxoCaixaPage />} />
+            <Route path="contas-pagar" element={<ContasPagarPage />} />
             <Route path="categorias" element={<CategoriasTiposPage />} />
             <Route path="vendas" element={<CampanhasListPage />} />
             <Route path="vendas/:campanhaId" element={<CampanhaDetalhesPage />} />
@@ -132,6 +135,7 @@ function App() {
             <Route path="blog" element={<BlogManagerPage />} />
             <Route path="emails" element={<EmailDashboardPage />} />
             <Route path="leads" element={<LeadsPage />} />
+            <Route path="midia" element={<MediaManagerPage />} />
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
 

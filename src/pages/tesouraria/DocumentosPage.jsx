@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+import { uploadDocument, deleteDocument as deleteDocumentApi } from '../../services/documentApi';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
-import { FiPlus, FiFile, FiTrash2, FiDownload, FiAlertCircle } from 'react-icons/fi';
-// import '../financeiro/Financeiro.css'; // CSS movido para mesma pasta
+import { FiPlus, FiFile, FiTrash2, FiDownload, FiAlertCircle, FiUpload, FiFolder } from 'react-icons/fi';
 import './Financeiro.css';
 
 const DocumentosPage = () => {
   const [documentos, setDocumentos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [novoDoc, setNovoDoc] = useState({ titulo: '', descricao: '', url: '' });
+  const [uploading, setUploading] = useState(false);
+  const [novoDoc, setNovoDoc] = useState({ titulo: '', descricao: '', pasta: 'tesouraria' });
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     fetchDocumentos();
@@ -33,34 +35,79 @@ const DocumentosPage = () => {
     }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Auto-fill titulo with filename if empty
+      if (!novoDoc.titulo.trim()) {
+        setNovoDoc({ ...novoDoc, titulo: file.name });
+      }
+    }
+  };
+
   const handleAddDocumento = async (e) => {
     e.preventDefault();
-    if (!novoDoc.titulo.trim()) return;
+    if (!novoDoc.titulo.trim() || !selectedFile) {
+      alert('Por favor, preencha o título e selecione um arquivo.');
+      return;
+    }
+
+    setUploading(true);
 
     try {
+      // Upload to Cloudflare via API
+      const uploadResponse = await uploadDocument(selectedFile, {
+        titulo: novoDoc.titulo.trim(),
+        descricao: novoDoc.descricao.trim(),
+        pasta: novoDoc.pasta || 'tesouraria'
+      });
+
+      // Save metadata to Firebase
       await addDoc(collection(db, 'tesourariaDocumentos'), {
         titulo: novoDoc.titulo.trim(),
         descricao: novoDoc.descricao.trim(),
-        url: novoDoc.url.trim(),
+        pasta: novoDoc.pasta || 'tesouraria',
+        url: uploadResponse.url || uploadResponse.fileUrl, // URL returned from Cloudflare
+        fileName: selectedFile.name,
+        fileSize: selectedFile.size,
+        fileType: selectedFile.type,
+        cloudflareId: uploadResponse.id || uploadResponse.documentId,
         createdAt: serverTimestamp(),
       });
 
-      setNovoDoc({ titulo: '', descricao: '', url: '' });
+      setNovoDoc({ titulo: '', descricao: '', pasta: 'tesouraria' });
+      setSelectedFile(null);
       setIsAdding(false);
       await fetchDocumentos();
     } catch (error) {
       console.error('Erro ao adicionar documento:', error);
+      alert(`Erro ao fazer upload: ${error.message}`);
+    } finally {
+      setUploading(false);
     }
   };
 
-  const handleDeleteDocumento = async (id) => {
+  const handleDeleteDocumento = async (id, cloudflareId) => {
     if (!window.confirm('Tem certeza que deseja excluir este documento?')) return;
 
     try {
+      // Delete from Cloudflare if cloudflareId exists
+      if (cloudflareId) {
+        try {
+          await deleteDocumentApi(cloudflareId);
+        } catch (apiError) {
+          console.error('Erro ao deletar do Cloudflare:', apiError);
+          // Continue to delete from Firebase even if Cloudflare deletion fails
+        }
+      }
+
+      // Delete from Firebase
       await deleteDoc(doc(db, 'tesourariaDocumentos', id));
       await fetchDocumentos();
     } catch (error) {
       console.error('Erro ao excluir documento:', error);
+      alert(`Erro ao excluir documento: ${error.message}`);
     }
   };
 
@@ -128,25 +175,52 @@ const DocumentosPage = () => {
               </div>
 
               <div>
-                <label htmlFor="url" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
-                  URL ou Link
+                <label htmlFor="pasta" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                  <FiFolder style={{ display: 'inline', marginRight: '0.5rem' }} />
+                  Pasta
                 </label>
                 <input
-                  id="url"
-                  type="url"
+                  id="pasta"
+                  type="text"
                   className="input-field"
-                  placeholder="https://..."
-                  value={novoDoc.url}
-                  onChange={(e) => setNovoDoc({ ...novoDoc, url: e.target.value })}
+                  placeholder="tesouraria"
+                  value={novoDoc.pasta}
+                  onChange={(e) => setNovoDoc({ ...novoDoc, pasta: e.target.value })}
                 />
+              </div>
+
+              <div>
+                <label htmlFor="arquivo" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                  <FiUpload style={{ display: 'inline', marginRight: '0.5rem' }} />
+                  Arquivo *
+                </label>
+                <input
+                  id="arquivo"
+                  type="file"
+                  className="input-field"
+                  onChange={handleFileSelect}
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip"
+                  required
+                />
+                {selectedFile && (
+                  <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.5rem' }}>
+                    Arquivo selecionado: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
+                  </p>
+                )}
               </div>
 
               <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
                 <Button type="button" className="btn-secondary" onClick={() => setIsAdding(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" className="btn-primary">
-                  <FiPlus /> Salvar Documento
+                <Button type="submit" className="btn-primary" disabled={uploading}>
+                  {uploading ? (
+                    <>Fazendo upload...</>
+                  ) : (
+                    <>
+                      <FiUpload /> Fazer Upload
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
@@ -180,6 +254,21 @@ const DocumentosPage = () => {
                   )}
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                    {doc.pasta && (
+                      <span style={{ fontSize: '0.875rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <FiFolder size={14} /> {doc.pasta}
+                      </span>
+                    )}
+                    {doc.fileName && (
+                      <span style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                        {doc.fileName}
+                      </span>
+                    )}
+                    {doc.fileSize && (
+                      <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>
+                        {(doc.fileSize / 1024).toFixed(2)} KB
+                      </span>
+                    )}
                     <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>
                       Adicionado em {formatDate(doc.createdAt)}
                     </span>
@@ -206,7 +295,7 @@ const DocumentosPage = () => {
                 </div>
 
                 <button
-                  onClick={() => handleDeleteDocumento(doc.id)}
+                  onClick={() => handleDeleteDocumento(doc.id, doc.cloudflareId)}
                   className="icon-btn delete"
                   title="Excluir documento"
                 >

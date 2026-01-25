@@ -14,6 +14,7 @@ import {
   orderBy
 } from 'firebase/firestore';
 
+import { uploadDocument } from '../../../services/documentApi';
 import BlockEditor from './BlockEditor';
 import WYSIWYGEditor from '../../../components/ui/WYSIWYGEditor';
 import './BlogManager.css';
@@ -28,7 +29,8 @@ import {
   FiFileText,
   FiSave,
   FiEye,
-  FiEdit
+  FiEdit,
+  FiUpload
 } from 'react-icons/fi';
 
 const BlogManager = () => {
@@ -39,6 +41,7 @@ const BlogManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
   const [activeTab, setActiveTab] = useState('editor'); // 'editor' ou 'preview'
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [currentPost, setCurrentPost] = useState({
     id: null,
@@ -113,6 +116,44 @@ const BlogManager = () => {
       data: post.data
     });
     setIsEditorOpen(true);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione apenas arquivos de imagem.');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('A imagem não pode ser maior que 5MB.');
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const uploadResponse = await uploadDocument(file, {
+        titulo: `blog-image-${Date.now()}`,
+        descricao: `Imagem destacada do post: ${currentPost.titulo || 'Sem título'}`,
+        pasta: 'blog-images'
+      });
+
+      // Update current post with uploaded image URL
+      setCurrentPost({
+        ...currentPost,
+        imagemUrl: uploadResponse.url || uploadResponse.fileUrl
+      });
+    } catch (error) {
+      console.error('Erro ao fazer upload da imagem:', error);
+      alert(`Erro ao fazer upload da imagem: ${error.message}`);
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -329,19 +370,85 @@ const BlogManager = () => {
                   <FiImage size={16} />
                   Imagem Destacada
                 </label>
-                <input
-                  type="url"
-                  placeholder="https://exemplo.com/imagem.jpg"
-                  value={currentPost.imagemUrl}
-                  onChange={(e) => setCurrentPost({...currentPost, imagemUrl: e.target.value})}
-                />
-                {currentPost.imagemUrl && (
-                  <img
-                    src={currentPost.imagemUrl}
-                    alt="Preview"
-                    className="blog-editor-fullscreen__image-preview"
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {/* File Upload Button */}
+                  <label
+                    htmlFor="image-upload"
+                    className="blog-editor-fullscreen__upload-btn"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.75rem 1rem',
+                      background: uploadingImage ? '#94a3b8' : '#3b82f6',
+                      color: '#fff',
+                      borderRadius: '8px',
+                      cursor: uploadingImage ? 'not-allowed' : 'pointer',
+                      fontWeight: 600,
+                      fontSize: '0.9375rem',
+                      border: 'none',
+                      transition: 'background 0.2s'
+                    }}
+                  >
+                    <FiUpload size={16} />
+                    {uploadingImage ? 'Fazendo upload...' : 'Fazer Upload de Imagem'}
+                  </label>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploadingImage}
+                    style={{ display: 'none' }}
                   />
-                )}
+
+                  {/* URL Input (optional) */}
+                  <div style={{ position: 'relative' }}>
+                    <small style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>
+                      Ou cole uma URL de imagem:
+                    </small>
+                    <input
+                      type="url"
+                      placeholder="https://exemplo.com/imagem.jpg"
+                      value={currentPost.imagemUrl}
+                      onChange={(e) => setCurrentPost({...currentPost, imagemUrl: e.target.value})}
+                    />
+                  </div>
+
+                  {/* Image Preview */}
+                  {currentPost.imagemUrl && (
+                    <div style={{ position: 'relative' }}>
+                      <img
+                        src={currentPost.imagemUrl}
+                        alt="Preview"
+                        className="blog-editor-fullscreen__image-preview"
+                        style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '0.5rem' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setCurrentPost({...currentPost, imagemUrl: ''})}
+                        style={{
+                          position: 'absolute',
+                          top: '0.75rem',
+                          right: '0.75rem',
+                          background: 'rgba(239, 68, 68, 0.9)',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '0.5rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        title="Remover imagem"
+                      >
+                        <FiX size={18} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="blog-editor-fullscreen__field">
