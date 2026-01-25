@@ -58,8 +58,16 @@ export async function uploadDocument(file, metadata = {}) {
       body: formData
     });
 
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error(`Rota não encontrada. Verifique se a API está configurada corretamente em ${API_URL}/api/documents/upload`);
+    }
+
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Erro ao fazer upload do documento');
+    if (!response.ok) {
+      throw new Error(data.error || `Erro ${response.status}: ${response.statusText}`);
+    }
     return data;
   } catch (error) {
     console.error('Erro no upload:', error);
