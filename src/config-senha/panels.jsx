@@ -22,5 +22,11 @@ export const PANELS = {
       label: 'Painel Config',
       password: 'Despertame@2025',
     },
+
+    EXCLUSAO_ARQUIVOS: {
+      key: 'exclusao_arquivos',
+      label: 'Exclusão de Arquivos',
+      password: 'DeleteFile@2025',
+    },
   };
   
