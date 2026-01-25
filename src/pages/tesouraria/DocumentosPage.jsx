@@ -4,7 +4,8 @@ import { db } from '../../services/firebase';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
 import { FiPlus, FiFile, FiTrash2, FiDownload, FiAlertCircle } from 'react-icons/fi';
-import '../financeiro/Financeiro.css';
+// import '../financeiro/Financeiro.css'; // CSS movido para mesma pasta
+import './Financeiro.css';
 
 const DocumentosPage = () => {
   const [documentos, setDocumentos] = useState([]);
