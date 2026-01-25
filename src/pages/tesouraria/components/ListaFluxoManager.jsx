@@ -5,6 +5,7 @@ import { db } from '../../../services/firebase';
 import { collection, getDocs, query, orderBy, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import LancamentoModal from '../../../components/modal/LancamentoModal';
 import PasswordPromptModal from '../../../components/modal/PasswordPromptModal';
+import { PANELS } from '../../../config-senha/panels';
 import { FiEdit2, FiTrash2, FiAlertCircle, FiDownload } from 'react-icons/fi';
 import Button from '../../../components/ui/Button';
 import * as XLSX from 'xlsx';
@@ -71,14 +72,14 @@ const ListaFluxoManager = () => {
     };
 
     const handlePasswordConfirm = (password) => {
-        const masterPassword = "DespertaAdmin#2025!";
+        const masterPassword = PANELS.EXCLUSAO_ARQUIVOS.password;
         if (password === masterPassword) {
             setIsPasswordModalOpen(false);
             if (actionToConfirm) {
                 actionToConfirm();
             }
         } else {
-            alert('Senha mestra incorreta!');
+            alert('Senha incorreta! Verifique a senha de exclusão de arquivos no painel Config.');
         }
         setActionToConfirm(null);
     };

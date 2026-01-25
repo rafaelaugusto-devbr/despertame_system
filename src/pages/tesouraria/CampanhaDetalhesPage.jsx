@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button';
 import NovaVendaModal from '../../components/modal/NovaCampanhaModal';
 import EditarVendaModal from '../../components/modal/EditarVendaModal'; // 1. Importar o novo modal
 import PasswordPromptModal from '../../components/modal/PasswordPromptModal';
+import { PANELS } from '../../config-senha/panels';
 import { FiPlus, FiArrowLeft, FiDollarSign, FiBox, FiTrendingUp, FiAlertCircle, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 const KpiCard = ({ title, value, icon, color }) => (
@@ -139,13 +140,12 @@ const CampanhaDetalhesPage = () => {
     };
 
     const handlePasswordConfirm = (password) => {
-        // ... (código de confirmação de senha continua o mesmo)
-        const masterPassword = "DespertaAdmin#2025!";
+        const masterPassword = PANELS.EXCLUSAO_ARQUIVOS.password;
         if (password === masterPassword) {
             setIsPasswordModalOpen(false);
             if (actionToConfirm) actionToConfirm();
         } else {
-            alert('Senha mestra incorreta!');
+            alert('Senha incorreta! Verifique a senha de exclusão de arquivos no painel Config.');
         }
         setActionToConfirm(null);
     };
