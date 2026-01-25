@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { PANELS } from '../../config-senha/panels';
 import Header from '../../components/layout/Header';
 import { FiLock, FiEye, FiEyeOff, FiCopy, FiCheckCircle, FiShield } from 'react-icons/fi';
-import '../financeiro/Financeiro.css';
+// import '../financeiro/Financeiro.css'; // CSS movido para tesouraria
+import '../tesouraria/Financeiro.css';
 
 const SenhasPage = () => {
   const [visiblePasswords, setVisiblePasswords] = useState({});

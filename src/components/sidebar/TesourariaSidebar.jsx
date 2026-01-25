@@ -14,6 +14,7 @@ import {
   TagIcon,
   ChartIcon,
   ShoppingCartIcon,
+  TicketIcon,
 } from '../../assets/icons/icons';
 
 const TesourariaSidebar = () => {
@@ -32,21 +33,6 @@ const TesourariaSidebar = () => {
 </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/tesouraria/inscritos">
-          <UsersIcon />
-          <span>Inscritos do Retiro</span>
-        </NavLink>
-
-        <NavLink to="/tesouraria/calendario">
-          <CalendarIcon />
-          <span>Calendário</span>
-        </NavLink>
-
-        <NavLink to="/tesouraria/documentos">
-          <FileIcon />
-          <span>Documentos</span>
-        </NavLink>
-
         <NavLink to="/tesouraria/dashboard">
           <FinanceIcon />
           <span>Dashboard Financeiro</span>
@@ -67,9 +53,31 @@ const TesourariaSidebar = () => {
           <span>Vendas</span>
         </NavLink>
 
+        <NavLink to="/tesouraria/rifas">
+          <TicketIcon />
+          <span>Rifas</span>
+        </NavLink>
+
         <NavLink to="/tesouraria/relatorios">
           <ChartIcon />
           <span>Relatórios</span>
+        </NavLink>
+
+        <div className="sidebar-divider" />
+
+        <NavLink to="/tesouraria/inscritos">
+          <UsersIcon />
+          <span>Inscritos do Retiro</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/calendario">
+          <CalendarIcon />
+          <span>Calendário</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/documentos">
+          <FileIcon />
+          <span>Documentos</span>
         </NavLink>
       </nav>
 

@@ -3,8 +3,9 @@ import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp
 import { db } from '../../services/firebase';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
-import { FiPlus, FiEdit2, FiTrash2, FiUsers, FiCheckCircle, FiXCircle, FiDollarSign, FiRefreshCw, FiSettings, FiDownload } from 'react-icons/fi';
-import '../financeiro/Financeiro.css';
+import { FiPlus, FiEdit2, FiTrash2, FiUsers, FiCheckCircle, FiXCircle, FiDollarSign, FiRefreshCw, FiSettings, FiDownload, FiExternalLink } from 'react-icons/fi';
+// import '../financeiro/Financeiro.css'; // CSS movido para tesouraria
+import './Financeiro.css';
 
 const InscritosPage = () => {
   const [inscritos, setInscritos] = useState([]);
@@ -25,6 +26,7 @@ const InscritosPage = () => {
     spreadsheetId: '',
     range: 'Respostas!A2:F',
     ano: new Date().getFullYear(),
+    formsLink: '', // Link do Google Forms
   });
 
   useEffect(() => {
@@ -270,6 +272,14 @@ const InscritosPage = () => {
       <div className="section-header">
         <h2 className="link-title">Lista de Inscritos</h2>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          {sheetConfig.formsLink && (
+            <Button
+              className="btn-success"
+              onClick={() => window.open(sheetConfig.formsLink, '_blank')}
+            >
+              <FiExternalLink /> Formulário de Inscrição
+            </Button>
+          )}
           <Button
             className="btn-secondary"
             onClick={() => setIsConfigOpen(true)}
@@ -531,6 +541,21 @@ const InscritosPage = () => {
               </div>
 
               <div style={{ display: 'grid', gap: '1rem' }}>
+                <div>
+                  <label htmlFor="formsLink">Link do Google Forms</label>
+                  <input
+                    id="formsLink"
+                    type="url"
+                    className="input-field"
+                    placeholder="https://forms.gle/..."
+                    value={sheetConfig.formsLink}
+                    onChange={(e) => setSheetConfig({ ...sheetConfig, formsLink: e.target.value })}
+                  />
+                  <small style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '0.25rem', display: 'block' }}>
+                    Link do formulário de inscrição (aparecerá como botão na página)
+                  </small>
+                </div>
+
                 <div>
                   <label htmlFor="spreadsheetId">ID da Planilha *</label>
                   <input

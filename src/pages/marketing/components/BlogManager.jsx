@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 
 import BlockEditor from './BlockEditor';
+import WYSIWYGEditor from '../../../components/ui/WYSIWYGEditor';
 import './BlogManager.css';
 
 import {
@@ -359,22 +360,10 @@ const BlogManager = () => {
 
             <div className="blog-editor-fullscreen__main">
               <div className="blog-editor-fullscreen__field" style={{ marginBottom: '1rem' }}>
-                <label>Conteúdo do Post (HTML)</label>
-                <textarea
-                  className="blog-editor-fullscreen__html-editor"
-                  placeholder="Digite o conteúdo do post em HTML..."
+                <label>Conteúdo do Post</label>
+                <WYSIWYGEditor
                   value={currentPost.conteudo}
-                  onChange={(e) => setCurrentPost({...currentPost, conteudo: e.target.value})}
-                  rows={25}
-                  style={{
-                    width: '100%',
-                    padding: '1rem',
-                    fontFamily: 'monospace',
-                    fontSize: '0.9rem',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '8px',
-                    resize: 'vertical'
-                  }}
+                  onChange={(html) => setCurrentPost({...currentPost, conteudo: html})}
                 />
               </div>
             </div>

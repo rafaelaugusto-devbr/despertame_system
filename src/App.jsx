@@ -29,6 +29,7 @@ import LinksPage from './pages/public/LinksPage';
 import InscritosPage from './pages/tesouraria/InscritosPage';
 import CalendarioPage from './pages/tesouraria/CalendarioPage';
 import DocumentosPage from './pages/tesouraria/DocumentosPage';
+import RifasPage from './pages/tesouraria/RifasPage';
 
 /* Financeiro (agora em Tesouraria) */
 import FinanceiroDashboardPage from './pages/tesouraria/FinanceiroDashboardPage';
@@ -107,8 +108,9 @@ function App() {
             <Route path="categorias" element={<CategoriasTiposPage />} />
             <Route path="vendas" element={<CampanhasListPage />} />
             <Route path="vendas/:campanhaId" element={<CampanhaDetalhesPage />} />
+            <Route path="rifas" element={<RifasPage />} />
             <Route path="relatorios" element={<RelatoriosVendasPage />} />
-            <Route index element={<Navigate to="inscritos" replace />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
 
 {/* Painel Marketing */}
