@@ -3,7 +3,7 @@ import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp
 import { db } from '../../services/firebase';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
-import { FiPlus, FiEdit2, FiTrash2, FiUsers, FiCheckCircle, FiXCircle, FiDollarSign, FiRefreshCw, FiSettings, FiDownload, FiExternalLink } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiUsers, FiCheckCircle, FiXCircle, FiDollarSign, FiRefreshCw, FiSettings, FiDownload, FiExternalLink, FiUpload } from 'react-icons/fi';
 // import '../financeiro/Financeiro.css'; // CSS movido para tesouraria
 import './Financeiro.css';
 
