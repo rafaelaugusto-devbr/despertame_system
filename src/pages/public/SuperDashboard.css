@@ -384,78 +384,18 @@
   padding: 1rem 0;
 }
 
-/* ==================== Responsive ==================== */
+/* ========== RESPONSIVE BREAKPOINTS ========== */
 
-@media (max-width: 1024px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .activity-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card {
-    padding: 1.25rem;
-  }
-
-  .stat-card__value {
-    font-size: 1.5rem;
-  }
-
-  .chart-card__body {
-    min-height: 250px;
-  }
-
-  .activity-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .activity-item__date {
-    align-self: flex-start;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard-section {
-    margin-bottom: 1.5rem;
-  }
-
-  .kpi-grid,
-  .charts-grid,
-  .activity-grid {
-    gap: 1rem;
-  }
-
-  .stat-card__icon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .chart-card__header,
-  .activity-card__header {
-    padding: 1.25rem;
-  }
-
-  .chart-card__body {
-    padding: 1.25rem;
-  }
-}
-
-
-/* ========== MOBILE DASHBOARD SIMPLIFICADO ========== */
-
+/* 1024px - Tablet Landscape */
 @media (max-width: 1024px) {
   .super-dashboard {
     width: 100%;
     overflow-x: hidden;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   /* Grids em 1 coluna */
@@ -471,34 +411,209 @@
   /* Cards responsivos */
   .kpi-card,
   .chart-card,
-  .info-card {
+  .info-card,
+  .stat-card {
     width: 100%;
     padding: 1rem;
   }
+
+  .activity-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
+/* 720px - Tablet/Mobile Grande */
 @media (max-width: 720px) {
+  .super-dashboard {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .dashboard-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .kpi-grid,
+  .charts-grid,
+  .activity-grid,
+  .chart-grid,
+  .info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+
+  .stat-card,
   .kpi-card,
-  .chart-card {
+  .chart-card,
+  .info-card,
+  .activity-card {
+    width: 100% !important;
+    padding: 1.25rem !important;
+  }
+
+  .stat-card__icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .stat-card__value {
+    font-size: 1.75rem;
+  }
+
+  .chart-card__header,
+  .activity-card__header {
+    padding: 1.25rem;
+  }
+
+  .chart-card__body {
+    padding: 1.25rem;
+    min-height: 250px;
+  }
+
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .activity-item__date {
+    align-self: flex-start;
+  }
+}
+
+/* 520px - Mobile Médio */
+@media (max-width: 520px) {
+  .dashboard-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .kpi-grid,
+  .charts-grid,
+  .activity-grid {
+    gap: 0.875rem !important;
+  }
+
+  .stat-card,
+  .kpi-card,
+  .chart-card,
+  .info-card,
+  .activity-card {
+    padding: 1rem !important;
+  }
+
+  .stat-card__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .stat-card__value {
+    font-size: 1.5rem;
+  }
+
+  .stat-card__title {
+    font-size: 0.8125rem;
+  }
+
+  .chart-card__header,
+  .activity-card__header {
     padding: 1rem;
   }
-}
 
-@media (max-width: 520px) {
-  .kpi-card,
-  .chart-card {
+  .chart-card__body {
+    padding: 1rem;
+    min-height: 220px;
+  }
+
+  .chart-card__title,
+  .activity-card__title h3 {
+    font-size: 1rem;
+  }
+
+  .activity-item {
     padding: 0.875rem;
+  }
+
+  .amount,
+  .kpi-value {
+    font-size: 1.5rem;
+  }
+
+  input,
+  select {
+    font-size: 16px; /* Previne zoom iOS */
   }
 }
 
+/* 320px - Mobile Pequeno */
 @media (max-width: 320px) {
+  .dashboard-section {
+    margin-bottom: 1rem;
+  }
+
+  .kpi-grid,
+  .charts-grid,
+  .activity-grid {
+    gap: 0.75rem !important;
+  }
+
+  .stat-card,
   .kpi-card,
-  .chart-card {
+  .chart-card,
+  .info-card,
+  .activity-card {
+    padding: 0.875rem !important;
+  }
+
+  .stat-card__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stat-card__value {
+    font-size: 1.25rem;
+  }
+
+  .stat-card__title {
+    font-size: 0.75rem;
+  }
+
+  .chart-card__header,
+  .activity-card__header {
+    padding: 0.875rem;
+  }
+
+  .chart-card__body {
+    padding: 0.875rem;
+    min-height: 200px;
+  }
+
+  .chart-card__title,
+  .activity-card__title h3 {
+    font-size: 0.9375rem;
+  }
+
+  .activity-item {
     padding: 0.75rem;
+  }
+
+  .activity-item__title {
+    font-size: 0.875rem;
+  }
+
+  .activity-item__subtitle,
+  .activity-item__date {
+    font-size: 0.75rem;
   }
 
   .amount,
   .kpi-value {
     font-size: 1.25rem;
+  }
+
+  button {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
   }
 }
