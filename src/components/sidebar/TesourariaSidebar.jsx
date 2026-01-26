@@ -82,6 +82,11 @@ const TesourariaSidebar = () => {
           <span>Inscritos do Retiro</span>
         </NavLink>
 
+        <NavLink to="/tesouraria/operarios" onClick={handleNavClick}>
+          <UsersIcon />
+          <span>Operários</span>
+        </NavLink>
+
         <NavLink to="/tesouraria/calendario" onClick={handleNavClick}>
           <CalendarIcon />
           <span>Calendário</span>

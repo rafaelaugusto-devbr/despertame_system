@@ -27,6 +27,7 @@ import LinksPage from './pages/public/LinksPage';
 
 /* Tesouraria */
 import InscritosPage from './pages/tesouraria/InscritosPage';
+import OperariosPage from './pages/tesouraria/OperariosPage';
 import CalendarioPage from './pages/tesouraria/CalendarioPage';
 import DocumentosPage from './pages/tesouraria/DocumentosPage';
 import RifasPage from './pages/tesouraria/RifasPage';
@@ -103,6 +104,7 @@ function App() {
             }
           >
             <Route path="inscritos" element={<InscritosPage />} />
+            <Route path="operarios" element={<OperariosPage />} />
             <Route path="calendario" element={<CalendarioPage />} />
             <Route path="documentos" element={<DocumentosPage />} />
             <Route path="dashboard" element={<FinanceiroDashboardPage />} />
