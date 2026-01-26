@@ -328,8 +328,15 @@
   margin-top: 0.25rem;
 }
 
-/* Responsive */
+/* ========== RESPONSIVE BREAKPOINTS ========== */
+
+/* 1024px - Tablet Landscape */
 @media (max-width: 1024px) {
+  .links-page {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   .links-quick-info {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 0.875rem;
@@ -340,15 +347,25 @@
   }
 }
 
-@media (max-width: 768px) {
+/* 720px - Tablet/Mobile Grande */
+@media (max-width: 720px) {
+  .links-page,
+  .links-toolbar,
+  .links-content,
+  .links-category-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
   .links-quick-info {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
   }
 
   .quick-info-card {
-    padding: 1.25rem;
+    width: 100% !important;
+    padding: 1.25rem !important;
   }
 
   .quick-info-card__icon {
@@ -361,36 +378,49 @@
   }
 
   .links-toolbar {
-    padding: 1.25rem;
+    padding: 1.25rem !important;
   }
 
   .links-categories {
-    gap: 0.5rem;
-  }
-
-  .category-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8125rem;
-  }
-
-  .links-grid {
-    grid-template-columns: 1fr;
     gap: 0.75rem;
   }
 
+  .category-btn {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .links-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+
   .link-card-item {
-    padding: 1rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.25rem !important;
   }
 
   .link-card-item__icon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .links-search__input {
+    width: 100% !important;
+    font-size: 16px !important; /* Previne zoom no iOS */
   }
 }
 
-@media (max-width: 480px) {
+/* 520px - Mobile Médio */
+@media (max-width: 520px) {
+  .links-quick-info {
+    gap: 0.875rem !important;
+  }
+
   .quick-info-card {
-    padding: 1rem;
+    padding: 1rem !important;
   }
 
   .quick-info-card__icon {
@@ -407,11 +437,32 @@
   }
 
   .links-toolbar {
-    padding: 1rem;
+    padding: 1rem !important;
+  }
+
+  .links-categories {
+    gap: 0.5rem;
+  }
+
+  .category-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .links-grid {
+    gap: 0.875rem !important;
+  }
+
+  .link-card-item {
+    padding: 1rem !important;
+  }
+
+  .link-card-item__icon {
+    width: 40px;
+    height: 40px;
   }
 
   .links-search__input {
-    font-size: 16px; /* Prevent zoom on iOS */
     padding: 0.875rem 0.875rem 0.875rem 2.75rem;
   }
 
@@ -426,18 +477,52 @@
   .links-category-title {
     font-size: 1.125rem;
   }
+}
+
+/* 320px - Mobile Pequeno */
+@media (max-width: 320px) {
+  .links-quick-info {
+    gap: 0.75rem !important;
+  }
+
+  .quick-info-card {
+    padding: 0.875rem !important;
+  }
+
+  .quick-info-card__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .quick-info-card__value {
+    font-size: 1.25rem;
+  }
+
+  .quick-info-card__title {
+    font-size: 0.75rem;
+  }
+
+  .links-toolbar {
+    padding: 0.875rem !important;
+  }
 
   .category-btn {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.75rem;
     flex: 1;
-    min-width: calc(50% - 0.25rem);
+    min-width: calc(50% - 0.375rem);
     justify-content: center;
+  }
+
+  .links-grid {
+    gap: 0.75rem !important;
   }
 
   .link-card-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
-    padding: 0.875rem;
+    padding: 0.875rem !important;
   }
 
   .link-card-item__icon {
@@ -446,52 +531,20 @@
   }
 
   .link-card-item__title {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     white-space: normal;
   }
-}
 
-/* FORCE MOBILE RESPONSIVENESS */
-@media (max-width: 768px) {
-  .links-page,
-  .links-toolbar,
-  .links-content,
-  .links-category-section {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-  }
-
-  /* FORÇAR grid para 1 coluna */
-  .links-grid {
-    grid-template-columns: 1fr !important;
-    width: 100% !important;
-  }
-
-  /* FORÇAR cards */
-  .link-card-item {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* Toolbar responsive */
-  .links-toolbar {
-    padding: 1rem !important;
-  }
-
-  /* Search responsive */
-  .links-search__input {
-    width: 100% !important;
-    font-size: 16px !important; /* Previne zoom no iOS */
-  }
-}
-
-@media (max-width: 480px) {
-  .link-card-item {
-    padding: 0.875rem !important;
+  .link-card-item__description {
+    font-size: 0.8125rem;
   }
 
   .links-category-title {
-    font-size: 1.125rem !important;
+    font-size: 1rem !important;
+  }
+
+  button {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
   }
 }

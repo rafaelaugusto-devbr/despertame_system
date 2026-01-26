@@ -1,28 +1,89 @@
 .user-table-container {
     overflow-x: auto;
   }
-  
+
   .user-table {
     width: 100%;
     border-collapse: collapse;
   }
-  
+
   .user-table th,
   .user-table td {
     padding: var(--spacing-md);
     border-bottom: 1px solid var(--color-border);
   }
-  
+
   .action-buttons {
     display: flex;
     justify-content: center;
     gap: 0.75rem;
   }
-  
+
   .icon-btn {
     background: none;
     border: none;
     cursor: pointer;
     color: var(--color-text-secondary);
   }
-  
+
+  /* ========== RESPONSIVE BREAKPOINTS ========== */
+
+  /* 720px - Tablet/Mobile Grande */
+  @media (max-width: 720px) {
+    .user-table-container {
+      overflow-x: auto;
+      width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .user-table th,
+    .user-table td {
+      padding: 0.875rem;
+      font-size: 0.9375rem;
+    }
+
+    .action-buttons {
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .icon-btn {
+      padding: 0.5rem;
+    }
+  }
+
+  /* 520px - Mobile Médio */
+  @media (max-width: 520px) {
+    .user-table th,
+    .user-table td {
+      padding: 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    .action-buttons {
+      gap: 0.375rem;
+    }
+
+    .icon-btn {
+      padding: 0.375rem;
+    }
+  }
+
+  /* 320px - Mobile Pequeno */
+  @media (max-width: 320px) {
+    .user-table th,
+    .user-table td {
+      padding: 0.625rem;
+      font-size: 0.8125rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .icon-btn {
+      padding: 0.25rem;
+      width: 100%;
+    }
+  }
