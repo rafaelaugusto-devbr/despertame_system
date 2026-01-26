@@ -79,3 +79,60 @@
     font-size: 0.875rem !important;
   }
 }
+
+/* ========== CENTRALIZAÇÃO MOBILE SENHAS ========== */
+
+@media (max-width: 1024px) {
+  /* Grid de senhas centralizado */
+  .senhas-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 1rem !important;
+  }
+
+  /* Cards de senha centralizados */
+  .senha-card {
+    width: 100% !important;
+    max-width: 500px !important;
+    margin: 0 auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile padrão */
+  .senha-card {
+    max-width: 100% !important;
+    padding: 1.25rem !important;
+  }
+
+  /* Header de senha */
+  .senha-header {
+    flex-wrap: nowrap !important;
+  }
+
+  /* Ícone menor */
+  .senha-icon {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Mobile pequeno */
+  .senha-card {
+    padding: 1rem !important;
+  }
+
+  /* Input responsivo */
+  .senha-input {
+    font-size: 0.9375rem !important;
+  }
+
+  /* Botão responsivo */
+  .senha-button {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9375rem !important;
+  }
+}
