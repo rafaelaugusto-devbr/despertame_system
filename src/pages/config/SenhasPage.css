@@ -189,3 +189,77 @@
     font-size: 0.9375rem !important;
   }
 }
+
+/* ========== MOBILE SENHAS SIMPLIFICADO ========== */
+
+@media (max-width: 1024px) {
+  /* Grid de senhas */
+  .senhas-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  /* Cards de senha */
+  .senha-card {
+    width: 100%;
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .senha-card {
+    padding: 1rem;
+  }
+
+  .senha-icon {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (max-width: 520px) {
+  .senha-card {
+    padding: 0.875rem;
+  }
+
+  .senha-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .senha-input {
+    font-size: 0.875rem;
+  }
+
+  .senha-button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .senha-card {
+    padding: 0.75rem;
+  }
+
+  .senha-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .senha-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .senha-input {
+    font-size: 0.8125rem;
+  }
+
+  .senha-button {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+}
