@@ -1188,3 +1188,98 @@
     width: 100%;
   }
 }
+
+/* ========== MOBILE RESPONSIVO GLOBAL TESOURARIA ========== */
+
+@media (max-width: 1024px) {
+  /* FORÇAR containers */
+  .financeiro-page,
+  .tesouraria-dashboard,
+  .relatorios-page,
+  [class*="tesouraria"],
+  [class*="financeiro"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* FORÇAR grids */
+  .kpi-grid,
+  .chart-grid,
+  .table-grid,
+  [style*="grid-template-columns: repeat"] {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+
+  /* FORÇAR summary cards */
+  .summary-card,
+  .kpi-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1rem !important;
+  }
+
+  /* FORÇAR tabelas */
+  table,
+  .table-wrapper {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    display: block !important;
+  }
+
+  /* FORÇAR modais */
+  .modal-content {
+    max-width: 95vw !important;
+    margin: 0.5rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Cards menores */
+  .summary-card,
+  .kpi-card,
+  [class*="card"] {
+    padding: 0.875rem !important;
+  }
+
+  /* Valores grandes */
+  .amount,
+  [class*="amount"],
+  [class*="value"] {
+    font-size: 1.5rem !important;
+  }
+
+  /* Botões */
+  button,
+  .btn {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9375rem !important;
+  }
+
+  /* Inputs */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Previne zoom iOS */
+  }
+}
+
+@media (max-width: 640px) {
+  /* Extra small */
+  .summary-card,
+  .kpi-card {
+    padding: 0.75rem !important;
+  }
+
+  /* Valores */
+  .amount {
+    font-size: 1.25rem !important;
+  }
+
+  /* Ícones */
+  svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
