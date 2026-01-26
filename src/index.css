@@ -1246,3 +1246,168 @@ html, body {
     padding: 0.875rem !important;
   }
 }
+/* ========== BREAKPOINTS ESPECÍFICOS MOBILE ========== */
+
+/* Tablet e Mobile - 720px */
+@media (max-width: 720px) {
+  /* Content não se move com sidebar */
+  .admin-content-wrapper {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .admin-content {
+    padding: 5.5rem 1rem 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Grids em 1 coluna */
+  [class*="grid"],
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Cards ajustados */
+  [class*="card"] {
+    width: 100% !important;
+    padding: 1rem !important;
+  }
+
+  /* Sidebar sobrepõe */
+  .sidebar {
+    position: fixed !important;
+    z-index: 1100 !important;
+  }
+}
+
+/* Mobile Médio - 520px */
+@media (max-width: 520px) {
+  .admin-content {
+    padding: 5.5rem 0.875rem 0.875rem !important;
+  }
+
+  [class*="card"] {
+    padding: 0.875rem !important;
+  }
+
+  /* Headers menores */
+  .header {
+    padding: 0.875rem !important;
+  }
+
+  .header h1 {
+    font-size: 1.375rem !important;
+  }
+
+  .header p {
+    font-size: 0.8125rem !important;
+  }
+
+  /* Botões menores */
+  button,
+  .btn {
+    padding: 0.625rem 0.875rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* Ícones menores */
+  [style*="width: 56px"],
+  [style*="width:56px"] {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* Valores */
+  .amount,
+  [class*="amount"] {
+    font-size: 1.375rem !important;
+  }
+}
+
+/* Mobile Pequeno - 320px */
+@media (max-width: 320px) {
+  .admin-content {
+    padding: 5.5rem 0.5rem 0.5rem !important;
+  }
+
+  [class*="card"] {
+    padding: 0.75rem !important;
+    border-radius: 8px !important;
+  }
+
+  /* Headers ainda menores */
+  .header {
+    padding: 0.75rem !important;
+  }
+
+  .header h1 {
+    font-size: 1.125rem !important;
+  }
+
+  .header p {
+    font-size: 0.75rem !important;
+  }
+
+  /* Botões compactos */
+  button,
+  .btn {
+    padding: 0.5rem 0.625rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  /* Menu button menor */
+  .mobile-menu-btn {
+    width: 40px !important;
+    height: 40px !important;
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+  }
+
+  /* Ícones muito pequenos */
+  [style*="width: 56px"],
+  [style*="width:56px"],
+  [style*="width: 48px"],
+  [style*="width:48px"] {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Valores compactos */
+  .amount,
+  [class*="amount"] {
+    font-size: 1.125rem !important;
+  }
+
+  /* Fontes reduzidas */
+  h1 { font-size: 1.125rem !important; }
+  h2 { font-size: 1rem !important; }
+  h3 { font-size: 0.9375rem !important; }
+}
+
+/* Garantir que sidebar sempre sobreponha */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    z-index: 1100 !important;
+    transform: translateX(-100%) !important;
+  }
+
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+
+  /* Overlay sempre abaixo do sidebar */
+  .sidebar-overlay {
+    z-index: 999 !important;
+  }
+
+  /* Content nunca se move */
+  .admin-layout.sidebar-collapsed .admin-content-wrapper,
+  .admin-content-wrapper {
+    margin-left: 0 !important;
+  }
+}
