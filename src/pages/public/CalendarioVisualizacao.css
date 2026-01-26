@@ -169,3 +169,124 @@
     padding: 1.25rem;
   }
 }
+
+/* ========== MOBILE RESPONSIVO AGRESSIVO ========== */
+
+@media (max-width: 1024px) {
+  .calendario-visualizacao {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .calendario-card {
+    padding: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* FORÇAR FullCalendar responsivo */
+  .fc {
+    max-width: 100% !important;
+    font-size: 0.75rem !important;
+  }
+
+  .fc-header-toolbar {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    align-items: stretch !important;
+  }
+
+  .fc-toolbar-chunk {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .fc-button {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1.125rem !important;
+  }
+
+  /* FORÇAR tabela do calendário */
+  .fc-scrollgrid,
+  .fc-scrollgrid-sync-table {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .fc-col-header-cell,
+  .fc-daygrid-day {
+    min-width: 0 !important;
+    padding: 0.25rem !important;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.75rem !important;
+    padding: 0.25rem !important;
+  }
+
+  .fc-event {
+    font-size: 0.6875rem !important;
+    padding: 0.125rem 0.25rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendario-card {
+    padding: 0.75rem !important;
+    min-height: auto !important;
+  }
+
+  .fc {
+    font-size: 0.6875rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1rem !important;
+  }
+
+  .fc-button {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.6875rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .calendario-card {
+    padding: 0.5rem !important;
+    border-radius: 8px !important;
+  }
+
+  .fc {
+    font-size: 0.625rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 0.9375rem !important;
+  }
+
+  .fc-button {
+    padding: 0.25rem 0.375rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .fc-col-header-cell-cushion,
+  .fc-daygrid-day-number {
+    font-size: 0.625rem !important;
+    padding: 0.125rem !important;
+  }
+
+  .fc-event {
+    font-size: 0.5625rem !important;
+    padding: 0.0625rem 0.125rem !important;
+  }
+}
