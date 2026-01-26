@@ -290,3 +290,89 @@
     padding: 0.0625rem 0.125rem !important;
   }
 }
+
+/* ========== BREAKPOINTS ESPECÍFICOS CALENDÁRIO ========== */
+
+/* 720px */
+@media (max-width: 720px) {
+  .calendario-card {
+    padding: 0.875rem !important;
+  }
+
+  .fc {
+    font-size: 0.75rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1.125rem !important;
+  }
+
+  .fc-button {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* 520px */
+@media (max-width: 520px) {
+  .calendario-card {
+    padding: 0.625rem !important;
+  }
+
+  .fc {
+    font-size: 0.6875rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1rem !important;
+  }
+
+  .fc-button {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.6875rem !important;
+  }
+
+  .fc-event {
+    font-size: 0.625rem !important;
+  }
+}
+
+/* 320px */
+@media (max-width: 320px) {
+  .calendario-card {
+    padding: 0.5rem !important;
+    border-radius: 8px !important;
+  }
+
+  .fc {
+    font-size: 0.625rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 0.875rem !important;
+  }
+
+  .fc-button {
+    padding: 0.25rem 0.375rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.625rem !important;
+    padding: 0.125rem !important;
+  }
+
+  .fc-event {
+    font-size: 0.5625rem !important;
+    padding: 0.0625rem !important;
+  }
+
+  .fc-col-header-cell {
+    padding: 0.125rem !important;
+    font-size: 0.625rem !important;
+  }
+}

@@ -109,3 +109,45 @@
     height: 44px;
   }
 }
+
+/* ==================== Breakpoints Específicos ==================== */
+
+/* 720px - Tablet/Mobile Grande */
+@media (max-width: 720px) {
+  .admin-content {
+    padding: 5.5rem 1rem 1rem !important;
+  }
+
+  .mobile-menu-btn {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* 520px - Mobile Médio */
+@media (max-width: 520px) {
+  .admin-content {
+    padding: 5.5rem 0.875rem 0.875rem !important;
+  }
+
+  .mobile-menu-btn {
+    width: 44px;
+    height: 44px;
+    top: 0.625rem;
+    left: 0.625rem;
+  }
+}
+
+/* 320px - Mobile Pequeno */
+@media (max-width: 320px) {
+  .admin-content {
+    padding: 5.5rem 0.5rem 0.5rem !important;
+  }
+
+  .mobile-menu-btn {
+    width: 40px;
+    height: 40px;
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+}

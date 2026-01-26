@@ -113,3 +113,79 @@
     padding: 1rem !important;
   }
 }
+
+/* ========== BREAKPOINTS ESPECÍFICOS SENHAS ========== */
+
+/* 720px */
+@media (max-width: 720px) {
+  .senhas-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .senha-card {
+    padding: 1rem !important;
+  }
+
+  .senha-icon {
+    width: 52px !important;
+    height: 52px !important;
+  }
+}
+
+/* 520px */
+@media (max-width: 520px) {
+  .senha-card {
+    padding: 0.875rem !important;
+  }
+
+  .senha-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .senha-input {
+    font-size: 0.875rem !important;
+  }
+
+  .senha-button {
+    padding: 0.625rem 0.875rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* 320px */
+@media (max-width: 320px) {
+  .senha-card {
+    padding: 0.75rem !important;
+  }
+
+  .senha-header {
+    gap: 0.625rem !important;
+  }
+
+  .senha-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .senha-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .senha-input {
+    font-size: 0.8125rem !important;
+    padding: 0.625rem !important;
+  }
+
+  .senha-button {
+    padding: 0.5rem 0.625rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  /* Título menor */
+  .senha-header h3 {
+    font-size: 0.9375rem !important;
+  }
+}
