@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { PANELS } from '../../config-senha/panels';
 import Header from '../../components/layout/Header';
 import { FiLock, FiEye, FiEyeOff, FiCopy, FiCheckCircle, FiShield } from 'react-icons/fi';
-// import '../financeiro/Financeiro.css'; // CSS movido para tesouraria
 import '../tesouraria/Financeiro.css';
+import './SenhasPage.css';
 
 const SenhasPage = () => {
   const [visiblePasswords, setVisiblePasswords] = useState({});
@@ -57,7 +57,7 @@ const SenhasPage = () => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+      <div className="senhas-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
         {panelsList.map(([key, panel]) => {
           const isVisible = visiblePasswords[key];
           const isCopied = copiedKey === key;
@@ -66,7 +66,7 @@ const SenhasPage = () => {
           return (
             <div
               key={key}
-              className="link-card"
+              className="link-card senha-card"
               style={{
                 padding: '2rem',
                 background: isExclusao ? 'linear-gradient(135deg, #FFF9F0, #FFF5E6)' : 'white',
@@ -77,8 +77,8 @@ const SenhasPage = () => {
               }}
             >
               {/* Ícone e Nome */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{
+              <div className="senha-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div className="senha-icon" style={{
                   width: '56px',
                   height: '56px',
                   background: 'linear-gradient(135deg, #FFD700, #FF8C00)',
@@ -124,7 +124,7 @@ const SenhasPage = () => {
                 }}>
                   Senha de Acesso
                 </label>
-                <div style={{
+                <div className="senha-input-wrapper" style={{
                   position: 'relative',
                   display: 'flex',
                   alignItems: 'center',
@@ -138,6 +138,7 @@ const SenhasPage = () => {
                     type={isVisible ? 'text' : 'password'}
                     value={panel.password}
                     readOnly
+                    className="senha-input"
                     style={{
                       flex: 1,
                       border: 'none',
@@ -177,6 +178,7 @@ const SenhasPage = () => {
               {/* Botão Copiar */}
               <button
                 onClick={() => copyToClipboard(panel.password, key)}
+                className="senha-button"
                 style={{
                   width: '100%',
                   display: 'flex',
