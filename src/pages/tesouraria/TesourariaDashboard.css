@@ -166,3 +166,69 @@
     padding-left: 3rem;
   }
 }
+
+/* ========== BREAKPOINTS MOBILE ========== */
+
+/* 720px - Tablet/Mobile Grande */
+@media (max-width: 720px) {
+  .dashboard-grid,
+  .kpi-grid,
+  .chart-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .kpi-card,
+  .chart-card,
+  .summary-card {
+    padding: 1rem !important;
+  }
+
+  .kpi-value,
+  .amount {
+    font-size: 1.75rem !important;
+  }
+}
+
+/* 520px - Mobile Médio */
+@media (max-width: 520px) {
+  .kpi-card,
+  .chart-card,
+  .summary-card {
+    padding: 0.875rem !important;
+  }
+
+  .kpi-value,
+  .amount {
+    font-size: 1.5rem !important;
+  }
+
+  .kpi-title,
+  .chart-title {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* 320px - Mobile Pequeno */
+@media (max-width: 320px) {
+  .kpi-card,
+  .chart-card,
+  .summary-card {
+    padding: 0.75rem !important;
+  }
+
+  .kpi-value,
+  .amount {
+    font-size: 1.25rem !important;
+  }
+
+  .kpi-title,
+  .chart-title {
+    font-size: 0.8125rem !important;
+  }
+
+  button {
+    padding: 0.5rem 0.625rem !important;
+    font-size: 0.8125rem !important;
+  }
+}
