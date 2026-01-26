@@ -46,7 +46,6 @@ const OperariosPage = () => {
     endereco: '',
     funcao: '',
     dataAdmissao: '',
-    salario: '',
     status: 'Ativo',
     observacoes: '',
   });
@@ -92,7 +91,6 @@ const OperariosPage = () => {
         endereco: operario.endereco || '',
         funcao: operario.funcao || '',
         dataAdmissao: operario.dataAdmissao || '',
-        salario: operario.salario || '',
         status: operario.status || 'Ativo',
         observacoes: operario.observacoes || '',
       });
@@ -131,7 +129,6 @@ const OperariosPage = () => {
     try {
       const dataToSave = {
         ...formData,
-        salario: formData.salario ? parseFloat(formData.salario) : 0,
       };
 
       if (editingId) {
@@ -168,7 +165,7 @@ const OperariosPage = () => {
       return;
     }
 
-    const headers = ['Nome', 'CPF', 'RG', 'Telefone', 'E-mail', 'Função', 'Data Admissão', 'Salário', 'Status'];
+    const headers = ['Nome', 'CPF', 'RG', 'Telefone', 'E-mail', 'Função', 'Data Admissão', 'Status'];
     const csvHeaders = headers.join(',');
 
     const csvRows = operarios.map(op => {
@@ -180,7 +177,6 @@ const OperariosPage = () => {
         `"${op.email || ''}"`,
         `"${op.funcao || ''}"`,
         `"${op.dataAdmissao || ''}"`,
-        `"${op.salario || 0}"`,
         `"${op.status || ''}"`,
       ].join(',');
     });
@@ -317,7 +313,6 @@ const OperariosPage = () => {
                   <th>Telefone</th>
                   <th>Função</th>
                   <th>Data Admissão</th>
-                  <th>Salário</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -325,7 +320,7 @@ const OperariosPage = () => {
               <tbody>
                 {filteredOperarios.length === 0 ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>
+                    <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>
                       {searchTerm || filterStatus
                         ? 'Nenhum operário encontrado com os filtros aplicados.'
                         : 'Nenhum operário cadastrado ainda.'}
@@ -339,7 +334,6 @@ const OperariosPage = () => {
                       <td data-label="Telefone">{operario.telefone || '-'}</td>
                       <td data-label="Função">{operario.funcao || '-'}</td>
                       <td data-label="Data Admissão">{formatDate(operario.dataAdmissao)}</td>
-                      <td data-label="Salário">{formatCurrency(operario.salario)}</td>
                       <td data-label="Status">
                         <span
                           className={`badge badge--${
@@ -513,20 +507,6 @@ const OperariosPage = () => {
                           className="input-field"
                           value={formData.dataAdmissao}
                           onChange={(e) => setFormData({ ...formData, dataAdmissao: e.target.value })}
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="salario">Salário (R$)</label>
-                        <input
-                          id="salario"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          className="input-field"
-                          placeholder="0.00"
-                          value={formData.salario}
-                          onChange={(e) => setFormData({ ...formData, salario: e.target.value })}
                         />
                       </div>
 

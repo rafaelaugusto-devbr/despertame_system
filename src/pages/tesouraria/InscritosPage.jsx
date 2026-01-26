@@ -60,6 +60,7 @@ const InscritosPage = () => {
       const evento = registry.find(r => r.evento === selectedEvento);
       if (evento) {
         setAvailableAnos(evento.anos);
+        // Auto-seleciona primeiro ano apenas se não houver ano selecionado
         if (evento.anos.length > 0 && !selectedAno) {
           setSelectedAno(evento.anos[0]);
         }
@@ -68,6 +69,7 @@ const InscritosPage = () => {
       setAvailableAnos([]);
       setSelectedAno('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEvento, registry]);
 
   // Carrega dados quando filtros mudam
@@ -79,7 +81,8 @@ const InscritosPage = () => {
       setHeaders([]);
       setTotal(0);
     }
-  }, [selectedEvento, selectedAno, offset, searchQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEvento, selectedAno, offset]);
 
   const checkApiHealth = async () => {
     try {
@@ -157,10 +160,10 @@ const InscritosPage = () => {
     }
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     setOffset(0); // Reset para primeira página
-    loadInscritos();
+    await loadInscritos();
   };
 
   const handleExport = () => {
