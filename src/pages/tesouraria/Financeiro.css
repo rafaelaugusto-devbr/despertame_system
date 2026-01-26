@@ -1284,39 +1284,32 @@
   }
 }
 
-/* ========== CENTRALIZAÇÃO MOBILE FINANCEIRO ========== */
+
+/* ========== FIX ALINHAMENTO MOBILE FINANCEIRO ========== */
 
 @media (max-width: 1024px) {
-  /* Containers financeiros centralizados */
+  /* Containers sem centralização forçada */
   .financeiro-dashboard,
   .tesouraria-page,
   [class*="tesouraria"] {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    display: block !important;
     width: 100% !important;
   }
 
-  /* KPI Grid centralizado */
+  /* KPI Grid normal */
   .kpi-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
     width: 100% !important;
     gap: 1rem !important;
   }
 
-  /* Cards financeiros centralizados */
+  /* Cards sem centralização */
   .kpi-card,
   .summary-card {
     width: 100% !important;
-    max-width: 500px !important;
-    margin: 0 auto !important;
-  }
-
-  /* Scroll suave */
-  * {
-    scroll-behavior: smooth !important;
+    max-width: 100% !important;
+    margin: 0 0 1rem 0 !important;
   }
 }
 
@@ -1324,8 +1317,7 @@
   /* Mobile padrão */
   .kpi-card,
   .summary-card {
-    max-width: 100% !important;
-    width: 100% !important;
+    padding: 1rem !important;
   }
 
   /* Charts responsivos */
@@ -1333,7 +1325,6 @@
   canvas {
     max-width: 100% !important;
     width: 100% !important;
-    height: auto !important;
   }
 }
 
@@ -1342,11 +1333,5 @@
   .kpi-card,
   .summary-card {
     padding: 0.875rem !important;
-  }
-
-  /* Valores grandes legíveis */
-  .amount,
-  .kpi-value {
-    font-size: 1.5rem !important;
   }
 }
