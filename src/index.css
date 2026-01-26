@@ -1187,37 +1187,35 @@ html, body {
     margin-right: 0 !important;
   }
 }
-/* ========== CENTRALIZAÇÃO E SCROLL MOBILE ========== */
+/* ========== FIX ALINHAMENTO MOBILE ========== */
 
 @media (max-width: 1024px) {
-  /* Centralizar conteúdo no mobile */
+  /* Remover centralização forçada */
   .admin-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    display: block !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    height: calc(100vh - 5.5rem) !important;
+    height: auto !important;
+    min-height: calc(100vh - 5.5rem) !important;
   }
 
-  /* Centralizar grids */
+  /* Grids normais em 1 coluna */
   [class*="grid"],
   [style*="display: grid"] {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
     width: 100% !important;
     gap: 1rem !important;
   }
 
-  /* Cards centralizados */
+  /* Cards sem centralização forçada */
   [class*="card"],
   .kpi-card,
   .summary-card,
   .info-card {
     width: 100% !important;
-    max-width: 500px !important;
-    margin: 0 auto !important;
+    max-width: 100% !important;
+    margin: 0 0 1rem 0 !important;
   }
 }
 
@@ -1229,18 +1227,12 @@ html, body {
 
   /* Cards menores */
   [class*="card"] {
-    max-width: 100% !important;
     padding: 1rem !important;
   }
 
-  /* Grids sempre em coluna */
-  [style*="grid-template-columns"],
-  .kpi-grid,
-  .chart-grid,
-  .senhas-grid,
-  .links-grid {
-    grid-template-columns: 1fr !important;
-    display: grid !important;
+  /* Headers */
+  .header {
+    text-align: left !important;
   }
 }
 
@@ -1252,6 +1244,5 @@ html, body {
 
   [class*="card"] {
     padding: 0.875rem !important;
-    max-width: 100% !important;
   }
 }
