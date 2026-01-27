@@ -14,7 +14,7 @@ import {
   orderBy
 } from 'firebase/firestore';
 
-import { uploadDocument } from '../../../services/documentApi';
+import { uploadFile, BUCKETS } from '../../../services/storageApi';
 import BlockEditor from './BlockEditor';
 import WYSIWYGEditor from '../../../components/ui/WYSIWYGEditor';
 import './BlogManager.css';
@@ -137,20 +137,18 @@ const BlogManager = () => {
     setUploadingImage(true);
 
     try {
-      const uploadResponse = await uploadDocument(file, {
-        titulo: `blog-image-${Date.now()}`,
-        descricao: `Imagem destacada do post: ${currentPost.titulo || 'Sem título'}`,
-        pasta: 'blog-images'
-      });
+      const uploadResponse = await uploadFile(BUCKETS.BLOG, file);
 
       // Update current post with uploaded image URL
       setCurrentPost({
         ...currentPost,
-        imagemUrl: uploadResponse.url || uploadResponse.fileUrl
+        imagemUrl: uploadResponse.url
       });
+
+      alert('✓ Imagem enviada com sucesso!');
     } catch (error) {
       console.error('Erro ao fazer upload da imagem:', error);
-      alert(`Erro ao fazer upload da imagem: ${error.message}`);
+      alert(`✗ Erro ao fazer upload da imagem: ${error.message}`);
     } finally {
       setUploadingImage(false);
     }

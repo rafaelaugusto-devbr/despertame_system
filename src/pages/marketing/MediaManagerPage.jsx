@@ -1,151 +1,214 @@
+// src/pages/marketing/MediaManagerPage.jsx
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, deleteDoc, doc, query, where, orderBy } from 'firebase/firestore';
-import { db } from '../../services/firebase';
-import { deleteDocument as deleteDocumentApi } from '../../services/documentApi';
 import Header from '../../components/layout/Header';
-import Button from '../../components/ui/Button';
-import { FiImage, FiTrash2, FiCopy, FiExternalLink, FiAlertCircle, FiFolder } from 'react-icons/fi';
+import { FiImage, FiTrash2, FiCopy, FiExternalLink, FiFolder, FiRefreshCw, FiUpload } from 'react-icons/fi';
+import {
+  listFiles,
+  uploadFile,
+  deleteFile,
+  formatFileSize,
+  isImageFile,
+  BUCKETS,
+} from '../../services/storageApi';
 import '../tesouraria/Financeiro.css';
 
 const MediaManagerPage = () => {
-  const [medias, setMedias] = useState([]);
+  const [blogFiles, setBlogFiles] = useState([]);
+  const [logoFiles, setLogoFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('todas'); // 'todas', 'blog-images', 'tesouraria'
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedBucket, setSelectedBucket] = useState('');
+  const [fileToUpload, setFileToUpload] = useState(null);
+  const [filter, setFilter] = useState('todas'); // 'todas', 'blog', 'logo'
 
   useEffect(() => {
-    fetchMedias();
+    loadMedias();
   }, []);
 
-  const fetchMedias = async () => {
-    setLoading(true);
+  const loadMedias = async () => {
     try {
-      // Fetch from both collections that might have uploaded files
-      const [tesourariaSnap, blogImagesSnap] = await Promise.all([
-        getDocs(collection(db, 'tesourariaDocumentos')),
-        // You might want to create a dedicated 'mediaLibrary' collection
-        // For now, we'll get blog images from tesourariaDocumentos with pasta filter
-        getDocs(query(
-          collection(db, 'tesourariaDocumentos'),
-          where('pasta', '==', 'blog-images'),
-          orderBy('createdAt', 'desc')
-        ))
-      ]);
+      setLoading(true);
 
-      const allMedias = [];
+      // Load blog
+      const blogData = await listFiles(BUCKETS.BLOG);
+      setBlogFiles(blogData.files || []);
 
-      // Process tesouraria documents (filter only images)
-      tesourariaSnap.forEach(docSnap => {
-        const data = docSnap.data();
-        if (data.fileType?.startsWith('image/') || data.url?.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-          allMedias.push({
-            id: docSnap.id,
-            ...data,
-            source: data.pasta || 'tesouraria'
-          });
-        }
-      });
-
-      setMedias(allMedias.sort((a, b) => {
-        const timeA = a.createdAt?.toMillis() || 0;
-        const timeB = b.createdAt?.toMillis() || 0;
-        return timeB - timeA;
-      }));
+      // Load logo
+      const logoData = await listFiles(BUCKETS.LOGO);
+      setLogoFiles(logoData.files || []);
     } catch (error) {
-      console.error('Erro ao buscar mídias:', error);
+      console.error('Erro ao carregar mídias:', error);
+      alert('Erro ao carregar mídias: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (media) => {
-    if (!window.confirm(`Tem certeza que deseja excluir "${media.titulo || media.fileName}"?`)) {
-      return;
-    }
+  const handleUpload = async () => {
+    if (!fileToUpload || !selectedBucket) return;
 
     try {
-      // Delete from Cloudflare if cloudflareId exists
-      if (media.cloudflareId) {
-        try {
-          await deleteDocumentApi(media.cloudflareId);
-        } catch (apiError) {
-          console.error('Erro ao deletar do Cloudflare:', apiError);
-        }
-      }
+      setUploading(true);
+      setUploadProgress(0);
 
-      // Delete from Firebase
-      await deleteDoc(doc(db, 'tesourariaDocumentos', media.id));
-      await fetchMedias();
+      await uploadFile(selectedBucket, fileToUpload, (progress) => {
+        setUploadProgress(progress);
+      });
+
+      alert('✓ Mídia enviada com sucesso!');
+      setShowUploadModal(false);
+      setFileToUpload(null);
+      setSelectedBucket('');
+      setUploadProgress(0);
+      await loadMedias();
     } catch (error) {
-      console.error('Erro ao excluir mídia:', error);
-      alert(`Erro ao excluir mídia: ${error.message}`);
+      console.error('Erro ao fazer upload:', error);
+      alert('✗ Erro ao fazer upload: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (bucketName, filename) => {
+    if (!confirm(`Tem certeza que deseja excluir "${filename}"?`)) return;
+
+    try {
+      await deleteFile(bucketName, filename);
+      alert('✓ Mídia excluída com sucesso!');
+      await loadMedias();
+    } catch (error) {
+      console.error('Erro ao deletar mídia:', error);
+      alert('✗ Erro ao deletar mídia: ' + error.message);
     }
   };
 
   const handleCopyUrl = (url) => {
     navigator.clipboard.writeText(url).then(() => {
-      alert('URL copiada para a área de transferência!');
+      alert('✓ URL copiada para a área de transferência!');
     }).catch(err => {
       console.error('Erro ao copiar URL:', err);
-      alert('Erro ao copiar URL. Tente novamente.');
+      alert('✗ Erro ao copiar URL. Tente novamente.');
     });
   };
 
-  const getFilteredMedias = () => {
-    if (filter === 'todas') return medias;
-    return medias.filter(m => m.source === filter || m.pasta === filter);
+  const getFilteredFiles = () => {
+    if (filter === 'blog') return blogFiles.map(f => ({ ...f, bucket: BUCKETS.BLOG }));
+    if (filter === 'logo') return logoFiles.map(f => ({ ...f, bucket: BUCKETS.LOGO }));
+    return [
+      ...blogFiles.map(f => ({ ...f, bucket: BUCKETS.BLOG })),
+      ...logoFiles.map(f => ({ ...f, bucket: BUCKETS.LOGO }))
+    ];
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    try {
-      return timestamp.toDate().toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch (e) {
-      return 'N/A';
-    }
-  };
-
-  const filteredMedias = getFilteredMedias();
+  const filteredFiles = getFilteredFiles();
 
   return (
     <>
       <Header
         title="Galeria de Mídia"
-        subtitle="Gerencie todas as imagens e arquivos enviados para o sistema"
+        subtitle="Gerencie imagens do blog e logos do sistema"
       />
 
-      {/* Filters */}
-      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <Button
-          className={filter === 'todas' ? 'btn-primary' : 'btn-secondary'}
-          onClick={() => setFilter('todas')}
-        >
-          Todas ({medias.length})
-        </Button>
-        <Button
-          className={filter === 'blog-images' ? 'btn-primary' : 'btn-secondary'}
-          onClick={() => setFilter('blog-images')}
-        >
-          <FiImage /> Blog ({medias.filter(m => m.pasta === 'blog-images').length})
-        </Button>
-        <Button
-          className={filter === 'tesouraria' ? 'btn-primary' : 'btn-secondary'}
-          onClick={() => setFilter('tesouraria')}
-        >
-          <FiFolder /> Tesouraria ({medias.filter(m => m.pasta === 'tesouraria' || m.source === 'tesouraria').length})
-        </Button>
+      {/* KPI Cards */}
+      <div className="kpi-grid" style={{ marginBottom: '2rem' }}>
+        <div className="stat-card stat-card--blue">
+          <div className="stat-card__icon">
+            <FiImage size={28} />
+          </div>
+          <div className="stat-card__content">
+            <h4 className="stat-card__title">Blog</h4>
+            <p className="stat-card__value">{blogFiles.length}</p>
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
+              imagens
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-card stat-card--green">
+          <div className="stat-card__icon">
+            <FiFolder size={28} />
+          </div>
+          <div className="stat-card__content">
+            <h4 className="stat-card__title">Logo</h4>
+            <p className="stat-card__value">{logoFiles.length}</p>
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
+              arquivos
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-card stat-card--orange">
+          <div className="stat-card__icon">
+            <FiImage size={28} />
+          </div>
+          <div className="stat-card__content">
+            <h4 className="stat-card__title">Total</h4>
+            <p className="stat-card__value">{blogFiles.length + logoFiles.length}</p>
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
+              arquivos
+            </p>
+          </div>
+        </div>
       </div>
 
+      {/* Actions and Filters */}
+      <div className="link-card" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0 }}>Filtros</h3>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              className="btn-secondary"
+              onClick={loadMedias}
+              disabled={loading}
+            >
+              <FiRefreshCw className={loading ? 'spinning' : ''} />
+              Atualizar
+            </button>
+            <button
+              className="btn-primary"
+              onClick={() => setShowUploadModal(true)}
+            >
+              <FiUpload />
+              Upload Mídia
+            </button>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button
+            className={filter === 'todas' ? 'btn-primary' : 'btn-secondary'}
+            onClick={() => setFilter('todas')}
+          >
+            Todas ({blogFiles.length + logoFiles.length})
+          </button>
+          <button
+            className={filter === 'blog' ? 'btn-primary' : 'btn-secondary'}
+            onClick={() => setFilter('blog')}
+          >
+            <FiImage /> Blog ({blogFiles.length})
+          </button>
+          <button
+            className={filter === 'logo' ? 'btn-primary' : 'btn-secondary'}
+            onClick={() => setFilter('logo')}
+          >
+            <FiFolder /> Logo ({logoFiles.length})
+          </button>
+        </div>
+      </div>
+
+      {/* Media Grid */}
       {loading ? (
-        <p>Carregando mídias...</p>
-      ) : filteredMedias.length === 0 ? (
+        <div className="link-card">
+          <div style={{ padding: '3rem', textAlign: 'center' }}>
+            <FiRefreshCw className="spinning" size={32} style={{ color: '#3b82f6' }} />
+            <p style={{ marginTop: '1rem', color: '#64748b' }}>Carregando mídias...</p>
+          </div>
+        </div>
+      ) : filteredFiles.length === 0 ? (
         <div className="link-card" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-          <FiAlertCircle size={48} style={{ color: '#94a3b8', marginBottom: '1rem' }} />
+          <FiImage size={48} style={{ color: '#cbd5e1', marginBottom: '1rem' }} />
           <h3 style={{ color: '#64748b', marginBottom: '0.5rem' }}>
             {filter === 'todas'
               ? 'Nenhuma mídia encontrada'
@@ -163,9 +226,9 @@ const MediaManagerPage = () => {
             gap: '1.5rem'
           }}
         >
-          {filteredMedias.map((media) => (
+          {filteredFiles.map((file) => (
             <div
-              key={media.id}
+              key={`${file.bucket}-${file.key}`}
               className="link-card"
               style={{ padding: '0', overflow: 'hidden', position: 'relative' }}
             >
@@ -181,10 +244,10 @@ const MediaManagerPage = () => {
                   overflow: 'hidden'
                 }}
               >
-                {media.url ? (
+                {isImageFile(file.key) ? (
                   <img
-                    src={media.url}
-                    alt={media.titulo || media.fileName}
+                    src={file.url}
+                    alt={file.key}
                     style={{
                       width: '100%',
                       height: '100%',
@@ -192,7 +255,7 @@ const MediaManagerPage = () => {
                     }}
                     onError={(e) => {
                       e.target.style.display = 'none';
-                      e.target.parentElement.innerHTML = '<div style="color: #94a3b8; text-align: center;"><i>Imagem não disponível</i></div>';
+                      e.target.parentElement.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 1rem;"><i>Imagem não disponível</i></div>';
                     }}
                   />
                 ) : (
@@ -202,6 +265,21 @@ const MediaManagerPage = () => {
 
               {/* Info */}
               <div style={{ padding: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <span
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      background: file.bucket === BUCKETS.BLOG ? '#dbeafe' : '#dcfce7',
+                      color: file.bucket === BUCKETS.BLOG ? '#1e40af' : '#166534',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      borderRadius: '4px'
+                    }}
+                  >
+                    {file.bucket}
+                  </span>
+                </div>
+
                 <h3
                   style={{
                     fontSize: '0.9375rem',
@@ -211,32 +289,26 @@ const MediaManagerPage = () => {
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
                   }}
-                  title={media.titulo || media.fileName}
+                  title={file.key}
                 >
-                  {media.titulo || media.fileName}
+                  {file.key}
                 </h3>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginBottom: '0.75rem' }}>
-                  {media.pasta && (
-                    <p style={{ fontSize: '0.8125rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <FiFolder size={12} /> {media.pasta}
-                    </p>
-                  )}
-                  {media.fileSize && (
-                    <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>
-                      {(media.fileSize / 1024).toFixed(2)} KB
-                    </p>
-                  )}
                   <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>
-                    {formatDate(media.createdAt)}
+                    {formatFileSize(file.size)}
+                  </p>
+                  <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>
+                    {file.uploaded
+                      ? new Date(file.uploaded).toLocaleString('pt-BR')
+                      : '-'}
                   </p>
                 </div>
 
                 {/* Actions */}
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <button
-                    onClick={() => handleCopyUrl(media.url)}
-                    className="icon-btn"
+                    onClick={() => handleCopyUrl(file.url)}
                     style={{
                       flex: 1,
                       display: 'flex',
@@ -247,17 +319,19 @@ const MediaManagerPage = () => {
                       background: '#3b82f6',
                       color: '#fff',
                       fontSize: '0.875rem',
-                      borderRadius: '6px'
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
                     }}
                     title="Copiar URL"
                   >
                     <FiCopy size={14} /> Copiar URL
                   </button>
                   <a
-                    href={media.url}
+                    href={file.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="icon-btn"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -266,15 +340,16 @@ const MediaManagerPage = () => {
                       background: '#64748b',
                       color: '#fff',
                       borderRadius: '6px',
-                      textDecoration: 'none'
+                      textDecoration: 'none',
+                      transition: 'all 0.2s'
                     }}
                     title="Abrir em nova aba"
                   >
                     <FiExternalLink size={16} />
                   </a>
                   <button
-                    onClick={() => handleDelete(media)}
-                    className="icon-btn delete"
+                    onClick={() => handleDelete(file.bucket, file.key)}
+                    className="btn-icon delete"
                     style={{
                       padding: '0.5rem',
                       borderRadius: '6px'
@@ -289,6 +364,126 @@ const MediaManagerPage = () => {
           ))}
         </div>
       )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="modal-overlay" onClick={() => !uploading && setShowUploadModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Upload de Mídia</h3>
+              <button
+                className="modal-close-btn"
+                onClick={() => setShowUploadModal(false)}
+                disabled={uploading}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                Selecione a Pasta
+              </label>
+              <select
+                className="input-field"
+                value={selectedBucket}
+                onChange={(e) => setSelectedBucket(e.target.value)}
+                disabled={uploading}
+                style={{ marginBottom: '1rem' }}
+              >
+                <option value="">Escolha uma pasta...</option>
+                <option value={BUCKETS.BLOG}>Blog</option>
+                <option value={BUCKETS.LOGO}>Logo</option>
+              </select>
+
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                Selecione o Arquivo
+              </label>
+              <input
+                type="file"
+                className="input-field"
+                onChange={(e) => setFileToUpload(e.target.files?.[0] || null)}
+                disabled={uploading}
+                style={{ marginBottom: '1rem' }}
+                accept="image/*"
+              />
+
+              {fileToUpload && (
+                <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '8px', marginBottom: '1rem' }}>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b' }}>
+                    <strong>Arquivo selecionado:</strong> {fileToUpload.name}
+                  </p>
+                  <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#64748b' }}>
+                    <strong>Tamanho:</strong> {formatFileSize(fileToUpload.size)}
+                  </p>
+                </div>
+              )}
+
+              {uploading && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.875rem', color: '#64748b' }}>Enviando...</span>
+                    <span style={{ fontSize: '0.875rem', color: '#3b82f6', fontWeight: 600 }}>
+                      {Math.round(uploadProgress)}%
+                    </span>
+                  </div>
+                  <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                        width: `${uploadProgress}%`,
+                        transition: 'width 0.3s ease',
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowUploadModal(false)}
+                disabled={uploading}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleUpload}
+                disabled={!fileToUpload || !selectedBucket || uploading}
+              >
+                <FiUpload />
+                {uploading ? 'Enviando...' : 'Enviar Mídia'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .spinning {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        .btn-icon.delete {
+          color: #ef4444;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-icon.delete:hover {
+          background: rgba(239, 68, 68, 0.1);
+        }
+      `}</style>
     </>
   );
 };
