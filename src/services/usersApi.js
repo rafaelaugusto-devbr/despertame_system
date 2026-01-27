@@ -1,7 +1,7 @@
 // src/services/usersApi.js
 // Serviço de integração com API de usuários
 
-const API_BASE_URL = 'https://api.despertame.com';
+import { API_BASE_URL } from '../config/api';
 
 /**
  * Obtém o token de autenticação do usuário logado
