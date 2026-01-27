@@ -34,5 +34,11 @@ export const PANELS = {
       label: 'Edição de Valores Financeiros',
       password: 'EditFinance@2025',
     },
+
+    ADICIONAR_TESOURARIA: {
+      key: 'adicionar_tesouraria',
+      label: 'Adicionar Fluxo de Caixa',
+      password: 'AddFluxo@2025',
+    },
   };
   
