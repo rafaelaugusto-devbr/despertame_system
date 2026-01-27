@@ -62,6 +62,16 @@ export const changeMyPassword = async ({ email, currentPassword, newPassword }) 
 };
 
 /**
+ * Atualiza perfil do usuário logado (photoURL, displayName, etc)
+ */
+export const updateUserProfile = async ({ email, photoURL, displayName }) => {
+  return await fetchWithApiKey(`${API_BASE_URL}/api/me/profile`, {
+    method: 'PUT',
+    body: JSON.stringify({ email, photoURL, displayName }),
+  });
+};
+
+/**
  * Lista todos os usuários (Admin)
  */
 export const listUsers = async () => {

@@ -17,12 +17,20 @@
   margin-bottom: 0.5rem;
 }
 
+.profile-avatar-card,
 .profile-info-card,
 .profile-password-card {
   background: white;
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem;
 }
 
 .profile-info-card h2,
@@ -135,6 +143,7 @@
     font-size: 1.5rem;
   }
 
+  .profile-avatar-card,
   .profile-info-card,
   .profile-password-card {
     padding: 1.5rem;
@@ -151,6 +160,7 @@
     padding: 1rem;
   }
 
+  .profile-avatar-card,
   .profile-info-card,
   .profile-password-card {
     padding: 1rem;

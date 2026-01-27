@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { changeMyPassword } from '../services/usersApi';
 import { useModal } from '../contexts/ModalContext';
+import AvatarUpload from '../components/AvatarUpload';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -73,10 +74,19 @@ const ProfilePage = () => {
     }
   };
 
+  const handleAvatarUpdate = (newAvatarUrl) => {
+    console.log('Avatar atualizado:', newAvatarUrl);
+  };
+
   return (
     <div className="profile-page">
       <div className="profile-container">
         <h1>Meu Perfil</h1>
+
+        {/* Avatar Upload */}
+        <div className="profile-avatar-card">
+          <AvatarUpload onAvatarUpdate={handleAvatarUpdate} />
+        </div>
 
         {/* Informações do usuário */}
         <div className="profile-info-card">
