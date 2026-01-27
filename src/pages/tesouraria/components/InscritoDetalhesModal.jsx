@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { FiX, FiSave, FiEdit2 } from 'react-icons/fi';
 import { updateInscritoField } from '../../../services/googleSheetsApi';
+import './InscritoDetalhesModal.css';
 
 const InscritoDetalhesModal = ({ inscrito, evento, ano, headers, onClose, onUpdate }) => {
   const [editMode, setEditMode] = useState(false);
@@ -25,21 +26,26 @@ const InscritoDetalhesModal = ({ inscrito, evento, ano, headers, onClose, onUpda
     try {
       // Atualiza cada campo editado
       for (const [campo, valor] of Object.entries(editedValues)) {
-        await updateInscritoField({
+        const result = await updateInscritoField({
           evento,
           ano,
           rowIndex: inscrito.rowIndex,
           campo,
           valor,
         });
+
+        if (!result.success) {
+          throw new Error(result.message || `Erro ao atualizar campo: ${campo}`);
+        }
       }
 
+      alert('✓ Dados atualizados com sucesso!');
       onUpdate && onUpdate();
       setEditMode(false);
       setEditedValues({});
     } catch (error) {
       console.error('Erro ao salvar:', error);
-      alert('Erro ao salvar alterações');
+      alert('✗ Erro ao salvar alterações: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -142,7 +148,7 @@ const InscritoDetalhesModal = ({ inscrito, evento, ano, headers, onClose, onUpda
         <div className="modal-body">
           <div className="inscrito-detalhes">
             <div className="detalhes-header">
-              <div>
+              <div className="detalhes-header-info">
                 <p className="text-sm text-secondary">Evento: {evento}</p>
                 <p className="text-sm text-secondary">Ano: {ano}</p>
                 <p className="text-sm text-secondary">Linha: {inscrito.rowIndex}</p>
@@ -155,7 +161,7 @@ const InscritoDetalhesModal = ({ inscrito, evento, ano, headers, onClose, onUpda
                   <FiEdit2 /> Editar
                 </button>
               ) : (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div className="detalhes-header-actions">
                   <button
                     className="btn btn-secondary"
                     onClick={() => {
@@ -197,114 +203,6 @@ const InscritoDetalhesModal = ({ inscrito, evento, ano, headers, onClose, onUpda
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .modal-content--large {
-          max-width: 800px;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-
-        .modal-body {
-          max-height: 70vh;
-          overflow-y: auto;
-        }
-
-        .inscrito-detalhes {
-          padding: 1rem 0;
-        }
-
-        .detalhes-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 1.5rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid #e2e8f0;
-        }
-
-        .detalhes-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 1.25rem;
-        }
-
-        .detalhe-item {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .detalhe-label {
-          font-size: 0.875rem;
-          font-weight: 600;
-          color: #64748b;
-          text-transform: capitalize;
-        }
-
-        .detalhe-value {
-          font-size: 1rem;
-          color: #1e293b;
-        }
-
-        .detalhe-value span {
-          display: block;
-          padding: 0.5rem;
-          background: #f8fafc;
-          border-radius: 6px;
-        }
-
-        .form-input {
-          width: 100%;
-          padding: 0.5rem;
-          border: 1px solid #cbd5e1;
-          border-radius: 6px;
-          font-size: 1rem;
-        }
-
-        .form-input:focus {
-          outline: none;
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .text-sm {
-          font-size: 0.875rem;
-        }
-
-        .text-xs {
-          font-size: 0.75rem;
-        }
-
-        .text-secondary {
-          color: #64748b;
-        }
-
-        .text-blue {
-          color: #3b82f6;
-        }
-
-        @media (max-width: 720px) {
-          .modal-content--large {
-            max-width: 95vw;
-            max-height: 95vh;
-          }
-
-          .detalhes-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .detalhes-header {
-            flex-direction: column;
-            gap: 1rem;
-          }
-
-          .detalhes-header button,
-          .detalhes-header div {
-            width: 100%;
-          }
-        }
-      `}</style>
     </div>
   );
 };
