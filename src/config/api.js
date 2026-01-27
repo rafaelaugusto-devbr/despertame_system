@@ -15,3 +15,8 @@ export const getApiBaseUrl = () => {
 };
 
 export const API_BASE_URL = getApiBaseUrl();
+
+/**
+ * API Key fixa para autenticação
+ */
+export const API_KEY = 'c6ecf126fe7240e3a066d6b65bfa61fe45ous';
