@@ -7,30 +7,48 @@ import { API_BASE_URL, API_KEY } from '../config/api';
  * Função auxiliar para fazer requisições com API Key
  */
 const fetchWithApiKey = async (url, options = {}) => {
-  console.log(`[UsersAPI] Fazendo requisição para: ${url}`);
-  console.log(`[UsersAPI] API Key: ${API_KEY ? '***configurada***' : 'NÃO CONFIGURADA'}`);
-  console.log(`[UsersAPI] Método: ${options.method || 'GET'}`);
+  try {
+    console.log(`[UsersAPI] Fazendo requisição para: ${url}`);
+    console.log(`[UsersAPI] API Key: ${API_KEY ? '***configurada***' : 'NÃO CONFIGURADA'}`);
+    console.log(`[UsersAPI] Método: ${options.method || 'GET'}`);
 
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'X-API-Key': API_KEY,
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'X-API-Key': API_KEY,
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
 
-  console.log(`[UsersAPI] Status da resposta: ${response.status}`);
+    console.log(`[UsersAPI] Status da resposta: ${response.status}`);
 
-  const data = await response.json();
-  console.log(`[UsersAPI] Dados recebidos:`, data);
+    if (!response.ok) {
+      let errorMessage = 'Erro na requisição';
+      try {
+        const data = await response.json();
+        console.error(`[UsersAPI] Erro na resposta:`, data);
+        errorMessage = data.error || errorMessage;
+      } catch (e) {
+        console.error(`[UsersAPI] Erro ao parsear resposta de erro:`, e);
+      }
+      throw new Error(errorMessage);
+    }
 
-  if (!response.ok) {
-    console.error(`[UsersAPI] Erro na resposta:`, data);
-    throw new Error(data.error || 'Erro na requisição');
+    const data = await response.json();
+    console.log(`[UsersAPI] Dados recebidos:`, data);
+
+    return data;
+  } catch (error) {
+    console.error(`[UsersAPI] Erro na requisição:`, error);
+
+    // Verifica se é um erro de rede
+    if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+      throw new Error('Não foi possível conectar à API. Verifique sua conexão com a internet.');
+    }
+
+    throw error;
   }
-
-  return data;
 };
 
 /**
