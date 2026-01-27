@@ -1,46 +1,38 @@
-// src/pages/tesouraria/DocumentosPage.jsx
+// src/pages/config/BucketsPage.jsx
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/layout/Header';
-import Button from '../../components/ui/Button';
-import { FiUpload, FiFile, FiTrash2, FiExternalLink, FiFolder, FiImage, FiRefreshCw } from 'react-icons/fi';
 import {
-  listFiles,
+  listAllBuckets,
   uploadFile,
   deleteFile,
   formatFileSize,
   isImageFile,
   BUCKETS,
 } from '../../services/storageApi';
-import './Financeiro.css';
+import { FiRefreshCw, FiUpload, FiTrash2, FiExternalLink, FiFolder, FiFile, FiImage } from 'react-icons/fi';
+import '../tesouraria/Financeiro.css';
 
-const DocumentosPage = () => {
-  const [financeiroFiles, setFinanceiroFiles] = useState([]);
-  const [tesourariaFiles, setTesourariaFiles] = useState([]);
+const BucketsPage = () => {
+  const [bucketsData, setBucketsData] = useState({});
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [selectedBucket, setSelectedBucket] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [selectedBucket, setSelectedBucket] = useState('');
   const [fileToUpload, setFileToUpload] = useState(null);
 
   useEffect(() => {
-    loadDocuments();
+    loadAllBuckets();
   }, []);
 
-  const loadDocuments = async () => {
+  const loadAllBuckets = async () => {
     try {
       setLoading(true);
-
-      // Load financeiro
-      const financeiroData = await listFiles(BUCKETS.FINANCEIRO);
-      setFinanceiroFiles(financeiroData.files || []);
-
-      // Load tesouraria
-      const tesourariaData = await listFiles(BUCKETS.TESOURARIA);
-      setTesourariaFiles(tesourariaData.files || []);
+      const data = await listAllBuckets();
+      setBucketsData(data);
     } catch (error) {
-      console.error('Erro ao carregar documentos:', error);
-      alert('Erro ao carregar documentos: ' + error.message);
+      console.error('Erro ao carregar buckets:', error);
+      alert('Erro ao carregar arquivos: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -57,12 +49,12 @@ const DocumentosPage = () => {
         setUploadProgress(progress);
       });
 
-      alert('✓ Documento enviado com sucesso!');
+      alert('✓ Arquivo enviado com sucesso!');
       setShowUploadModal(false);
       setFileToUpload(null);
       setSelectedBucket('');
       setUploadProgress(0);
-      await loadDocuments();
+      await loadAllBuckets();
     } catch (error) {
       console.error('Erro ao fazer upload:', error);
       alert('✗ Erro ao fazer upload: ' + error.message);
@@ -76,91 +68,40 @@ const DocumentosPage = () => {
 
     try {
       await deleteFile(bucketName, filename);
-      alert('✓ Documento excluído com sucesso!');
-      await loadDocuments();
+      alert('✓ Arquivo excluído com sucesso!');
+      await loadAllBuckets();
     } catch (error) {
-      console.error('Erro ao deletar documento:', error);
-      alert('✗ Erro ao deletar documento: ' + error.message);
+      console.error('Erro ao deletar arquivo:', error);
+      alert('✗ Erro ao deletar arquivo: ' + error.message);
     }
+  };
+
+  const getTotalFiles = () => {
+    return Object.values(bucketsData).reduce((acc, files) => acc + files.length, 0);
+  };
+
+  const getTotalSize = () => {
+    let totalBytes = 0;
+    Object.values(bucketsData).forEach((files) => {
+      files.forEach((file) => {
+        totalBytes += file.size || 0;
+      });
+    });
+    return formatFileSize(totalBytes);
   };
 
   const getFileIcon = (filename) => {
     if (isImageFile(filename)) {
-      return <FiImage size={20} style={{ color: '#3b82f6' }} />;
+      return <FiImage size={20} />;
     }
-    return <FiFile size={20} style={{ color: '#3b82f6' }} />;
-  };
-
-  const renderFilesList = (files, bucketName) => {
-    if (files.length === 0) {
-      return (
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-          <FiFolder size={48} style={{ opacity: 0.3, marginBottom: '1rem' }} />
-          <p>Nenhum documento nesta pasta</p>
-        </div>
-      );
-    }
-
-    return (
-      <div style={{ overflowX: 'auto' }}>
-        <table className="lancamentos-table">
-          <thead>
-            <tr>
-              <th>Arquivo</th>
-              <th>Tamanho</th>
-              <th>Data de Upload</th>
-              <th style={{ textAlign: 'center' }}>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {files.map((file) => (
-              <tr key={file.key}>
-                <td data-label="Arquivo">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    {getFileIcon(file.key)}
-                    <span style={{ wordBreak: 'break-all' }}>{file.key}</span>
-                  </div>
-                </td>
-                <td data-label="Tamanho">{formatFileSize(file.size)}</td>
-                <td data-label="Data de Upload">
-                  {file.uploaded
-                    ? new Date(file.uploaded).toLocaleString('pt-BR')
-                    : '-'}
-                </td>
-                <td data-label="Ações">
-                  <div className="action-buttons" style={{ justifyContent: 'center' }}>
-                    <a
-                      href={file.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-icon"
-                      title="Abrir documento"
-                      style={{ color: '#3b82f6', textDecoration: 'none' }}
-                    >
-                      <FiExternalLink />
-                    </a>
-                    <button
-                      className="btn-icon delete"
-                      title="Excluir"
-                      onClick={() => handleDelete(bucketName, file.key)}
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
+    return <FiFile size={20} />;
   };
 
   return (
     <>
       <Header
-        title="Documentos da Tesouraria"
-        subtitle="Gerencie documentos financeiros e administrativos"
+        title="Gerenciamento de Arquivos (R2)"
+        subtitle="Visualize e gerencie todos os arquivos nos buckets do Cloudflare R2"
       />
 
       {/* KPI Cards */}
@@ -170,36 +111,29 @@ const DocumentosPage = () => {
             <FiFolder size={28} />
           </div>
           <div className="stat-card__content">
-            <h4 className="stat-card__title">Financeiro</h4>
-            <p className="stat-card__value">{financeiroFiles.length}</p>
-            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
-              documentos
-            </p>
+            <h4 className="stat-card__title">Total de Buckets</h4>
+            <p className="stat-card__value">{Object.keys(BUCKETS).length}</p>
           </div>
         </div>
 
         <div className="stat-card stat-card--green">
           <div className="stat-card__icon">
-            <FiFolder size={28} />
+            <FiFile size={28} />
           </div>
           <div className="stat-card__content">
-            <h4 className="stat-card__title">Tesouraria</h4>
-            <p className="stat-card__value">{tesourariaFiles.length}</p>
-            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
-              documentos
-            </p>
+            <h4 className="stat-card__title">Total de Arquivos</h4>
+            <p className="stat-card__value">{getTotalFiles()}</p>
           </div>
         </div>
 
         <div className="stat-card stat-card--orange">
           <div className="stat-card__icon">
-            <FiFile size={28} />
+            <FiFolder size={28} />
           </div>
           <div className="stat-card__content">
-            <h4 className="stat-card__title">Total</h4>
-            <p className="stat-card__value">{financeiroFiles.length + tesourariaFiles.length}</p>
-            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
-              documentos
+            <h4 className="stat-card__title">Espaço Utilizado</h4>
+            <p className="stat-card__value" style={{ fontSize: '1.5rem' }}>
+              {getTotalSize()}
             </p>
           </div>
         </div>
@@ -208,11 +142,11 @@ const DocumentosPage = () => {
       {/* Actions */}
       <div className="link-card" style={{ marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3 style={{ margin: 0 }}>Documentos por Pasta</h3>
+          <h3 style={{ margin: 0 }}>Arquivos por Bucket</h3>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button
               className="btn-secondary"
-              onClick={loadDocuments}
+              onClick={loadAllBuckets}
               disabled={loading}
             >
               <FiRefreshCw className={loading ? 'spinning' : ''} />
@@ -223,60 +157,101 @@ const DocumentosPage = () => {
               onClick={() => setShowUploadModal(true)}
             >
               <FiUpload />
-              Upload Documento
+              Upload Arquivo
             </button>
           </div>
         </div>
       </div>
 
-      {/* Financeiro Folder */}
-      <div className="link-card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <FiFolder style={{ color: '#3b82f6' }} />
-            Financeiro
-          </h3>
-          <span style={{ color: '#64748b', fontSize: '0.875rem' }}>
-            {financeiroFiles.length} documento{financeiroFiles.length !== 1 ? 's' : ''}
-          </span>
-        </div>
-        {loading ? (
-          <div style={{ padding: '2rem', textAlign: 'center' }}>
+      {/* Buckets List */}
+      {loading ? (
+        <div className="link-card">
+          <div style={{ padding: '3rem', textAlign: 'center' }}>
             <FiRefreshCw className="spinning" size={32} style={{ color: '#3b82f6' }} />
-            <p style={{ marginTop: '1rem', color: '#64748b' }}>Carregando...</p>
+            <p style={{ marginTop: '1rem', color: '#64748b' }}>Carregando arquivos...</p>
           </div>
-        ) : (
-          renderFilesList(financeiroFiles, BUCKETS.FINANCEIRO)
-        )}
-      </div>
-
-      {/* Tesouraria Folder */}
-      <div className="link-card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <FiFolder style={{ color: '#10b981' }} />
-            Tesouraria
-          </h3>
-          <span style={{ color: '#64748b', fontSize: '0.875rem' }}>
-            {tesourariaFiles.length} documento{tesourariaFiles.length !== 1 ? 's' : ''}
-          </span>
         </div>
-        {loading ? (
-          <div style={{ padding: '2rem', textAlign: 'center' }}>
-            <FiRefreshCw className="spinning" size={32} style={{ color: '#10b981' }} />
-            <p style={{ marginTop: '1rem', color: '#64748b' }}>Carregando...</p>
+      ) : (
+        Object.entries(bucketsData).map(([bucketName, files]) => (
+          <div key={bucketName} className="link-card" style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <FiFolder style={{ color: '#3b82f6' }} />
+                {bucketName}
+              </h3>
+              <span style={{ color: '#64748b', fontSize: '0.875rem' }}>
+                {files.length} arquivo{files.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {files.length === 0 ? (
+              <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                <FiFolder size={48} style={{ opacity: 0.3, marginBottom: '1rem' }} />
+                <p>Nenhum arquivo neste bucket</p>
+              </div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table className="lancamentos-table">
+                  <thead>
+                    <tr>
+                      <th>Arquivo</th>
+                      <th>Tamanho</th>
+                      <th>Data de Upload</th>
+                      <th style={{ textAlign: 'center' }}>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {files.map((file) => (
+                      <tr key={file.key}>
+                        <td data-label="Arquivo">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            {getFileIcon(file.key)}
+                            <span style={{ wordBreak: 'break-all' }}>{file.key}</span>
+                          </div>
+                        </td>
+                        <td data-label="Tamanho">{formatFileSize(file.size)}</td>
+                        <td data-label="Data de Upload">
+                          {file.uploaded
+                            ? new Date(file.uploaded).toLocaleString('pt-BR')
+                            : '-'}
+                        </td>
+                        <td data-label="Ações">
+                          <div className="action-buttons" style={{ justifyContent: 'center' }}>
+                            <a
+                              href={file.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-icon"
+                              title="Abrir arquivo"
+                              style={{ color: '#3b82f6', textDecoration: 'none' }}
+                            >
+                              <FiExternalLink />
+                            </a>
+                            <button
+                              className="btn-icon delete"
+                              title="Excluir"
+                              onClick={() => handleDelete(bucketName, file.key)}
+                            >
+                              <FiTrash2 />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        ) : (
-          renderFilesList(tesourariaFiles, BUCKETS.TESOURARIA)
-        )}
-      </div>
+        ))
+      )}
 
       {/* Upload Modal */}
       {showUploadModal && (
         <div className="modal-overlay" onClick={() => !uploading && setShowUploadModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Upload de Documento</h3>
+              <h3>Upload de Arquivo</h3>
               <button
                 className="modal-close-btn"
                 onClick={() => setShowUploadModal(false)}
@@ -288,7 +263,7 @@ const DocumentosPage = () => {
 
             <div className="modal-body">
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
-                Selecione a Pasta
+                Selecione o Bucket
               </label>
               <select
                 className="input-field"
@@ -297,9 +272,12 @@ const DocumentosPage = () => {
                 disabled={uploading}
                 style={{ marginBottom: '1rem' }}
               >
-                <option value="">Escolha uma pasta...</option>
-                <option value={BUCKETS.FINANCEIRO}>Financeiro</option>
-                <option value={BUCKETS.TESOURARIA}>Tesouraria</option>
+                <option value="">Escolha um bucket...</option>
+                {Object.values(BUCKETS).map((bucket) => (
+                  <option key={bucket} value={bucket}>
+                    {bucket}
+                  </option>
+                ))}
               </select>
 
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
@@ -311,7 +289,6 @@ const DocumentosPage = () => {
                 onChange={(e) => setFileToUpload(e.target.files?.[0] || null)}
                 disabled={uploading}
                 style={{ marginBottom: '1rem' }}
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip"
               />
 
               {fileToUpload && (
@@ -361,7 +338,7 @@ const DocumentosPage = () => {
                 disabled={!fileToUpload || !selectedBucket || uploading}
               >
                 <FiUpload />
-                {uploading ? 'Enviando...' : 'Enviar Documento'}
+                {uploading ? 'Enviando...' : 'Enviar Arquivo'}
               </button>
             </div>
           </div>
@@ -408,4 +385,4 @@ const DocumentosPage = () => {
   );
 };
 
-export default DocumentosPage;
+export default BucketsPage;
