@@ -16,6 +16,7 @@ import {
   ShoppingCartIcon,
   TicketIcon,
   ClockIcon,
+  ProfileIcon,
 } from '../../assets/icons/icons';
 
 const TesourariaSidebar = () => {
@@ -104,13 +105,18 @@ const TesourariaSidebar = () => {
           <span>Voltar ao Painel</span>
         </button>
 
+        <button onClick={() => { navigate('/perfil'); handleNavClick(); }} className="profile-button">
+          <ProfileIcon />
+          <span>Meu Perfil</span>
+        </button>
+
         <button onClick={handleLogout} className="logout-button">
           <LogoutIcon />
           <span>Sair</span>
         </button>
 
         <button onClick={toggleCollapse} className="collapse-button">
-          <CollapseIcon />
+          <CollapseIcon collapsed={collapsed} />
           <span>{collapsed ? 'Expandir Menu' : 'Recolher Menu'}</span>
         </button>
       </div>

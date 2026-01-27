@@ -28,5 +28,11 @@ export const PANELS = {
       label: 'Exclusão de Arquivos',
       password: 'DeleteFile@2025',
     },
+
+    EDICAO_VALORES_FINANCEIROS: {
+      key: 'edicao_valores_financeiros',
+      label: 'Edição de Valores Financeiros',
+      password: 'EditFinance@2025',
+    },
   };
   

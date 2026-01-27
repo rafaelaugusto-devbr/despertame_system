@@ -11,6 +11,7 @@ import {
   HomeIcon,
   LogoutIcon,
   CollapseIcon,
+  ProfileIcon,
 } from '../../assets/icons/icons';
 import { FiImage } from 'react-icons/fi';
 
@@ -68,14 +69,19 @@ const MarketingSidebar = () => {
   {!collapsed && <span>Voltar ao Painel</span>}
 </button>
 
+        <button onClick={() => { navigate('/perfil'); handleNavClick(); }} className="profile-button">
+          <ProfileIcon />
+          {!collapsed && <span>Meu Perfil</span>}
+        </button>
+
         <button onClick={handleLogout} className="logout-button">
           <LogoutIcon />
-          <span>Sair</span>
+          {!collapsed && <span>Sair</span>}
         </button>
 
         <button onClick={toggleCollapse} className="collapse-button">
-          <CollapseIcon />
-          <span>{collapsed ? 'Expandir Menu' : 'Recolher Menu'}</span>
+          <CollapseIcon collapsed={collapsed} />
+          {!collapsed && <span>{collapsed ? 'Expandir Menu' : 'Recolher Menu'}</span>}
         </button>
       </div>
     </aside>

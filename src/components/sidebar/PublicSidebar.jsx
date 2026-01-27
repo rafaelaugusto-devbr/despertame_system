@@ -13,6 +13,7 @@ import {
   ConfigIcon,
   LogoutIcon,
   CollapseIcon,
+  ProfileIcon,
 } from '../../assets/icons/icons';
 
 const PublicSidebar = () => {
@@ -73,13 +74,18 @@ const PublicSidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
+        <button className="profile-button" onClick={() => { navigate('/perfil'); handleNavClick(); }}>
+          <ProfileIcon />
+          {!collapsed && <span>Meu Perfil</span>}
+        </button>
+
         <button className="logout-button" onClick={handleLogout}>
           <LogoutIcon />
           {!collapsed && <span>Sair</span>}
         </button>
 
         <button className="collapse-button" onClick={toggleCollapse}>
-          <CollapseIcon />
+          <CollapseIcon collapsed={collapsed} />
           {!collapsed && <span>Recolher Menu</span>}
         </button>
       </div>

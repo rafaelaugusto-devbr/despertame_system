@@ -10,6 +10,7 @@ import {
   CollapseIcon,
   LockIcon,
   FileIcon,
+  ProfileIcon,
 } from '../../assets/icons/icons';
 
 const ConfigSidebar = () => {
@@ -56,13 +57,18 @@ const ConfigSidebar = () => {
           <span>Voltar ao Painel</span>
         </button>
 
+        <button onClick={() => { navigate('/perfil'); handleNavClick(); }} className="profile-button">
+          <ProfileIcon />
+          <span>Meu Perfil</span>
+        </button>
+
         <button onClick={handleLogout} className="logout-button">
           <LogoutIcon />
           <span>Sair</span>
         </button>
 
         <button onClick={toggleCollapse} className="collapse-button">
-          <CollapseIcon />
+          <CollapseIcon collapsed={collapsed} />
           <span>{collapsed ? 'Expandir Menu' : 'Recolher Menu'}</span>
         </button>
       </div>
