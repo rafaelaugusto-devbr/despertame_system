@@ -1,3 +1,6 @@
+/* Import responsive utilities */
+@import './styles/responsive.css';
+
 /* 1. VARIÁVEIS E ESTILOS GLOBAIS */
 :root {
   /* Cores */

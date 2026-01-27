@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { useNotification } from '../../hooks/useNotification';
 import { handleError } from '../../utils/errorHandler';
+import { useAuth } from '../../hooks/useAuth';
 import Header from '../../components/layout/Header';
+import Button from '../../components/ui/Button';
 import {
   FiExternalLink,
   FiFolder,
@@ -15,6 +17,11 @@ import {
   FiBook,
   FiMail,
   FiVideo,
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
+  FiSave,
+  FiX,
 } from 'react-icons/fi';
 import './LinksPage.css';
 
@@ -31,11 +38,24 @@ const CATEGORY_ICONS = {
 };
 
 const LinksPage = () => {
+  const { user } = useAuth();
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('todos');
-  const { showError } = useNotification();
+  const { showError, showSuccess } = useNotification();
+
+  // Estados para gerenciamento
+  const [showForm, setShowForm] = useState(false);
+  const [editingLink, setEditingLink] = useState(null);
+  const [formData, setFormData] = useState({
+    titulo: '',
+    descricao: '',
+    url: '',
+    categoria: 'ajuda'
+  });
+
+  const isAdmin = user?.isAdmin || false;
 
   useEffect(() => {
     fetchLinks();
@@ -62,6 +82,81 @@ const LinksPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddNew = () => {
+    setEditingLink(null);
+    setFormData({
+      titulo: '',
+      descricao: '',
+      url: '',
+      categoria: 'ajuda'
+    });
+    setShowForm(true);
+  };
+
+  const handleEdit = (link, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingLink(link);
+    setFormData({
+      titulo: link.titulo || '',
+      descricao: link.descricao || '',
+      url: link.url || '',
+      categoria: link.categoria || 'ajuda'
+    });
+    setShowForm(true);
+  };
+
+  const handleDelete = async (linkId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!window.confirm('Tem certeza que deseja excluir este link?')) {
+      return;
+    }
+
+    try {
+      await deleteDoc(doc(db, 'links', linkId));
+      showSuccess('Link excluído com sucesso!');
+      fetchLinks();
+    } catch (error) {
+      handleError(error, showError);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.titulo || !formData.url) {
+      showError('Título e URL são obrigatórios');
+      return;
+    }
+
+    try {
+      if (editingLink) {
+        await updateDoc(doc(db, 'links', editingLink.id), formData);
+        showSuccess('Link atualizado com sucesso!');
+      } else {
+        await addDoc(collection(db, 'links'), formData);
+        showSuccess('Link adicionado com sucesso!');
+      }
+      setShowForm(false);
+      fetchLinks();
+    } catch (error) {
+      handleError(error, showError);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowForm(false);
+    setEditingLink(null);
+    setFormData({
+      titulo: '',
+      descricao: '',
+      url: '',
+      categoria: 'ajuda'
+    });
   };
 
   // Agrupar links por categoria
@@ -121,6 +216,15 @@ const LinksPage = () => {
 
       {/* Search and Filter Bar */}
       <div className="links-toolbar">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0, color: '#1e293b' }}>Filtros</h3>
+          {isAdmin && (
+            <Button className="btn-primary" onClick={handleAddNew}>
+              <FiPlus /> Adicionar Link
+            </Button>
+          )}
+        </div>
+
         <div className="links-search">
           <FiSearch className="links-search__icon" />
           <input
@@ -149,6 +253,84 @@ const LinksPage = () => {
           })}
         </div>
       </div>
+
+      {/* Form Modal */}
+      {showForm && (
+        <div className="link-form-modal-overlay" onClick={handleCancel}>
+          <div className="link-form-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="link-form-header">
+              <h3>{editingLink ? 'Editar Link' : 'Adicionar Novo Link'}</h3>
+              <button className="link-form-close" onClick={handleCancel}>
+                <FiX size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="link-form-body">
+              <div className="form-group">
+                <label htmlFor="titulo">Título *</label>
+                <input
+                  type="text"
+                  id="titulo"
+                  value={formData.titulo}
+                  onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                  required
+                  placeholder="Nome do link"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="url">URL *</label>
+                <input
+                  type="url"
+                  id="url"
+                  value={formData.url}
+                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                  required
+                  placeholder="https://exemplo.com"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="descricao">Descrição</label>
+                <textarea
+                  id="descricao"
+                  value={formData.descricao}
+                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                  placeholder="Breve descrição do link"
+                  rows={3}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="categoria">Categoria *</label>
+                <select
+                  id="categoria"
+                  value={formData.categoria}
+                  onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
+                  required
+                >
+                  <option value="ajuda">Ajuda</option>
+                  <option value="retiro">Retiro</option>
+                  <option value="financeiro">Financeiro</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="config">Configuração</option>
+                  <option value="recursos">Recursos</option>
+                  <option value="videos">Vídeos</option>
+                  <option value="outros">Outros</option>
+                </select>
+              </div>
+
+              <div className="form-actions">
+                <Button type="button" className="btn-secondary" onClick={handleCancel}>
+                  <FiX /> Cancelar
+                </Button>
+                <Button type="submit" className="btn-primary">
+                  <FiSave /> {editingLink ? 'Atualizar' : 'Salvar'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Links Grid */}
       <div className="links-content">
@@ -181,24 +363,43 @@ const LinksPage = () => {
 
               <div className="links-grid">
                 {categoryLinks.map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="link-card-item"
-                  >
-                    <div className="link-card-item__icon">
-                      <FiExternalLink size={20} />
-                    </div>
-                    <div className="link-card-item__content">
-                      <h3 className="link-card-item__title">{link.titulo}</h3>
-                      {link.descricao && (
-                        <p className="link-card-item__description">{link.descricao}</p>
-                      )}
-                      <span className="link-card-item__url">{link.url}</span>
-                    </div>
-                  </a>
+                  <div key={link.id} className="link-card-wrapper">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-card-item"
+                    >
+                      <div className="link-card-item__icon">
+                        <FiExternalLink size={20} />
+                      </div>
+                      <div className="link-card-item__content">
+                        <h3 className="link-card-item__title">{link.titulo}</h3>
+                        {link.descricao && (
+                          <p className="link-card-item__description">{link.descricao}</p>
+                        )}
+                        <span className="link-card-item__url">{link.url}</span>
+                      </div>
+                    </a>
+                    {isAdmin && (
+                      <div className="link-card-actions">
+                        <button
+                          className="link-action-btn link-action-btn--edit"
+                          onClick={(e) => handleEdit(link, e)}
+                          title="Editar"
+                        >
+                          <FiEdit2 size={16} />
+                        </button>
+                        <button
+                          className="link-action-btn link-action-btn--delete"
+                          onClick={(e) => handleDelete(link.id, e)}
+                          title="Excluir"
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
