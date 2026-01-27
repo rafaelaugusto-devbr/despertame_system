@@ -13,6 +13,7 @@ export const BUCKETS = {
   BLOG: 'blog',
   OPERARIOS: 'operarios',
   DOCUMENTOS: 'documentos',
+  AVATARS: 'avatars',
 };
 
 /**
@@ -25,6 +26,7 @@ export const BUCKET_DOMAINS = {
   blog: 'https://blog.despertame.org',
   operarios: 'https://operarios.despertame.org',
   documentos: 'https://documentos.despertame.org',
+  avatars: 'https://avatars.despertame.org',
 };
 
 /**

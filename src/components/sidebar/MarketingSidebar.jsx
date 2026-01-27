@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
 import { DashboardIcon } from '../../assets/icons/icons';
+import UserAvatarIcon from '../UserAvatarIcon';
 import './Sidebar.css';
 
 import {
@@ -11,7 +12,6 @@ import {
   HomeIcon,
   LogoutIcon,
   CollapseIcon,
-  ProfileIcon,
 } from '../../assets/icons/icons';
 import { FiImage } from 'react-icons/fi';
 
@@ -70,7 +70,7 @@ const MarketingSidebar = () => {
 </button>
 
         <button onClick={() => { navigate('/perfil'); handleNavClick(); }} className="profile-button">
-          <ProfileIcon />
+          <UserAvatarIcon />
           {!collapsed && <span>Meu Perfil</span>}
         </button>
 

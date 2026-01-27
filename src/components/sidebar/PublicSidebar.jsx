@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
+import UserAvatarIcon from '../UserAvatarIcon';
 import './Sidebar.css';
 
 /* SVGs – mantém seu padrão */
@@ -13,7 +14,6 @@ import {
   ConfigIcon,
   LogoutIcon,
   CollapseIcon,
-  ProfileIcon,
 } from '../../assets/icons/icons';
 
 const PublicSidebar = () => {
@@ -75,7 +75,7 @@ const PublicSidebar = () => {
 
       <div className="sidebar-footer">
         <button className="profile-button" onClick={() => { navigate('/perfil'); handleNavClick(); }}>
-          <ProfileIcon />
+          <UserAvatarIcon />
           {!collapsed && <span>Meu Perfil</span>}
         </button>
 
