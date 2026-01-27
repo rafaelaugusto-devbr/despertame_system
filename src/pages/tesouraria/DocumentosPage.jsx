@@ -1,311 +1,409 @@
+// src/pages/tesouraria/DocumentosPage.jsx
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../services/firebase';
-import { uploadDocument, deleteDocument as deleteDocumentApi } from '../../services/documentApi';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
-import { FiPlus, FiFile, FiTrash2, FiDownload, FiAlertCircle, FiUpload, FiFolder } from 'react-icons/fi';
+import { FiUpload, FiFile, FiTrash2, FiExternalLink, FiFolder, FiImage, FiRefreshCw } from 'react-icons/fi';
+import {
+  listFiles,
+  uploadFile,
+  deleteFile,
+  formatFileSize,
+  isImageFile,
+  BUCKETS,
+} from '../../services/storageApi';
 import './Financeiro.css';
 
 const DocumentosPage = () => {
-  const [documentos, setDocumentos] = useState([]);
+  const [financeiroFiles, setFinanceiroFiles] = useState([]);
+  const [tesourariaFiles, setTesourariaFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isAdding, setIsAdding] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [novoDoc, setNovoDoc] = useState({ titulo: '', descricao: '', pasta: 'tesouraria' });
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedBucket, setSelectedBucket] = useState('');
+  const [fileToUpload, setFileToUpload] = useState(null);
 
   useEffect(() => {
-    fetchDocumentos();
+    loadDocuments();
   }, []);
 
-  const fetchDocumentos = async () => {
+  const loadDocuments = async () => {
     try {
       setLoading(true);
-      const querySnapshot = await getDocs(collection(db, 'tesourariaDocumentos'));
-      const docs = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setDocumentos(docs.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis() || 0));
+
+      // Load financeiro
+      const financeiroData = await listFiles(BUCKETS.FINANCEIRO);
+      setFinanceiroFiles(financeiroData.files || []);
+
+      // Load tesouraria
+      const tesourariaData = await listFiles(BUCKETS.TESOURARIA);
+      setTesourariaFiles(tesourariaData.files || []);
     } catch (error) {
-      console.error('Erro ao buscar documentos:', error);
+      console.error('Erro ao carregar documentos:', error);
+      alert('Erro ao carregar documentos: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      // Auto-fill titulo with filename if empty
-      if (!novoDoc.titulo.trim()) {
-        setNovoDoc({ ...novoDoc, titulo: file.name });
-      }
-    }
-  };
-
-  const handleAddDocumento = async (e) => {
-    e.preventDefault();
-    if (!novoDoc.titulo.trim() || !selectedFile) {
-      alert('Por favor, preencha o título e selecione um arquivo.');
-      return;
-    }
-
-    setUploading(true);
+  const handleUpload = async () => {
+    if (!fileToUpload || !selectedBucket) return;
 
     try {
-      // Upload to Cloudflare via API
-      const uploadResponse = await uploadDocument(selectedFile, {
-        titulo: novoDoc.titulo.trim(),
-        descricao: novoDoc.descricao.trim(),
-        pasta: novoDoc.pasta || 'tesouraria'
+      setUploading(true);
+      setUploadProgress(0);
+
+      await uploadFile(selectedBucket, fileToUpload, (progress) => {
+        setUploadProgress(progress);
       });
 
-      // Save metadata to Firebase
-      await addDoc(collection(db, 'tesourariaDocumentos'), {
-        titulo: novoDoc.titulo.trim(),
-        descricao: novoDoc.descricao.trim(),
-        pasta: novoDoc.pasta || 'tesouraria',
-        url: uploadResponse.url || uploadResponse.fileUrl, // URL returned from Cloudflare
-        fileName: selectedFile.name,
-        fileSize: selectedFile.size,
-        fileType: selectedFile.type,
-        cloudflareId: uploadResponse.id || uploadResponse.documentId,
-        createdAt: serverTimestamp(),
-      });
-
-      setNovoDoc({ titulo: '', descricao: '', pasta: 'tesouraria' });
-      setSelectedFile(null);
-      setIsAdding(false);
-      await fetchDocumentos();
+      alert('✓ Documento enviado com sucesso!');
+      setShowUploadModal(false);
+      setFileToUpload(null);
+      setSelectedBucket('');
+      setUploadProgress(0);
+      await loadDocuments();
     } catch (error) {
-      console.error('Erro ao adicionar documento:', error);
-      alert(`Erro ao fazer upload: ${error.message}`);
+      console.error('Erro ao fazer upload:', error);
+      alert('✗ Erro ao fazer upload: ' + error.message);
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDeleteDocumento = async (id, cloudflareId) => {
-    if (!window.confirm('Tem certeza que deseja excluir este documento?')) return;
+  const handleDelete = async (bucketName, filename) => {
+    if (!confirm(`Tem certeza que deseja excluir "${filename}"?`)) return;
 
     try {
-      // Delete from Cloudflare if cloudflareId exists
-      if (cloudflareId) {
-        try {
-          await deleteDocumentApi(cloudflareId);
-        } catch (apiError) {
-          console.error('Erro ao deletar do Cloudflare:', apiError);
-          // Continue to delete from Firebase even if Cloudflare deletion fails
-        }
-      }
-
-      // Delete from Firebase
-      await deleteDoc(doc(db, 'tesourariaDocumentos', id));
-      await fetchDocumentos();
+      await deleteFile(bucketName, filename);
+      alert('✓ Documento excluído com sucesso!');
+      await loadDocuments();
     } catch (error) {
-      console.error('Erro ao excluir documento:', error);
-      alert(`Erro ao excluir documento: ${error.message}`);
+      console.error('Erro ao deletar documento:', error);
+      alert('✗ Erro ao deletar documento: ' + error.message);
     }
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    try {
-      return timestamp.toDate().toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
-    } catch (e) {
-      return 'N/A';
+  const getFileIcon = (filename) => {
+    if (isImageFile(filename)) {
+      return <FiImage size={20} style={{ color: '#3b82f6' }} />;
     }
+    return <FiFile size={20} style={{ color: '#3b82f6' }} />;
+  };
+
+  const renderFilesList = (files, bucketName) => {
+    if (files.length === 0) {
+      return (
+        <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+          <FiFolder size={48} style={{ opacity: 0.3, marginBottom: '1rem' }} />
+          <p>Nenhum documento nesta pasta</p>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ overflowX: 'auto' }}>
+        <table className="lancamentos-table">
+          <thead>
+            <tr>
+              <th>Arquivo</th>
+              <th>Tamanho</th>
+              <th>Data de Upload</th>
+              <th style={{ textAlign: 'center' }}>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {files.map((file) => (
+              <tr key={file.key}>
+                <td data-label="Arquivo">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {getFileIcon(file.key)}
+                    <span style={{ wordBreak: 'break-all' }}>{file.key}</span>
+                  </div>
+                </td>
+                <td data-label="Tamanho">{formatFileSize(file.size)}</td>
+                <td data-label="Data de Upload">
+                  {file.uploaded
+                    ? new Date(file.uploaded).toLocaleString('pt-BR')
+                    : '-'}
+                </td>
+                <td data-label="Ações">
+                  <div className="action-buttons" style={{ justifyContent: 'center' }}>
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-icon"
+                      title="Abrir documento"
+                      style={{ color: '#3b82f6', textDecoration: 'none' }}
+                    >
+                      <FiExternalLink />
+                    </a>
+                    <button
+                      className="btn-icon delete"
+                      title="Excluir"
+                      onClick={() => handleDelete(bucketName, file.key)}
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   return (
     <>
       <Header
-        title="Documentos"
-        subtitle="Gerencie documentos importantes da tesouraria"
+        title="Documentos da Tesouraria"
+        subtitle="Gerencie documentos financeiros e administrativos"
       />
 
-      <div className="section-header">
-        <h2 className="link-title">Documentos Cadastrados</h2>
-        <Button className="btn-primary" onClick={() => setIsAdding(!isAdding)}>
-          <FiPlus /> Novo Documento
-        </Button>
+      {/* KPI Cards */}
+      <div className="kpi-grid" style={{ marginBottom: '2rem' }}>
+        <div className="stat-card stat-card--blue">
+          <div className="stat-card__icon">
+            <FiFolder size={28} />
+          </div>
+          <div className="stat-card__content">
+            <h4 className="stat-card__title">Financeiro</h4>
+            <p className="stat-card__value">{financeiroFiles.length}</p>
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
+              documentos
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-card stat-card--green">
+          <div className="stat-card__icon">
+            <FiFolder size={28} />
+          </div>
+          <div className="stat-card__content">
+            <h4 className="stat-card__title">Tesouraria</h4>
+            <p className="stat-card__value">{tesourariaFiles.length}</p>
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
+              documentos
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-card stat-card--orange">
+          <div className="stat-card__icon">
+            <FiFile size={28} />
+          </div>
+          <div className="stat-card__content">
+            <h4 className="stat-card__title">Total</h4>
+            <p className="stat-card__value">{financeiroFiles.length + tesourariaFiles.length}</p>
+            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0.5rem 0 0' }}>
+              documentos
+            </p>
+          </div>
+        </div>
       </div>
 
-      {isAdding && (
-        <div className="link-card" style={{ marginBottom: '1.5rem' }}>
-          <h3 className="link-title" style={{ fontSize: '1rem', marginBottom: '1rem' }}>
-            Adicionar Documento
+      {/* Actions */}
+      <div className="link-card" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <h3 style={{ margin: 0 }}>Documentos por Pasta</h3>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              className="btn-secondary"
+              onClick={loadDocuments}
+              disabled={loading}
+            >
+              <FiRefreshCw className={loading ? 'spinning' : ''} />
+              Atualizar
+            </button>
+            <button
+              className="btn-primary"
+              onClick={() => setShowUploadModal(true)}
+            >
+              <FiUpload />
+              Upload Documento
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Financeiro Folder */}
+      <div className="link-card" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FiFolder style={{ color: '#3b82f6' }} />
+            Financeiro
           </h3>
-          <form onSubmit={handleAddDocumento}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label htmlFor="titulo" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
-                  Título *
-                </label>
-                <input
-                  id="titulo"
-                  type="text"
-                  className="input-field"
-                  placeholder="Ex: Relatório Mensal Dezembro 2024"
-                  value={novoDoc.titulo}
-                  onChange={(e) => setNovoDoc({ ...novoDoc, titulo: e.target.value })}
-                  required
-                />
-              </div>
+          <span style={{ color: '#64748b', fontSize: '0.875rem' }}>
+            {financeiroFiles.length} documento{financeiroFiles.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        {loading ? (
+          <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <FiRefreshCw className="spinning" size={32} style={{ color: '#3b82f6' }} />
+            <p style={{ marginTop: '1rem', color: '#64748b' }}>Carregando...</p>
+          </div>
+        ) : (
+          renderFilesList(financeiroFiles, BUCKETS.FINANCEIRO)
+        )}
+      </div>
 
-              <div>
-                <label htmlFor="descricao" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
-                  Descrição
-                </label>
-                <textarea
-                  id="descricao"
-                  className="input-field"
-                  placeholder="Breve descrição do documento"
-                  value={novoDoc.descricao}
-                  onChange={(e) => setNovoDoc({ ...novoDoc, descricao: e.target.value })}
-                  rows={3}
-                />
-              </div>
+      {/* Tesouraria Folder */}
+      <div className="link-card" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FiFolder style={{ color: '#10b981' }} />
+            Tesouraria
+          </h3>
+          <span style={{ color: '#64748b', fontSize: '0.875rem' }}>
+            {tesourariaFiles.length} documento{tesourariaFiles.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        {loading ? (
+          <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <FiRefreshCw className="spinning" size={32} style={{ color: '#10b981' }} />
+            <p style={{ marginTop: '1rem', color: '#64748b' }}>Carregando...</p>
+          </div>
+        ) : (
+          renderFilesList(tesourariaFiles, BUCKETS.TESOURARIA)
+        )}
+      </div>
 
-              <div>
-                <label htmlFor="pasta" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
-                  <FiFolder style={{ display: 'inline', marginRight: '0.5rem' }} />
-                  Pasta
-                </label>
-                <input
-                  id="pasta"
-                  type="text"
-                  className="input-field"
-                  placeholder="tesouraria"
-                  value={novoDoc.pasta}
-                  onChange={(e) => setNovoDoc({ ...novoDoc, pasta: e.target.value })}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="arquivo" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
-                  <FiUpload style={{ display: 'inline', marginRight: '0.5rem' }} />
-                  Arquivo *
-                </label>
-                <input
-                  id="arquivo"
-                  type="file"
-                  className="input-field"
-                  onChange={handleFileSelect}
-                  accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip"
-                  required
-                />
-                {selectedFile && (
-                  <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.5rem' }}>
-                    Arquivo selecionado: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
-                  </p>
-                )}
-              </div>
-
-              <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                <Button type="button" className="btn-secondary" onClick={() => setIsAdding(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" className="btn-primary" disabled={uploading}>
-                  {uploading ? (
-                    <>Fazendo upload...</>
-                  ) : (
-                    <>
-                      <FiUpload /> Fazer Upload
-                    </>
-                  )}
-                </Button>
-              </div>
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="modal-overlay" onClick={() => !uploading && setShowUploadModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Upload de Documento</h3>
+              <button
+                className="modal-close-btn"
+                onClick={() => setShowUploadModal(false)}
+                disabled={uploading}
+              >
+                ×
+              </button>
             </div>
-          </form>
-        </div>
-      )}
 
-      {loading ? (
-        <p>Carregando documentos...</p>
-      ) : documentos.length === 0 ? (
-        <div className="link-card" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-          <FiAlertCircle size={48} style={{ color: '#94a3b8', marginBottom: '1rem' }} />
-          <h3 style={{ color: '#64748b', marginBottom: '0.5rem' }}>Nenhum documento cadastrado</h3>
-          <p style={{ color: '#94a3b8' }}>Clique em "Novo Documento" para adicionar o primeiro documento.</p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {documentos.map((doc) => (
-            <div key={doc.id} className="link-card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                    <FiFile size={20} style={{ color: '#3b82f6' }} />
-                    <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 700 }}>{doc.titulo}</h3>
-                  </div>
+            <div className="modal-body">
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                Selecione a Pasta
+              </label>
+              <select
+                className="input-field"
+                value={selectedBucket}
+                onChange={(e) => setSelectedBucket(e.target.value)}
+                disabled={uploading}
+                style={{ marginBottom: '1rem' }}
+              >
+                <option value="">Escolha uma pasta...</option>
+                <option value={BUCKETS.FINANCEIRO}>Financeiro</option>
+                <option value={BUCKETS.TESOURARIA}>Tesouraria</option>
+              </select>
 
-                  {doc.descricao && (
-                    <p style={{ color: '#64748b', margin: '0.5rem 0', fontSize: '0.9375rem' }}>
-                      {doc.descricao}
-                    </p>
-                  )}
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                Selecione o Arquivo
+              </label>
+              <input
+                type="file"
+                className="input-field"
+                onChange={(e) => setFileToUpload(e.target.files?.[0] || null)}
+                disabled={uploading}
+                style={{ marginBottom: '1rem' }}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip"
+              />
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                    {doc.pasta && (
-                      <span style={{ fontSize: '0.875rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <FiFolder size={14} /> {doc.pasta}
-                      </span>
-                    )}
-                    {doc.fileName && (
-                      <span style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                        {doc.fileName}
-                      </span>
-                    )}
-                    {doc.fileSize && (
-                      <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>
-                        {(doc.fileSize / 1024).toFixed(2)} KB
-                      </span>
-                    )}
-                    <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>
-                      Adicionado em {formatDate(doc.createdAt)}
+              {fileToUpload && (
+                <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '8px', marginBottom: '1rem' }}>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b' }}>
+                    <strong>Arquivo selecionado:</strong> {fileToUpload.name}
+                  </p>
+                  <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#64748b' }}>
+                    <strong>Tamanho:</strong> {formatFileSize(fileToUpload.size)}
+                  </p>
+                </div>
+              )}
+
+              {uploading && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.875rem', color: '#64748b' }}>Enviando...</span>
+                    <span style={{ fontSize: '0.875rem', color: '#3b82f6', fontWeight: 600 }}>
+                      {Math.round(uploadProgress)}%
                     </span>
-                    {doc.url && (
-                      <a
-                        href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          color: '#3b82f6',
-                          fontSize: '0.875rem',
-                          textDecoration: 'none',
-                          fontWeight: 600,
-                        }}
-                      >
-                        <FiDownload size={16} />
-                        Abrir Documento
-                      </a>
-                    )}
+                  </div>
+                  <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                        width: `${uploadProgress}%`,
+                        transition: 'width 0.3s ease',
+                      }}
+                    />
                   </div>
                 </div>
-
-                <button
-                  onClick={() => handleDeleteDocumento(doc.id, doc.cloudflareId)}
-                  className="icon-btn delete"
-                  title="Excluir documento"
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
+              )}
             </div>
-          ))}
+
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowUploadModal(false)}
+                disabled={uploading}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleUpload}
+                disabled={!fileToUpload || !selectedBucket || uploading}
+              >
+                <FiUpload />
+                {uploading ? 'Enviando...' : 'Enviar Documento'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
+
+      <style>{`
+        .spinning {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        .btn-icon {
+          padding: 0.5rem;
+          background: transparent;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .btn-icon:hover {
+          background: rgba(59, 130, 246, 0.1);
+          color: #2563eb;
+        }
+
+        .btn-icon.delete {
+          color: #ef4444;
+        }
+
+        .btn-icon.delete:hover {
+          background: rgba(239, 68, 68, 0.1);
+          color: #dc2626;
+        }
+      `}</style>
     </>
   );
 };
