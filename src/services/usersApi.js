@@ -7,6 +7,10 @@ import { API_BASE_URL, API_KEY } from '../config/api';
  * Função auxiliar para fazer requisições com API Key
  */
 const fetchWithApiKey = async (url, options = {}) => {
+  console.log(`[UsersAPI] Fazendo requisição para: ${url}`);
+  console.log(`[UsersAPI] API Key: ${API_KEY ? '***configurada***' : 'NÃO CONFIGURADA'}`);
+  console.log(`[UsersAPI] Método: ${options.method || 'GET'}`);
+
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -16,9 +20,13 @@ const fetchWithApiKey = async (url, options = {}) => {
     },
   });
 
+  console.log(`[UsersAPI] Status da resposta: ${response.status}`);
+
   const data = await response.json();
+  console.log(`[UsersAPI] Dados recebidos:`, data);
 
   if (!response.ok) {
+    console.error(`[UsersAPI] Erro na resposta:`, data);
     throw new Error(data.error || 'Erro na requisição');
   }
 

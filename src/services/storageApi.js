@@ -24,28 +24,66 @@ export const BUCKET_DOMAINS = {
 };
 
 /**
+ * Normaliza URL para usar domínio customizado
+ * Se a API retornar URL genérica, converte para domínio customizado
+ */
+const normalizeFileUrl = (bucketName, url, filename) => {
+  const domain = BUCKET_DOMAINS[bucketName];
+  if (!domain) {
+    return url;
+  }
+
+  // Se a URL já usa o domínio customizado, retorna como está
+  if (url && url.startsWith(domain)) {
+    return url;
+  }
+
+  // Caso contrário, constrói URL com domínio customizado
+  return `${domain}/${filename}`;
+};
+
+/**
+ * Normaliza lista de arquivos para usar domínios customizados
+ */
+const normalizeFileList = (bucketName, files) => {
+  return files.map(file => ({
+    ...file,
+    url: normalizeFileUrl(bucketName, file.url, file.key)
+  }));
+};
+
+/**
  * Lista arquivos de um bucket
  * Não requer autenticação
  */
 export const listFiles = async (bucketName) => {
   try {
+    console.log(`[StorageAPI] Listando arquivos do bucket: ${bucketName}`);
+    console.log(`[StorageAPI] URL: ${API_BASE_URL}/api/storage/${bucketName}`);
+
     const response = await fetch(`${API_BASE_URL}/api/storage/${bucketName}`);
+
+    console.log(`[StorageAPI] Status da resposta: ${response.status}`);
 
     if (!response.ok) {
       const data = await response.json();
+      console.error(`[StorageAPI] Erro na resposta:`, data);
       throw new Error(data.error || 'Erro ao listar arquivos');
     }
 
     const data = await response.json();
+    console.log(`[StorageAPI] Dados recebidos:`, data);
 
     // Normaliza URLs para usar domínios customizados
     if (data.files) {
+      console.log(`[StorageAPI] Normalizando ${data.files.length} arquivos`);
       data.files = normalizeFileList(bucketName, data.files);
+      console.log(`[StorageAPI] URLs normalizadas:`, data.files.map(f => f.url));
     }
 
     return data;
   } catch (error) {
-    console.error(`Erro ao listar arquivos do bucket ${bucketName}:`, error);
+    console.error(`[StorageAPI] Erro ao listar arquivos do bucket ${bucketName}:`, error);
     throw error;
   }
 };
@@ -158,35 +196,6 @@ export const deleteFile = async (bucketName, filename) => {
     console.error(`Erro ao deletar arquivo ${filename}:`, error);
     throw error;
   }
-};
-
-/**
- * Normaliza URL para usar domínio customizado
- * Se a API retornar URL genérica, converte para domínio customizado
- */
-const normalizeFileUrl = (bucketName, url, filename) => {
-  const domain = BUCKET_DOMAINS[bucketName];
-  if (!domain) {
-    return url;
-  }
-
-  // Se a URL já usa o domínio customizado, retorna como está
-  if (url.startsWith(domain)) {
-    return url;
-  }
-
-  // Caso contrário, constrói URL com domínio customizado
-  return `${domain}/${filename}`;
-};
-
-/**
- * Normaliza lista de arquivos para usar domínios customizados
- */
-const normalizeFileList = (bucketName, files) => {
-  return files.map(file => ({
-    ...file,
-    url: normalizeFileUrl(bucketName, file.url, file.key)
-  }));
 };
 
 /**
