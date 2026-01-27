@@ -1,33 +1,16 @@
 // src/services/usersApi.js
 // Serviço de integração com API de usuários
 
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL, API_KEY } from '../config/api';
 
 /**
- * Obtém o token de autenticação do usuário logado
+ * Função auxiliar para fazer requisições com API Key
  */
-const getAuthToken = async () => {
-  const { getAuth } = await import('firebase/auth');
-  const auth = getAuth();
-  const user = auth.currentUser;
-
-  if (!user) {
-    throw new Error('Usuário não autenticado');
-  }
-
-  return await user.getIdToken();
-};
-
-/**
- * Função auxiliar para fazer requisições autenticadas
- */
-const fetchWithAuth = async (url, options = {}) => {
-  const token = await getAuthToken();
-
+const fetchWithApiKey = async (url, options = {}) => {
   const response = await fetch(url, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'X-API-Key': API_KEY,
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -45,10 +28,10 @@ const fetchWithAuth = async (url, options = {}) => {
 /**
  * Muda a própria senha do usuário logado
  */
-export const changeMyPassword = async ({ currentPassword, newPassword }) => {
-  return await fetchWithAuth(`${API_BASE_URL}/api/me/password`, {
+export const changeMyPassword = async ({ email, currentPassword, newPassword }) => {
+  return await fetchWithApiKey(`${API_BASE_URL}/api/me/password`, {
     method: 'PUT',
-    body: JSON.stringify({ currentPassword, newPassword }),
+    body: JSON.stringify({ email, currentPassword, newPassword }),
   });
 };
 
@@ -56,14 +39,14 @@ export const changeMyPassword = async ({ currentPassword, newPassword }) => {
  * Lista todos os usuários (Admin)
  */
 export const listUsers = async () => {
-  return await fetchWithAuth(`${API_BASE_URL}/api/users`);
+  return await fetchWithApiKey(`${API_BASE_URL}/api/users`);
 };
 
 /**
  * Cria novo usuário (Admin)
  */
 export const createUser = async ({ email, password, displayName, isAdmin = false }) => {
-  return await fetchWithAuth(`${API_BASE_URL}/api/users/create`, {
+  return await fetchWithApiKey(`${API_BASE_URL}/api/users/create`, {
     method: 'POST',
     body: JSON.stringify({ email, password, displayName, isAdmin }),
   });
@@ -73,7 +56,7 @@ export const createUser = async ({ email, password, displayName, isAdmin = false
  * Muda senha de outro usuário (Admin)
  */
 export const changeUserPassword = async (uid, newPassword) => {
-  return await fetchWithAuth(`${API_BASE_URL}/api/users/${uid}/password`, {
+  return await fetchWithApiKey(`${API_BASE_URL}/api/users/${uid}/password`, {
     method: 'PUT',
     body: JSON.stringify({ newPassword }),
   });
@@ -83,7 +66,7 @@ export const changeUserPassword = async (uid, newPassword) => {
  * Habilita ou desabilita usuário (Admin)
  */
 export const toggleUserStatus = async (uid, disabled) => {
-  return await fetchWithAuth(`${API_BASE_URL}/api/users/${uid}/toggle`, {
+  return await fetchWithApiKey(`${API_BASE_URL}/api/users/${uid}/toggle`, {
     method: 'POST',
     body: JSON.stringify({ disabled }),
   });
@@ -93,7 +76,7 @@ export const toggleUserStatus = async (uid, disabled) => {
  * Exclui usuário (Admin)
  */
 export const deleteUser = async (uid) => {
-  return await fetchWithAuth(`${API_BASE_URL}/api/users/${uid}`, {
+  return await fetchWithApiKey(`${API_BASE_URL}/api/users/${uid}`, {
     method: 'DELETE',
   });
 };
