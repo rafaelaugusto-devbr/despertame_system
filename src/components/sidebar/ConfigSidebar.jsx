@@ -9,6 +9,7 @@ import {
   LogoutIcon,
   CollapseIcon,
   LockIcon,
+  FileIcon,
 } from '../../assets/icons/icons';
 
 const ConfigSidebar = () => {
@@ -41,6 +42,11 @@ const ConfigSidebar = () => {
         <NavLink to="/config/senhas" onClick={handleNavClick}>
           <LockIcon />
           <span>Senhas</span>
+        </NavLink>
+
+        <NavLink to="/config/buckets" onClick={handleNavClick}>
+          <FileIcon />
+          <span>Arquivos (R2)</span>
         </NavLink>
       </nav>
 
