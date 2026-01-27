@@ -14,6 +14,16 @@ export const BUCKETS = {
 };
 
 /**
+ * Domínios customizados dos buckets R2
+ */
+export const BUCKET_DOMAINS = {
+  logo: 'https://logo.despertame.org',
+  financeiro: 'https://financeiro.despertame.org',
+  tesouraria: 'https://tesouraria.despertame.org',
+  blog: 'https://blog.despertame.org',
+};
+
+/**
  * Lista arquivos de um bucket
  * Não requer autenticação
  */
@@ -26,7 +36,14 @@ export const listFiles = async (bucketName) => {
       throw new Error(data.error || 'Erro ao listar arquivos');
     }
 
-    return await response.json();
+    const data = await response.json();
+
+    // Normaliza URLs para usar domínios customizados
+    if (data.files) {
+      data.files = normalizeFileList(bucketName, data.files);
+    }
+
+    return data;
   } catch (error) {
     console.error(`Erro ao listar arquivos do bucket ${bucketName}:`, error);
     throw error;
@@ -82,6 +99,10 @@ export const uploadFile = async (bucketName, file, onProgress = null) => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             const data = JSON.parse(xhr.responseText);
+            // Normaliza URL para usar domínio customizado
+            if (data.url && data.key) {
+              data.url = normalizeFileUrl(bucketName, data.url, data.key);
+            }
             resolve(data);
           } catch (e) {
             reject(new Error('Erro ao processar resposta'));
@@ -140,10 +161,44 @@ export const deleteFile = async (bucketName, filename) => {
 };
 
 /**
- * Obtém URL pública de um arquivo
+ * Normaliza URL para usar domínio customizado
+ * Se a API retornar URL genérica, converte para domínio customizado
+ */
+const normalizeFileUrl = (bucketName, url, filename) => {
+  const domain = BUCKET_DOMAINS[bucketName];
+  if (!domain) {
+    return url;
+  }
+
+  // Se a URL já usa o domínio customizado, retorna como está
+  if (url.startsWith(domain)) {
+    return url;
+  }
+
+  // Caso contrário, constrói URL com domínio customizado
+  return `${domain}/${filename}`;
+};
+
+/**
+ * Normaliza lista de arquivos para usar domínios customizados
+ */
+const normalizeFileList = (bucketName, files) => {
+  return files.map(file => ({
+    ...file,
+    url: normalizeFileUrl(bucketName, file.url, file.key)
+  }));
+};
+
+/**
+ * Obtém URL pública de um arquivo usando domínio customizado
  */
 export const getFileUrl = (bucketName, filename) => {
-  return `${API_BASE_URL}/api/storage/${bucketName}/${filename}`;
+  const domain = BUCKET_DOMAINS[bucketName];
+  if (!domain) {
+    console.warn(`Domínio customizado não encontrado para bucket: ${bucketName}`);
+    return `${API_BASE_URL}/api/storage/${bucketName}/${filename}`;
+  }
+  return `${domain}/${filename}`;
 };
 
 /**
