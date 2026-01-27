@@ -1,184 +1,214 @@
 // src/services/googleSheetsApi.js
-// Serviço de integração com Google Apps Script API para inscrições de retiros
-
-const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjeI1xYwuoKTQCAbCc_M89xSIBYbTMXcrAHHsgHBCNdr2eJtR4rG3p5Eza7x658yFUfAWd3AC4Vfkn1T-xLflaqWZkxod-z2Ugdo-5DfBINX-_Z28y2bs_AJ2uDabwf7gYBRZbRY616COXQjUCJgoO98QjEgmwGdLR7zHTpp1Anx2LXJ-5mWWmx5t2uJpzyGZbbV09wSIOfomvI-ShlZ1LHpWIOwF3Rk6ErAqR-wOcDxJhTIeoMAds2QGdT2MO1IekahhpuqYv-TYtUjJbSiR2gGZiHnOkaihw7KSxhccAiIbP3f8hYOiPZeKmLQUZsZJXkCwn-38YBGjpxBYvYsgt5Fqv4EYu9y40zE2Gwra986nhKKP2LS0s2Ih-PYg&lib=MVYhAVXTDdise702xjaYgBauiLsUwLjAJ';
-const API_KEY = '1o8oNUJs5-lt3EsIpTZ07Gdfcla15yVKiajhaYFooyBo453';
 
 /**
- * Sincroniza eventos do Google Drive
- * @returns {Promise<{success: boolean, status: string, processed: number, added: number, skipped: number}>}
+ * ⚠️ IMPORTANTE: Configure a URL da sua API aqui
+ *
+ * Para obter a URL:
+ * 1. Abra o Google Apps Script
+ * 2. Clique em "Implantar" → "Nova implantação"
+ * 3. Tipo: "Aplicativo da Web"
+ * 4. Executar como: "Eu"
+ * 5. Quem tem acesso: "Qualquer pessoa"
+ * 6. Copie a URL gerada
  */
-export async function syncEvents() {
-  try {
-    const url = `${API_URL}&action=sync&apiKey=${API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Erro ao sincronizar eventos:', error);
-    throw error;
-  }
-}
+
+const API_CONFIG = {
+  // URL da API do Google Apps Script
+  BASE_URL: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjeI1xYwuoKTQCAbCc_M89xSIBYbTMXcrAHHsgHBCNdr2eJtR4rG3p5Eza7x658yFUfAWd3AC4Vfkn1T-xLflaqWZkxod-z2Ugdo-5DfBINX-_Z28y2bs_AJ2uDabwf7gYBRZbRY616COXQjUCJgoO98QjEgmwGdLR7zHTpp1Anx2LXJ-5mWWmx5t2uJpzyGZbbV09wSIOfomvI-ShlZ1LHpWIOwF3Rk6ErAqR-wOcDxJhTIeoMAds2QGdT2MO1IekahhpuqYv-TYtUjJbSiR2gGZiHnOkaihw7KSxhccAiIbP3f8hYOiPZeKmLQUZsZJXkCwn-38YBGjpxBYvYsgt5Fqv4EYu9y40zE2Gwra986nhKKP2LS0s2Ih-PYg&lib=MVYhAVXTDdise702xjaYgBauiLsUwLjAJ',
+  API_KEY: '1o8oNUJs5-lt3EsIpTZ07Gdfcla15yVKiajhaYFooyBo453',
+};
 
 /**
- * Busca o registro de eventos/anos disponíveis
- * @returns {Promise<{success: boolean, data: {items: Array<{evento: string, anos: string[]}>}}>}
+ * Função auxiliar para fazer requisições GET
  */
-export async function getRegistry() {
-  try {
-    const url = `${API_URL}&action=registry&apiKey=${API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Erro ao buscar registro:', error);
-    throw error;
-  }
-}
+const fetchGet = async (params) => {
+  const url = new URL(API_CONFIG.BASE_URL);
 
-/**
- * Busca dados de inscritos de um evento/ano específico
- * @param {Object} params - Parâmetros da busca
- * @param {string} params.evento - Nome do evento
- * @param {string} params.ano - Ano do evento
- * @param {number} [params.offset=0] - Offset para paginação
- * @param {number} [params.limit=100] - Limite de registros
- * @param {string} [params.q] - Termo de busca
- * @returns {Promise<{success: boolean, data: {total: number, offset: number, limit: number, headers: string[], items: Array}}>}
- */
-export async function getInscritosData({ evento, ano, offset = 0, limit = 100, q = '' }) {
-  try {
-    let url = `${API_URL}&action=data&apiKey=${API_KEY}&evento=${encodeURIComponent(evento)}&ano=${encodeURIComponent(ano)}&offset=${offset}&limit=${limit}`;
+  // Adiciona parâmetros à URL
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.append(key, String(value));
+    }
+  });
 
-    if (q) {
-      url += `&q=${encodeURIComponent(q)}`;
+  try {
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      redirect: 'follow',
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const response = await fetch(url);
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Erro ao buscar dados de inscritos:', error);
+    console.error('Erro na requisição GET:', error);
     throw error;
   }
-}
+};
 
 /**
- * Atualiza um campo de um inscrito
- * @param {Object} params - Parâmetros da atualização
- * @param {string} params.evento - Nome do evento
- * @param {string} params.ano - Ano do evento
- * @param {number} params.rowIndex - Índice da linha (>=2)
- * @param {string} params.campo - Nome do campo a atualizar
- * @param {any} params.valor - Novo valor
- * @returns {Promise<{success: boolean, data: Object}>}
+ * Função auxiliar para fazer requisições POST
  */
-export async function updateInscritoField({ evento, ano, rowIndex, campo, valor }) {
+const fetchPost = async (body) => {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(API_CONFIG.BASE_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        apiKey: API_KEY,
-        action: 'update',
-        evento,
-        ano,
-        rowIndex,
-        campo,
-        valor,
-      }),
+      body: JSON.stringify(body),
+      redirect: 'follow',
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Erro ao atualizar campo:', error);
+    console.error('Erro na requisição POST:', error);
     throw error;
   }
-}
+};
 
 /**
- * Atualiza múltiplos campos de um inscrito de uma vez
- * @param {Object} params - Parâmetros da atualização
- * @param {string} params.evento - Nome do evento
- * @param {string} params.ano - Ano do evento
- * @param {number} params.rowIndex - Índice da linha (>=2)
- * @param {Object} params.patch - Objeto com campos e valores {Campo1: Valor1, Campo2: Valor2}
- * @returns {Promise<{success: boolean, data: Object}>}
+ * Health check - verifica se a API está respondendo
  */
-export async function bulkUpdateInscrito({ evento, ano, rowIndex, patch }) {
+export const healthCheck = async () => {
   try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        apiKey: API_KEY,
-        action: 'bulk_update',
-        evento,
-        ano,
-        rowIndex,
-        patch,
-      }),
+    return await fetchGet({
+      action: 'health',
+      apiKey: API_CONFIG.API_KEY,
     });
-
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error('Erro ao atualizar múltiplos campos:', error);
-    throw error;
+    return { success: false, message: error.message };
   }
-}
+};
 
 /**
- * Verifica a saúde da API
- * @returns {Promise<{success: boolean, ok: boolean}>}
+ * Sincroniza eventos do Google Drive para o índice
  */
-export async function healthCheck() {
+export const syncEvents = async () => {
   try {
-    const url = `${API_URL}&action=health&apiKey=${API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
+    return await fetchGet({
+      action: 'sync',
+      apiKey: API_CONFIG.API_KEY,
+    });
   } catch (error) {
-    console.error('Erro ao verificar saúde da API:', error);
-    throw error;
+    return { success: false, message: error.message };
   }
-}
+};
+
+/**
+ * Obtém o registro de eventos/anos disponíveis
+ */
+export const getRegistry = async () => {
+  try {
+    return await fetchGet({
+      action: 'registry',
+      apiKey: API_CONFIG.API_KEY,
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+/**
+ * Obtém dados dos inscritos de um evento/ano
+ */
+export const getInscritosData = async ({ evento, ano, offset = 0, limit = 50, q = '' }) => {
+  try {
+    return await fetchGet({
+      action: 'data',
+      evento,
+      ano,
+      offset,
+      limit,
+      q,
+      apiKey: API_CONFIG.API_KEY,
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+/**
+ * Atualiza um campo específico de um inscrito
+ */
+export const updateInscritoField = async ({ evento, ano, rowIndex, campo, valor }) => {
+  try {
+    return await fetchPost({
+      action: 'update',
+      apiKey: API_CONFIG.API_KEY,
+      evento,
+      ano,
+      rowIndex,
+      campo,
+      valor,
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+/**
+ * Atualiza múltiplos campos de um inscrito (bulk update)
+ */
+export const bulkUpdateInscrito = async ({ evento, ano, rowIndex, patch }) => {
+  try {
+    return await fetchPost({
+      action: 'bulk_update',
+      apiKey: API_CONFIG.API_KEY,
+      evento,
+      ano,
+      rowIndex,
+      patch,
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
 
 /**
  * Exporta dados para CSV
- * @param {Array} items - Array de objetos
- * @param {Array} headers - Array de cabeçalhos
- * @param {string} filename - Nome do arquivo
  */
-export function exportToCSV(items, headers, filename = 'inscritos.csv') {
-  if (!items || items.length === 0) return;
+export const exportToCSV = (data, headers, filename = 'export.csv') => {
+  try {
+    // Remove campos internos
+    const cleanHeaders = headers.filter(h => !['rowIndex', 'evento', 'ano'].includes(h));
 
-  // Cria cabeçalhos
-  const csvHeaders = headers.join(',');
+    // Cria CSV
+    let csv = cleanHeaders.join(',') + '\n';
 
-  // Cria linhas
-  const csvRows = items.map(item => {
-    return headers.map(header => {
-      const value = item[header] ?? '';
-      // Escapa valores com vírgula ou aspas
-      const escaped = String(value).replace(/"/g, '""');
-      return `"${escaped}"`;
-    }).join(',');
-  });
+    data.forEach(row => {
+      const values = cleanHeaders.map(header => {
+        const value = row[header] || '';
+        const stringValue = String(value).replace(/"/g, '""');
+        return stringValue.includes(',') || stringValue.includes('\n') || stringValue.includes('"')
+          ? `"${stringValue}"`
+          : stringValue;
+      });
+      csv += values.join(',') + '\n';
+    });
 
-  // Combina tudo
-  const csv = [csvHeaders, ...csvRows].join('\n');
+    // Download
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
 
-  // Cria blob e download
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    return true;
+  } catch (error) {
+    console.error('Erro ao exportar CSV:', error);
+    alert('Erro ao exportar arquivo CSV');
+    return false;
+  }
+};
