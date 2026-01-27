@@ -1,7 +1,7 @@
 // src/services/storageApi.js
 // Serviço de integração com API de Storage (R2)
 
-const API_BASE_URL = 'https://api.despertame.com';
+import { API_BASE_URL } from '../config/api';
 
 /**
  * Buckets disponíveis
