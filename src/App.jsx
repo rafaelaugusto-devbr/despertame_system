@@ -21,6 +21,7 @@ import ConfigSidebar from './components/sidebar/ConfigSidebar';
 
 /* Páginas públicas */
 import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/public/SuperDashboardPage';
 import CalendarioVisualizacao from './pages/public/CalendarioVisualizacao';
 import LinksPage from './pages/public/LinksPage';
@@ -87,6 +88,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/calendario" element={<CalendarioVisualizacao />} />
             <Route path="/links" element={<LinksPage />} />
+            <Route path="/perfil" element={<ProfilePage />} />
           </Route>
 
           {/* Painel Tesouraria */}

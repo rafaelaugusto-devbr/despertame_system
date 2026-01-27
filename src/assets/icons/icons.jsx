@@ -18,6 +18,7 @@ export { default as UsersIcon } from './UsersIcon';
 export { default as LogoutIcon } from './LogoutIcon';
 export { default as CollapseIcon } from './CollapseIcon';
 export { default as BackIcon } from './BackIcon';
+export { default as ProfileIcon } from './ProfileIcon';
 
 export { default as PlusIcon } from './PlusIcon';
 export { default as ListIcon } from './ListIcon';

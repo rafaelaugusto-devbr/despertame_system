@@ -1,4 +1,4 @@
-const CollapseIcon = () => (
+const CollapseIcon = ({ collapsed = false }) => (
     <svg
       width="24"
       height="24"
@@ -9,9 +9,10 @@ const CollapseIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <polyline points="15 18 9 12 15 6" />
+      {/* Seta aponta para direita quando fechado, esquerda quando aberto */}
+      <polyline points={collapsed ? "9 18 15 12 9 6" : "15 18 9 12 15 6"} />
     </svg>
   );
-  
+
   export default CollapseIcon;
   

@@ -90,6 +90,16 @@
     font-size: 0.95rem;
     transition: background 0.2s ease;
   }
+
+  /* Garantir que ícones mantenham proporção e não fiquem esticados */
+  .sidebar-nav a svg,
+  .sidebar-footer button svg {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+  }
   
   .sidebar-nav a:hover {
     background-color: rgba(255,255,255,0.06);

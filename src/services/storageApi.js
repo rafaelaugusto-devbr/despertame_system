@@ -11,6 +11,8 @@ export const BUCKETS = {
   FINANCEIRO: 'financeiro',
   TESOURARIA: 'tesouraria',
   BLOG: 'blog',
+  OPERARIOS: 'operarios',
+  DOCUMENTOS: 'documentos',
 };
 
 /**
@@ -21,6 +23,8 @@ export const BUCKET_DOMAINS = {
   financeiro: 'https://financeiro.despertame.org',
   tesouraria: 'https://tesouraria.despertame.org',
   blog: 'https://blog.despertame.org',
+  operarios: 'https://operarios.despertame.org',
+  documentos: 'https://documentos.despertame.org',
 };
 
 /**
