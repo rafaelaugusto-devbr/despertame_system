@@ -58,17 +58,24 @@ const normalizeFileList = (bucketName, files) => {
  */
 export const listFiles = async (bucketName) => {
   try {
+    const url = `${API_BASE_URL}/api/storage/${bucketName}`;
     console.log(`[StorageAPI] Listando arquivos do bucket: ${bucketName}`);
-    console.log(`[StorageAPI] URL: ${API_BASE_URL}/api/storage/${bucketName}`);
+    console.log(`[StorageAPI] URL: ${url}`);
 
-    const response = await fetch(`${API_BASE_URL}/api/storage/${bucketName}`);
+    const response = await fetch(url);
 
     console.log(`[StorageAPI] Status da resposta: ${response.status}`);
 
     if (!response.ok) {
-      const data = await response.json();
-      console.error(`[StorageAPI] Erro na resposta:`, data);
-      throw new Error(data.error || 'Erro ao listar arquivos');
+      let errorMessage = 'Erro ao listar arquivos';
+      try {
+        const data = await response.json();
+        console.error(`[StorageAPI] Erro na resposta:`, data);
+        errorMessage = data.error || errorMessage;
+      } catch (e) {
+        console.error(`[StorageAPI] Erro ao parsear resposta de erro:`, e);
+      }
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
@@ -84,6 +91,12 @@ export const listFiles = async (bucketName) => {
     return data;
   } catch (error) {
     console.error(`[StorageAPI] Erro ao listar arquivos do bucket ${bucketName}:`, error);
+
+    // Verifica se é um erro de rede
+    if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+      throw new Error('Não foi possível conectar à API. Verifique sua conexão com a internet.');
+    }
+
     throw error;
   }
 };
