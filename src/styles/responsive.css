@@ -642,6 +642,137 @@ img {
   }
 }
 
+/* ========== MELHORIAS MOBILE GLOBAL ========== */
+
+/* Action buttons responsivos - empilham em mobile */
+@media (max-width: 640px) {
+  .action-buttons {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .action-buttons button,
+  .action-buttons .icon-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Input font-size 16px para prevenir zoom no iOS */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea,
+  .input-field {
+    font-size: 16px !important;
+  }
+}
+
+/* Modais responsivos - altura máxima e overflow */
+@media (max-width: 768px) {
+  .modal-content {
+    max-height: 100vh !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
+  .modal-body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex: 1 !important;
+  }
+}
+
+/* Botões em modais - width 100% em mobile */
+@media (max-width: 520px) {
+  .modal-footer button,
+  .modal-footer .btn {
+    width: 100% !important;
+    margin: 0.25rem 0 !important;
+  }
+
+  .modal-footer {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Cards e link-cards responsivos */
+@media (max-width: 640px) {
+  .link-card,
+  .category-card,
+  .campaigns-card,
+  .stat-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .link-card-header,
+  .category-card__header,
+  .campaigns-card__header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .link-card-header button,
+  .link-card-header .btn {
+    width: 100% !important;
+  }
+}
+
+/* Grid de filtros - uma coluna em mobile */
+@media (max-width: 640px) {
+  .filters-grid,
+  [style*="grid-template-columns"][style*="auto-fit"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Section headers responsivos */
+@media (max-width: 640px) {
+  .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .section-header button,
+  .section-header .btn {
+    width: 100% !important;
+  }
+}
+
+/* KPI Grid - melhor responsividade */
+@media (max-width: 640px) {
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .stat-card {
+    min-height: auto !important;
+  }
+}
+
+/* Links grid - melhor em mobile */
+@media (max-width: 640px) {
+  .links-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}
+
 /* ========== FORÇA RESPONSIVIDADE GLOBAL ========== */
 
 /* Garante que nada ultrapasse o viewport */

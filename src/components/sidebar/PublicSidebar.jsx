@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
+import { useSidebar } from '../../contexts/SidebarContext';
 import UserAvatarIcon from '../UserAvatarIcon';
-import ProfileModal from '../modal/ProfileModal';
 import './Sidebar.css';
 
 /* SVGs – mantém seu padrão */
@@ -20,7 +19,7 @@ import {
 
 const PublicSidebar = () => {
   const { collapsed, toggleCollapse, handleLogout, mobileOpen, closeMobile } = useSidebarBase();
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const { openProfileModal } = useSidebar();
 
   const handleNavClick = () => {
     if (window.innerWidth <= 1024) {
@@ -29,8 +28,7 @@ const PublicSidebar = () => {
   };
 
   const handleProfileClick = () => {
-    setProfileModalOpen(true);
-    handleNavClick();
+    openProfileModal();
   };
 
   return (
@@ -96,11 +94,6 @@ const PublicSidebar = () => {
           {!collapsed && <span>Recolher Menu</span>}
         </button>
       </div>
-
-      <ProfileModal
-        isOpen={profileModalOpen}
-        onClose={() => setProfileModalOpen(false)}
-      />
     </aside>
   );
 };
