@@ -6,9 +6,15 @@
    - 1440px: Desktop grande
    - 1024px: Desktop / Tablet landscape
    - 768px:  Tablet portrait
+   - 720px:  Tablet pequeno / Mobile XL
    - 640px:  Mobile grande
+   - 520px:  Mobile médio+
    - 480px:  Mobile médio
    - 320px:  Mobile pequeno
+*/
+
+/* Meta Viewport - Adicione ao HTML:
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 */
 
 /* Container responsivo global */
@@ -454,5 +460,240 @@
 @media (max-width: 480px) {
   .gap-responsive {
     gap: 0.75rem;
+  }
+}
+
+/* ========== UTILITÁRIOS ADICIONAIS ========== */
+
+/* Flex wrap em mobile */
+.flex-wrap-mobile {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .flex-wrap-mobile {
+    flex-wrap: wrap;
+  }
+}
+
+/* Stack em mobile */
+.stack-mobile {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .stack-mobile {
+    flex-direction: column;
+  }
+}
+
+/* Width completa em mobile */
+.full-width-mobile {
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .full-width-mobile {
+    width: 100%;
+  }
+}
+
+/* Overflow horizontal seguro */
+.overflow-safe {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Imagens responsivas */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent horizontal scroll */
+.no-overflow {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ========== 720px: Tablet Pequeno / Mobile XL ========== */
+@media (max-width: 720px) {
+  /* Grids viram 1 coluna */
+  .responsive-grid--4,
+  .responsive-grid--3,
+  .responsive-grid--2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Containers com padding reduzido */
+  .responsive-container {
+    padding: 0 1rem;
+  }
+
+  /* Cards e elementos empilham */
+  .stack-tablet {
+    flex-direction: column !important;
+  }
+
+  /* Botões ficam full width */
+  .btn-full-tablet {
+    width: 100% !important;
+    justify-content: center;
+  }
+}
+
+/* ========== 520px: Mobile Médio+ ========== */
+@media (max-width: 520px) {
+  .responsive-container {
+    padding: 0 0.875rem;
+  }
+
+  .responsive-grid {
+    gap: 0.625rem;
+  }
+
+  /* Fontes menores em mobile */
+  .responsive-text {
+    font-size: 0.9375rem;
+  }
+
+  /* Prevenir zoom em inputs iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ========== COMPONENTES GLOBAIS RESPONSIVOS ========== */
+
+/* Headers de seção */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+}
+
+/* Action groups */
+.action-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .action-group {
+    flex-direction: column;
+  }
+
+  .action-group button {
+    width: 100%;
+  }
+}
+
+/* Info cards grid */
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .info-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Data cards */
+.data-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+  .data-card {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .data-card {
+    padding: 1rem;
+  }
+}
+
+/* ========== FORÇA RESPONSIVIDADE GLOBAL ========== */
+
+/* Garante que nada ultrapasse o viewport */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Elementos inline que podem quebrar layout */
+img,
+video,
+iframe,
+embed,
+object,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Previne overflow horizontal */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Tabelas sempre responsivas */
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+}
+
+/* ========== MELHORIAS DE PERFORMANCE ========== */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Otimização de animações em mobile */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
