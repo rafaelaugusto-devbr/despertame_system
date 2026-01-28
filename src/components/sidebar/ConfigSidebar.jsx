@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
-import UserAvatarIcon from '../UserAvatarIcon';
 import './Sidebar.css';
 
 import {
@@ -55,11 +54,6 @@ const ConfigSidebar = () => {
         <button onClick={() => navigate('/dashboard')} className="collapse-button">
           <HomeIcon />
           <span>Voltar ao Painel</span>
-        </button>
-
-        <button onClick={() => { navigate('/perfil'); handleNavClick(); }} className="profile-button">
-          <UserAvatarIcon />
-          <span>Meu Perfil</span>
         </button>
 
         <button onClick={handleLogout} className="logout-button">
