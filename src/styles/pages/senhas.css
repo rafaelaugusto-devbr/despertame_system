@@ -1,0 +1,265 @@
+/* Senhas Page Mobile Styles */
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  /* Grid responsivo */
+  .senhas-grid {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Cards de senha */
+  .senha-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.25rem !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Warning card */
+  .warning-card {
+    padding: 1rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  /* Ícone e título */
+  .senha-header {
+    flex-wrap: wrap;
+  }
+
+  .senha-icon {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .senha-icon svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  /* Input de senha */
+  .senha-input-wrapper {
+    width: 100% !important;
+    overflow: hidden;
+  }
+
+  .senha-input {
+    width: 100% !important;
+    font-size: 0.9375rem !important;
+  }
+
+  /* Botões */
+  .senha-button {
+    width: 100% !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 0.9375rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Ajustes para telas muito pequenas */
+  .senha-card {
+    padding: 1rem !important;
+  }
+
+  .senha-header h3 {
+    font-size: 1rem !important;
+  }
+
+  .senha-input {
+    font-size: 0.875rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .senha-button {
+    padding: 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+
+/* ========== FIX ALINHAMENTO MOBILE SENHAS ========== */
+
+@media (max-width: 1024px) {
+  /* Grid de senhas normal */
+  .senhas-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    gap: 1rem !important;
+  }
+
+  /* Cards de senha sem centralização */
+  .senha-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 1rem 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile padrão */
+  .senha-card {
+    padding: 1.25rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Mobile pequeno */
+  .senha-card {
+    padding: 1rem !important;
+  }
+}
+
+/* ========== BREAKPOINTS ESPECÍFICOS SENHAS ========== */
+
+/* 720px */
+@media (max-width: 720px) {
+  .senhas-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .senha-card {
+    padding: 1rem !important;
+  }
+
+  .senha-icon {
+    width: 52px !important;
+    height: 52px !important;
+  }
+}
+
+/* 520px */
+@media (max-width: 520px) {
+  .senha-card {
+    padding: 0.875rem !important;
+  }
+
+  .senha-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .senha-input {
+    font-size: 0.875rem !important;
+  }
+
+  .senha-button {
+    padding: 0.625rem 0.875rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* 320px */
+@media (max-width: 320px) {
+  .senha-card {
+    padding: 0.75rem !important;
+  }
+
+  .senha-header {
+    gap: 0.625rem !important;
+  }
+
+  .senha-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .senha-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .senha-input {
+    font-size: 0.8125rem !important;
+    padding: 0.625rem !important;
+  }
+
+  .senha-button {
+    padding: 0.5rem 0.625rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  /* Título menor */
+  .senha-header h3 {
+    font-size: 0.9375rem !important;
+  }
+}
+
+/* ========== MOBILE SENHAS SIMPLIFICADO ========== */
+
+@media (max-width: 1024px) {
+  /* Grid de senhas */
+  .senhas-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  /* Cards de senha */
+  .senha-card {
+    width: 100%;
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .senha-card {
+    padding: 1rem;
+  }
+
+  .senha-icon {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (max-width: 520px) {
+  .senha-card {
+    padding: 0.875rem;
+  }
+
+  .senha-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .senha-input {
+    font-size: 0.875rem;
+  }
+
+  .senha-button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .senha-card {
+    padding: 0.75rem;
+  }
+
+  .senha-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .senha-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .senha-input {
+    font-size: 0.8125rem;
+  }
+
+  .senha-button {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+}

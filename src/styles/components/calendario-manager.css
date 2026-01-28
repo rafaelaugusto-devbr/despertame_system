@@ -1,0 +1,201 @@
+/* src/CalendarioManager.css */
+
+.calendario-container {
+    /* Variáveis do seu tema para os botões e cores */
+    --fc-button-bg-color: #ff8c00;
+    --fc-button-border-color: #ff8c00;
+    --fc-button-hover-bg-color: #ff4500;
+    --fc-button-hover-border-color: #ff4500;
+    --fc-button-active-bg-color: #ff4500;
+    --fc-button-active-border-color: #ff4500;
+    --fc-today-bg-color: rgba(255, 215, 0, 0.15); /* Cor de fundo para o dia de hoje */
+}
+
+.calendario-container--compact .fc {
+    max-height: 600px;
+}
+
+.calendario-container--compact .fc-daygrid-day {
+    height: 80px !important;
+}
+
+.calendario-container--compact .fc-col-header-cell {
+    padding: 8px 4px !important;
+    font-size: 0.875rem;
+}
+
+.calendario-container--compact .fc-daygrid-day-number {
+    font-size: 0.875rem;
+    padding: 4px;
+}
+
+.calendario-container--compact .fc-event {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+}
+
+@media (max-width: 768px) {
+    .calendario-container--compact .fc {
+        max-height: none;
+    }
+
+    .calendario-container--compact .fc-daygrid-day {
+        height: 60px !important;
+    }
+}
+
+/* Ajusta as fontes para combinar com seu painel */
+.fc {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Estiliza os eventos normais */
+.fc-event {
+    cursor: pointer;
+    border: none !important;
+    font-weight: 500;
+}
+
+.category-list {
+    margin-top: var(--spacing-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background-color: #f8fafc;
+    padding: 0.5rem 1rem;
+    border-radius: 20px; /* Bordas mais arredondadas */
+    border: 1px solid var(--color-border);
+    font-weight: 500;
+}
+
+.category-color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.category-item .icon-btn.delete {
+    margin-left: var(--spacing-sm);
+}
+
+/*  
+  ==========================================================================
+  NOVO: Estiliza o texto dos eventos de fundo (feriados).
+  Esta regra faz o texto do feriado (ex: "Finados") aparecer corretamente.
+  ==========================================================================
+*/
+.fc-bg-event .fc-event-title {
+    color: #a1887f !important; /* Um tom de marrom/cinza escuro, garantido com !important */
+    font-style: italic;
+    font-weight: 500;
+    opacity: 1; /* Garante opacidade total para o texto */
+    text-align: right;
+    padding-right: 5px;
+    /* Adiciona uma pequena sombra para destacar o texto do fundo */
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+  }
+  .evento-feriado .fc-event-title {
+    color: #000000 !important; /* Força a cor do texto para preto */
+    font-style: normal;       /* Remove o itálico, se houver */
+    font-weight: 500;         /* Peso da fonte normal */
+    text-align: right;        /* Alinha à direita */
+    padding-right: 5px;       /* Pequeno espaçamento */
+  }
+  .custom-month-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 5px 0;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    text-transform: capitalize; /* Deixa a primeira letra maiúscula */
+  }
+  
+  .custom-month-title:hover {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+  }
+  
+  /* Esconde o "ponto" padrão que o FullCalendar coloca em eventos 'list-item' */
+  .fc-event-main-frame .fc-list-event-dot {
+      display: none;
+  }
+
+/* ========== BREAKPOINTS MOBILE ========== */
+
+/* 720px - Tablet/Mobile Grande */
+@media (max-width: 720px) {
+  .calendario-container {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .fc {
+    font-size: 0.75rem !important;
+  }
+
+  .fc-toolbar {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1.125rem !important;
+  }
+
+  .fc-button {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* 520px - Mobile Médio */
+@media (max-width: 520px) {
+  .fc {
+    font-size: 0.6875rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1rem !important;
+  }
+
+  .fc-button {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.6875rem !important;
+  }
+}
+
+/* 320px - Mobile Pequeno */
+@media (max-width: 320px) {
+  .fc {
+    font-size: 0.625rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 0.875rem !important;
+  }
+
+  .fc-button {
+    padding: 0.25rem 0.375rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.625rem !important;
+  }
+
+  .fc-event {
+    font-size: 0.5625rem !important;
+  }
+}

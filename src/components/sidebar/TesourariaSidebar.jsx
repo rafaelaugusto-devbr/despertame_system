@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
-import UserAvatarIcon from '../UserAvatarIcon';
 import './Sidebar.css';
 
 import {
@@ -51,11 +50,6 @@ const TesourariaSidebar = () => {
           <span>Novo Lançamento</span>
         </NavLink>
 
-        <NavLink to="/tesouraria/contas-pagar" onClick={handleNavClick}>
-          <ClockIcon />
-          <span>Contas a Pagar</span>
-        </NavLink>
-
         <NavLink to="/tesouraria/categorias" onClick={handleNavClick}>
           <TagIcon />
           <span>Categorias</span>
@@ -70,13 +64,6 @@ const TesourariaSidebar = () => {
           <TicketIcon />
           <span>Rifas</span>
         </NavLink>
-
-        <NavLink to="/tesouraria/relatorios" onClick={handleNavClick}>
-          <ChartIcon />
-          <span>Relatórios</span>
-        </NavLink>
-
-        <div className="sidebar-divider" />
 
         <NavLink to="/tesouraria/inscritos" onClick={handleNavClick}>
           <UsersIcon />
@@ -97,17 +84,17 @@ const TesourariaSidebar = () => {
           <FileIcon />
           <span>Documentos</span>
         </NavLink>
+
+        <NavLink to="/tesouraria/relatorios" onClick={handleNavClick}>
+          <ChartIcon />
+          <span>Relatórios</span>
+        </NavLink>
       </nav>
 
       <div className="sidebar-footer">
         <button onClick={() => navigate('/dashboard')} className="collapse-button">
           <HomeIcon />
           <span>Voltar ao Painel</span>
-        </button>
-
-        <button onClick={() => { navigate('/perfil'); handleNavClick(); }} className="profile-button">
-          <UserAvatarIcon />
-          <span>Meu Perfil</span>
         </button>
 
         <button onClick={handleLogout} className="logout-button">
