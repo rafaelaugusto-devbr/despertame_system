@@ -5,8 +5,10 @@ import { db } from '../../../services/firebase';
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, where, orderBy, getCountFromServer } from 'firebase/firestore';
 import Button from '../../../components/ui/Button';
 import { FiEdit2, FiTrash2, FiPlus, FiCheck, FiX } from 'react-icons/fi';
+import { useModal } from '../../../contexts/ModalContext';
 
 const CategoriasManager = () => {
+    const { showModal } = useModal();
     const [categorias, setCategorias] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingItem, setEditingItem] = useState(null);
@@ -54,9 +56,13 @@ const CategoriasManager = () => {
     const handleDeleteItem = async (id) => {
         const q = query(lancamentosCollectionRef, where("categoriaId", "==", id));
         const snapshot = await getCountFromServer(q);
-        
+
         if (snapshot.data().count > 0) {
-            alert('Não é possível excluir esta categoria, pois ela está sendo usada em um ou mais lançamentos.');
+            showModal({
+                title: 'Categoria em Uso',
+                message: 'Não é possível excluir esta categoria, pois ela está sendo usada em um ou mais lançamentos.',
+                type: 'danger'
+            });
             return;
         }
 

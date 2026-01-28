@@ -11,6 +11,7 @@ import EditarVendaModal from '../../components/modal/EditarVendaModal'; // 1. Im
 import PasswordPromptModal from '../../components/modal/PasswordPromptModal';
 import { PANELS } from '../../config-senha/panels';
 import { FiPlus, FiArrowLeft, FiDollarSign, FiBox, FiTrendingUp, FiAlertCircle, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { useModal } from '../../contexts/ModalContext';
 
 const KpiCard = ({ title, value, icon, color }) => (
     <div className="summary-card" style={{ background: color, padding: '1rem' }}>
@@ -22,17 +23,18 @@ const KpiCard = ({ title, value, icon, color }) => (
 );
 
 const CampanhaDetalhesPage = () => {
+    const { showModal } = useModal();
     const { campanhaId } = useParams();
     const [campanha, setCampanha] = useState(null);
     const [transacoes, setTransacoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // Estados para os modais
     const [isVendaModalOpen, setIsVendaModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 2. Estado para o modal de edição
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-    
+
     // Estados para ações
     const [transacaoParaEditar, setTransacaoParaEditar] = useState(null); // 3. Guarda a transação a ser editada
     const [actionToConfirm, setActionToConfirm] = useState(null);
@@ -119,24 +121,34 @@ const CampanhaDetalhesPage = () => {
 
     const performDelete = async (transacao) => {
         // ... (código de exclusão continua o mesmo)
-        if (!window.confirm(`Tem certeza que deseja excluir esta venda de ${formatCurrency(transacao.valorTotal)}? Esta ação é irreversível.`)) return;
-        try {
-            await runTransaction(db, async (transaction) => {
-                const campanhaRef = doc(db, 'vendasCampanhas', campanha.id);
-                const campanhaDoc = await transaction.get(campanhaRef);
-                if (!campanhaDoc.exists()) throw "Campanha não encontrada!";
-                const campanhaData = campanhaDoc.data();
-                const novosVendidos = campanhaData.vendidos - transacao.quantidade;
-                const novoArrecadado = campanhaData.arrecadado - transacao.valorTotal;
-                transaction.update(campanhaRef, { vendidos: novosVendidos, arrecadado: novoArrecadado });
-                const transacaoRef = doc(db, 'vendasTransacoes', transacao.id);
-                transaction.delete(transacaoRef);
-            });
-            fetchData();
-        } catch (error) {
-            console.error("Erro ao excluir transação:", error);
-            alert("Falha ao excluir a transação. Tente novamente.");
-        }
+        showModal({
+            title: 'Confirmar Exclusão',
+            message: `Tem certeza que deseja excluir esta venda de ${formatCurrency(transacao.valorTotal)}? Esta ação é irreversível.`,
+            type: 'danger',
+            onConfirm: async () => {
+                try {
+                    await runTransaction(db, async (transaction) => {
+                        const campanhaRef = doc(db, 'vendasCampanhas', campanha.id);
+                        const campanhaDoc = await transaction.get(campanhaRef);
+                        if (!campanhaDoc.exists()) throw "Campanha não encontrada!";
+                        const campanhaData = campanhaDoc.data();
+                        const novosVendidos = campanhaData.vendidos - transacao.quantidade;
+                        const novoArrecadado = campanhaData.arrecadado - transacao.valorTotal;
+                        transaction.update(campanhaRef, { vendidos: novosVendidos, arrecadado: novoArrecadado });
+                        const transacaoRef = doc(db, 'vendasTransacoes', transacao.id);
+                        transaction.delete(transacaoRef);
+                    });
+                    fetchData();
+                } catch (error) {
+                    console.error("Erro ao excluir transação:", error);
+                    showModal({
+                        title: 'Erro',
+                        message: 'Falha ao excluir a transação. Tente novamente.',
+                        type: 'danger'
+                    });
+                }
+            }
+        });
     };
 
     const handlePasswordConfirm = (password) => {
@@ -145,7 +157,11 @@ const CampanhaDetalhesPage = () => {
             setIsPasswordModalOpen(false);
             if (actionToConfirm) actionToConfirm();
         } else {
-            alert('Senha incorreta! Verifique a senha de exclusão de arquivos no painel Config.');
+            showModal({
+                title: 'Senha Incorreta',
+                message: 'Senha incorreta! Verifique a senha de exclusão de arquivos no painel Config.',
+                type: 'danger'
+            });
         }
         setActionToConfirm(null);
     };

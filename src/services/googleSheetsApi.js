@@ -208,7 +208,6 @@ export const exportToCSV = (data, headers, filename = 'export.csv') => {
     return true;
   } catch (error) {
     console.error('Erro ao exportar CSV:', error);
-    alert('Erro ao exportar arquivo CSV');
-    return false;
+    throw new Error('Erro ao exportar arquivo CSV: ' + error.message);
   }
 };

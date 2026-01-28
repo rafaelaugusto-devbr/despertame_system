@@ -1,8 +1,10 @@
 // src/components/LancamentoModal.js
 import React, { useState, useEffect } from 'react';
 import Button from '../ui/Button';
+import { useModal } from '../../contexts/ModalContext';
 
 const LancamentoModal = ({ isOpen, onClose, onSave, lancamento, categorias }) => {
+    const { showModal } = useModal();
     const [formData, setFormData] = useState({ nome: '', valor: '', categoriaId: '' });
 
     useEffect(() => {
@@ -25,7 +27,11 @@ const LancamentoModal = ({ isOpen, onClose, onSave, lancamento, categorias }) =>
     const handleSave = () => {
         // Validação simples
         if (!formData.nome.trim() || !formData.valor || !formData.categoriaId) {
-            alert('Todos os campos são obrigatórios.');
+            showModal({
+                title: 'Campos Obrigatórios',
+                message: 'Todos os campos são obrigatórios.',
+                type: 'info'
+            });
             return;
         }
         onSave(lancamento.id, {

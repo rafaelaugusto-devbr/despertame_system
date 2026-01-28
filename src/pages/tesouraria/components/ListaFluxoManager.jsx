@@ -9,9 +9,11 @@ import { PANELS } from '../../../config-senha/panels';
 import { FiEdit2, FiTrash2, FiAlertCircle, FiDownload } from 'react-icons/fi';
 import Button from '../../../components/ui/Button';
 import * as XLSX from 'xlsx';
+import { useModal } from '../../../contexts/ModalContext';
 import './ListaFluxoManager.css';
 
 const ListaFluxoManager = () => {
+    const { showModal } = useModal();
     const [lancamentos, setLancamentos] = useState([]);
     const [categorias, setCategorias] = useState({});
     const [loading, setLoading] = useState(true);
@@ -79,14 +81,22 @@ const ListaFluxoManager = () => {
                 actionToConfirm();
             }
         } else {
-            alert('Senha incorreta! Verifique a senha de exclusão de arquivos no painel Config.');
+            showModal({
+                title: 'Senha Incorreta',
+                message: 'Verifique a senha de exclusão de arquivos no painel Config.',
+                type: 'danger'
+            });
         }
         setActionToConfirm(null);
     };
 
     const handleExport = () => {
         if (lancamentos.length === 0) {
-            alert("Não há dados para exportar.");
+            showModal({
+                title: 'Exportação',
+                message: 'Não há dados para exportar.',
+                type: 'info'
+            });
             return;
         }
         const dataToExport = lancamentos.map(l => ({

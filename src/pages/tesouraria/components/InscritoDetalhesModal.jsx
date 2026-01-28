@@ -2,9 +2,11 @@
 import React, { useState } from 'react';
 import { FiX, FiSave, FiEdit2 } from 'react-icons/fi';
 import { updateInscritoField } from '../../../services/googleSheetsApi';
+import { useModal } from '../../../contexts/ModalContext';
 import './InscritoDetalhesModal.css';
 
 const InscritoDetalhesModal = ({ inscrito, evento, ano, headers, onClose, onUpdate }) => {
+  const { showModal } = useModal();
   const [editMode, setEditMode] = useState(false);
   const [editedValues, setEditedValues] = useState({});
   const [loading, setLoading] = useState(false);
@@ -39,13 +41,21 @@ const InscritoDetalhesModal = ({ inscrito, evento, ano, headers, onClose, onUpda
         }
       }
 
-      alert('✓ Dados atualizados com sucesso!');
+      showModal({
+        title: 'Sucesso',
+        message: 'Dados atualizados com sucesso!',
+        type: 'info'
+      });
       onUpdate && onUpdate();
       setEditMode(false);
       setEditedValues({});
     } catch (error) {
       console.error('Erro ao salvar:', error);
-      alert('✗ Erro ao salvar alterações: ' + error.message);
+      showModal({
+        title: 'Erro',
+        message: `Erro ao salvar alterações: ${error.message}`,
+        type: 'danger'
+      });
     } finally {
       setLoading(false);
     }

@@ -14,9 +14,11 @@ import {
   FiClock,
   FiPlus
 } from 'react-icons/fi';
+import { useModal } from '../../contexts/ModalContext';
 import './Financeiro.css';
 
 const ContasPagarPage = () => {
+  const { showModal } = useModal();
   const navigate = useNavigate();
   const [contas, setContas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,17 +74,26 @@ const ContasPagarPage = () => {
   };
 
   const handleMarcarComoPago = async (id) => {
-    if (!window.confirm('Marcar esta conta como paga?')) return;
-
-    try {
-      await updateDoc(doc(db, 'fluxoCaixaLancamentos', id), {
-        pago: true,
-      });
-      await fetchContas();
-    } catch (error) {
-      console.error('Erro ao atualizar conta:', error);
-      alert('Erro ao marcar conta como paga');
-    }
+    showModal({
+      title: 'Confirmar Pagamento',
+      message: 'Marcar esta conta como paga?',
+      type: 'info',
+      onConfirm: async () => {
+        try {
+          await updateDoc(doc(db, 'fluxoCaixaLancamentos', id), {
+            pago: true,
+          });
+          await fetchContas();
+        } catch (error) {
+          console.error('Erro ao atualizar conta:', error);
+          showModal({
+            title: 'Erro',
+            message: 'Erro ao marcar conta como paga',
+            type: 'danger'
+          });
+        }
+      }
+    });
   };
 
   const formatCurrency = (value) => {

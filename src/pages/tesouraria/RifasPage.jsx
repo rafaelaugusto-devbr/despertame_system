@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+import { useModal } from '../../contexts/ModalContext';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
 import { FiPlus, FiEdit2, FiTrash2, FiDollarSign, FiUsers, FiAward, FiGrid, FiCheckCircle } from 'react-icons/fi';
 import './Financeiro.css';
 
 const RifasPage = () => {
+  const { showModal } = useModal();
   const [rifas, setRifas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -140,7 +142,11 @@ const RifasPage = () => {
       await fetchRifas();
     } catch (error) {
       console.error('Erro ao salvar rifa:', error);
-      alert('Erro ao salvar rifa');
+      showModal({
+        title: 'Erro',
+        message: 'Erro ao salvar rifa',
+        type: 'danger'
+      });
     }
   };
 
@@ -156,7 +162,11 @@ const RifasPage = () => {
       );
 
       if (numerosInvalidos.length > 0) {
-        alert('Números inválidos! Verifique se todos estão entre 1 e ' + selectedRifa.quantidadeNumeros);
+        showModal({
+          title: 'Números Inválidos',
+          message: `Verifique se todos os números estão entre 1 e ${selectedRifa.quantidadeNumeros}`,
+          type: 'danger'
+        });
         return;
       }
 
@@ -166,7 +176,11 @@ const RifasPage = () => {
       );
 
       if (numerosJaVendidos.length > 0) {
-        alert('Os seguintes números já foram vendidos: ' + numerosJaVendidos.join(', '));
+        showModal({
+          title: 'Números Indisponíveis',
+          message: `Os seguintes números já foram vendidos: ${numerosJaVendidos.join(', ')}`,
+          type: 'danger'
+        });
         return;
       }
 
@@ -183,23 +197,40 @@ const RifasPage = () => {
 
       handleCloseModal();
       await fetchRifas();
-      alert('Venda registrada com sucesso!');
+      showModal({
+        title: 'Sucesso',
+        message: 'Venda registrada com sucesso!',
+        type: 'info'
+      });
     } catch (error) {
       console.error('Erro ao registrar venda:', error);
-      alert('Erro ao registrar venda');
+      showModal({
+        title: 'Erro',
+        message: 'Erro ao registrar venda',
+        type: 'danger'
+      });
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta rifa? Todas as vendas associadas serão perdidas!')) return;
-
-    try {
-      await deleteDoc(doc(db, 'rifas', id));
-      await fetchRifas();
-    } catch (error) {
-      console.error('Erro ao excluir rifa:', error);
-      alert('Erro ao excluir rifa');
-    }
+    showModal({
+      title: 'Confirmar Exclusão',
+      message: 'Tem certeza que deseja excluir esta rifa? Todas as vendas associadas serão perdidas!',
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          await deleteDoc(doc(db, 'rifas', id));
+          await fetchRifas();
+        } catch (error) {
+          console.error('Erro ao excluir rifa:', error);
+          showModal({
+            title: 'Erro',
+            message: 'Erro ao excluir rifa',
+            type: 'danger'
+          });
+        }
+      }
+    });
   };
 
   const formatCurrency = (value) => {

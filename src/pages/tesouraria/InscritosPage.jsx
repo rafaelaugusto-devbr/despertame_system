@@ -1,5 +1,6 @@
 // src/pages/tesouraria/InscritosPage.jsx
 import React, { useState, useEffect } from 'react';
+import { useModal } from '../../contexts/ModalContext';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
 import {
@@ -24,6 +25,8 @@ import InscritoDetalhesModal from './components/InscritoDetalhesModal';
 import './Financeiro.css';
 
 const InscritosPage = () => {
+  const { showModal } = useModal();
+
   // Estado dos eventos
   const [registry, setRegistry] = useState([]);
   const [loadingRegistry, setLoadingRegistry] = useState(true);
@@ -108,7 +111,11 @@ const InscritosPage = () => {
       }
     } catch (error) {
       console.error('Erro ao carregar registro:', error);
-      alert('Erro ao carregar lista de eventos');
+      showModal({
+        title: 'Erro ao Carregar Eventos',
+        message: 'Não foi possível carregar a lista de eventos. Tente novamente.',
+        type: 'danger'
+      });
     } finally {
       setLoadingRegistry(false);
     }
@@ -119,14 +126,26 @@ const InscritosPage = () => {
     try {
       const result = await syncEvents();
       if (result.success) {
-        alert(`Sincronização ${result.status}!\nProcessados: ${result.processed}\nAdicionados: ${result.added}\nIgnorados: ${result.skipped}`);
+        showModal({
+          title: 'Sincronização Concluída',
+          message: `Sincronização ${result.status}!\n\nProcessados: ${result.processed}\nAdicionados: ${result.added}\nIgnorados: ${result.skipped}`,
+          type: 'info'
+        });
         await loadRegistry();
       } else {
-        alert('Erro na sincronização: ' + (result.message || 'Desconhecido'));
+        showModal({
+          title: 'Erro na Sincronização',
+          message: result.message || 'Erro desconhecido durante a sincronização.',
+          type: 'danger'
+        });
       }
     } catch (error) {
       console.error('Erro ao sincronizar:', error);
-      alert('Erro ao sincronizar eventos');
+      showModal({
+        title: 'Erro ao Sincronizar',
+        message: 'Não foi possível sincronizar os eventos. Verifique sua conexão e tente novamente.',
+        type: 'danger'
+      });
     } finally {
       setSyncing(false);
     }
@@ -150,11 +169,19 @@ const InscritosPage = () => {
         setHeaders(result.data.headers || []);
         setTotal(result.data.total || 0);
       } else {
-        alert('Erro ao carregar dados: ' + (result.message || 'Desconhecido'));
+        showModal({
+          title: 'Erro ao Carregar Dados',
+          message: result.message || 'Erro desconhecido ao carregar os dados.',
+          type: 'danger'
+        });
       }
     } catch (error) {
       console.error('Erro ao carregar inscritos:', error);
-      alert('Erro ao carregar inscritos');
+      showModal({
+        title: 'Erro ao Carregar Inscritos',
+        message: 'Não foi possível carregar os inscritos. Verifique sua conexão e tente novamente.',
+        type: 'danger'
+      });
     } finally {
       setLoading(false);
     }
@@ -168,7 +195,11 @@ const InscritosPage = () => {
 
   const handleExport = () => {
     if (inscritos.length === 0) {
-      alert('Nenhum dado para exportar');
+      showModal({
+        title: 'Exportação Não Disponível',
+        message: 'Não há dados para exportar. Selecione um evento e ano com inscritos.',
+        type: 'info'
+      });
       return;
     }
 

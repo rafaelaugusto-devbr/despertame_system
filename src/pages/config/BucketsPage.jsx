@@ -10,9 +10,11 @@ import {
   BUCKETS,
 } from '../../services/storageApi';
 import { FiRefreshCw, FiUpload, FiTrash2, FiExternalLink, FiFolder, FiFile, FiImage } from 'react-icons/fi';
+import { useModal } from '../../contexts/ModalContext';
 import '../tesouraria/Financeiro.css';
 
 const BucketsPage = () => {
+  const { showModal } = useModal();
   const [bucketsData, setBucketsData] = useState({});
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -32,7 +34,11 @@ const BucketsPage = () => {
       setBucketsData(data);
     } catch (error) {
       console.error('Erro ao carregar buckets:', error);
-      alert('Erro ao carregar arquivos: ' + error.message);
+      showModal({
+        title: 'Erro ao Carregar Arquivos',
+        message: 'Erro ao carregar arquivos: ' + error.message,
+        type: 'danger'
+      });
     } finally {
       setLoading(false);
     }
@@ -49,7 +55,11 @@ const BucketsPage = () => {
         setUploadProgress(progress);
       });
 
-      alert('✓ Arquivo enviado com sucesso!');
+      showModal({
+        title: 'Sucesso',
+        message: 'Arquivo enviado com sucesso!',
+        type: 'info'
+      });
       setShowUploadModal(false);
       setFileToUpload(null);
       setSelectedBucket('');
@@ -57,23 +67,40 @@ const BucketsPage = () => {
       await loadAllBuckets();
     } catch (error) {
       console.error('Erro ao fazer upload:', error);
-      alert('✗ Erro ao fazer upload: ' + error.message);
+      showModal({
+        title: 'Erro ao Fazer Upload',
+        message: 'Erro ao fazer upload: ' + error.message,
+        type: 'danger'
+      });
     } finally {
       setUploading(false);
     }
   };
 
   const handleDelete = async (bucketName, filename) => {
-    if (!confirm(`Tem certeza que deseja excluir "${filename}"?`)) return;
-
-    try {
-      await deleteFile(bucketName, filename);
-      alert('✓ Arquivo excluído com sucesso!');
-      await loadAllBuckets();
-    } catch (error) {
-      console.error('Erro ao deletar arquivo:', error);
-      alert('✗ Erro ao deletar arquivo: ' + error.message);
-    }
+    showModal({
+      title: 'Confirmar Exclusão',
+      message: `Tem certeza que deseja excluir "${filename}"?`,
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          await deleteFile(bucketName, filename);
+          showModal({
+            title: 'Sucesso',
+            message: 'Arquivo excluído com sucesso!',
+            type: 'info'
+          });
+          await loadAllBuckets();
+        } catch (error) {
+          console.error('Erro ao deletar arquivo:', error);
+          showModal({
+            title: 'Erro ao Deletar Arquivo',
+            message: 'Erro ao deletar arquivo: ' + error.message,
+            type: 'danger'
+          });
+        }
+      }
+    });
   };
 
   const getTotalFiles = () => {

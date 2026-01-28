@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../../services/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { useModal } from '../../../contexts/ModalContext';
 import './LeadsManager.css';
 
 // A função de exportação agora é uma prop, para ser chamada pelo botão na página pai
 const LeadsManager = ({ onDataLoaded }) => {
+    const { showModal } = useModal();
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -40,8 +42,16 @@ const LeadsManager = ({ onDataLoaded }) => {
 
     const handleCopy = (text) => {
         navigator.clipboard.writeText(text)
-            .then(() => alert(`"${text}" copiado para a área de transferência!`))
-            .catch(() => alert("Falha ao copiar."));
+            .then(() => showModal({
+                title: 'Sucesso',
+                message: `"${text}" copiado para a área de transferência!`,
+                type: 'info'
+            }))
+            .catch(() => showModal({
+                title: 'Erro',
+                message: 'Falha ao copiar.',
+                type: 'danger'
+            }));
     };
 
     if (loading) {

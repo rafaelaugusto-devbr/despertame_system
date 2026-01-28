@@ -14,6 +14,7 @@ import {
   orderBy
 } from 'firebase/firestore';
 
+import { useModal } from '../../../contexts/ModalContext';
 import BlockEditor from './BlockEditor';
 import './BlogManager.css';
 
@@ -30,6 +31,7 @@ import {
 } from 'react-icons/fi';
 
 const BlogManager = () => {
+  const { showModal } = useModal();
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,16 +114,25 @@ const BlogManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.')) {
-      try {
-        const postDoc = doc(db, 'posts', id);
-        await deleteDoc(postDoc);
-        setPosts(posts.filter(p => p.id !== id));
-      } catch (error) {
-        console.error('Erro ao excluir post:', error);
-        alert('Erro ao excluir post. Tente novamente.');
+    showModal({
+      title: 'Confirmar Exclusão',
+      message: 'Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.',
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          const postDoc = doc(db, 'posts', id);
+          await deleteDoc(postDoc);
+          setPosts(posts.filter(p => p.id !== id));
+        } catch (error) {
+          console.error('Erro ao excluir post:', error);
+          showModal({
+            title: 'Erro',
+            message: 'Erro ao excluir post. Tente novamente.',
+            type: 'danger'
+          });
+        }
       }
-    }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -150,7 +161,11 @@ const BlogManager = () => {
       resetForm();
     } catch (error) {
       console.error('Erro ao salvar post:', error);
-      alert('Erro ao salvar post. Tente novamente.');
+      showModal({
+        title: 'Erro',
+        message: 'Erro ao salvar post. Tente novamente.',
+        type: 'danger'
+      });
     }
 
     setLoading(false);
