@@ -1,5 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
+import { useSidebar } from '../../contexts/SidebarContext';
+import UserAvatarIcon from '../UserAvatarIcon';
 import './Sidebar.css';
 
 import {
@@ -20,6 +22,7 @@ import {
 
 const TesourariaSidebar = () => {
   const { collapsed, toggleCollapse, handleLogout, mobileOpen, closeMobile } = useSidebarBase();
+  const { openProfileModal } = useSidebar();
   const navigate = useNavigate();
 
   const handleNavClick = () => {
@@ -92,6 +95,11 @@ const TesourariaSidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
+        <button className="profile-button" onClick={openProfileModal}>
+          <UserAvatarIcon />
+          <span>Meu Perfil</span>
+        </button>
+
         <button onClick={() => navigate('/dashboard')} className="collapse-button">
           <HomeIcon />
           <span>Voltar ao Painel</span>

@@ -1,5 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSidebarBase } from './useSidebarBase';
+import { useSidebar } from '../../contexts/SidebarContext';
+import UserAvatarIcon from '../UserAvatarIcon';
 import { DashboardIcon } from '../../assets/icons/icons';
 import './Sidebar.css';
 
@@ -16,6 +18,7 @@ import { FiImage } from 'react-icons/fi';
 
 const MarketingSidebar = () => {
   const { collapsed, toggleCollapse, handleLogout, mobileOpen, closeMobile } = useSidebarBase();
+  const { openProfileModal } = useSidebar();
   const navigate = useNavigate();
 
   const handleNavClick = () => {
@@ -63,10 +66,15 @@ const MarketingSidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
-      <button onClick={() => navigate('/dashboard')} className="collapse-button">
-  <HomeIcon />
-  {!collapsed && <span>Voltar ao Painel</span>}
-</button>
+        <button className="profile-button" onClick={openProfileModal}>
+          <UserAvatarIcon />
+          {!collapsed && <span>Meu Perfil</span>}
+        </button>
+
+        <button onClick={() => navigate('/dashboard')} className="collapse-button">
+          <HomeIcon />
+          {!collapsed && <span>Voltar ao Painel</span>}
+        </button>
 
         <button onClick={handleLogout} className="logout-button">
           <LogoutIcon />

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
+import OperarioPhotoUpload from '../../components/OperarioPhotoUpload';
 import {
   FiPlus,
   FiEdit2,
@@ -48,6 +49,7 @@ const OperariosPage = () => {
     dataAdmissao: '',
     status: 'Ativo',
     observacoes: '',
+    fotoUrl: '',
   });
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const OperariosPage = () => {
         dataAdmissao: operario.dataAdmissao || '',
         status: operario.status || 'Ativo',
         observacoes: operario.observacoes || '',
+        fotoUrl: operario.fotoUrl || '',
       });
     } else {
       setEditingId(null);
@@ -109,6 +112,7 @@ const OperariosPage = () => {
         salario: '',
         status: 'Ativo',
         observacoes: '',
+        fotoUrl: '',
       });
     }
     setIsModalOpen(true);
@@ -308,6 +312,7 @@ const OperariosPage = () => {
             <table className="lancamentos-table">
               <thead>
                 <tr>
+                  <th>Foto</th>
                   <th>Nome</th>
                   <th>CPF</th>
                   <th>Telefone</th>
@@ -320,7 +325,7 @@ const OperariosPage = () => {
               <tbody>
                 {filteredOperarios.length === 0 ? (
                   <tr>
-                    <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>
+                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>
                       {searchTerm || filterStatus
                         ? 'Nenhum operário encontrado com os filtros aplicados.'
                         : 'Nenhum operário cadastrado ainda.'}
@@ -329,6 +334,37 @@ const OperariosPage = () => {
                 ) : (
                   filteredOperarios.map((operario) => (
                     <tr key={operario.id}>
+                      <td data-label="Foto">
+                        {operario.fotoUrl ? (
+                          <img
+                            src={operario.fotoUrl}
+                            alt={operario.nome}
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              borderRadius: '8px',
+                              objectFit: 'cover',
+                              border: '2px solid #e2e8f0',
+                            }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              borderRadius: '8px',
+                              backgroundColor: '#f1f5f9',
+                              border: '2px solid #e2e8f0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#94a3b8',
+                            }}
+                          >
+                            <FiUsers size={20} />
+                          </div>
+                        )}
+                      </td>
                       <td data-label="Nome">{operario.nome}</td>
                       <td data-label="CPF">{operario.cpf || '-'}</td>
                       <td data-label="Telefone">{operario.telefone || '-'}</td>
@@ -386,6 +422,13 @@ const OperariosPage = () => {
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
                 <div style={{ display: 'grid', gap: '1.5rem' }}>
+                  {/* Upload de Foto */}
+                  <OperarioPhotoUpload
+                    currentPhotoUrl={formData.fotoUrl}
+                    onPhotoChange={(url) => setFormData({ ...formData, fotoUrl: url })}
+                    operarioId={editingId}
+                  />
+
                   {/* Dados Pessoais */}
                   <div>
                     <h4 style={{ marginBottom: '1rem', color: '#1e293b', fontSize: '1rem', fontWeight: 600 }}>

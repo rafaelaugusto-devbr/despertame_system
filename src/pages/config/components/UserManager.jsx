@@ -269,21 +269,21 @@ const UserManager = () => {
 
               {users.map((user) => (
                 <tr key={user.uid}>
-                  <td>
+                  <td data-label="Nome">
                     <strong>{user.displayName || 'Sem nome'}</strong>
                   </td>
-                  <td>{user.email}</td>
-                  <td>
+                  <td data-label="E-mail">{user.email}</td>
+                  <td data-label="Tipo">
                     <span className={`badge ${user.isAdmin ? 'badge-primary' : 'badge-secondary'}`}>
                       {user.isAdmin ? 'Admin' : 'Usuário'}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Status">
                     <span className={`badge ${user.disabled ? 'badge-danger' : 'badge-success'}`}>
                       {user.disabled ? 'Inativo' : 'Ativo'}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Ações">
                     <div className="action-buttons">
                       <button
                         className="icon-btn"

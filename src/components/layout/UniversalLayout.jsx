@@ -2,10 +2,11 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { FiMenu, FiX } from 'react-icons/fi';
+import ProfileModal from '../modal/ProfileModal';
 import './UniversalLayout.css';
 
 const UniversalLayout = ({ Sidebar }) => {
-  const { collapsed, mobileOpen, toggleMobile } = useSidebar();
+  const { collapsed, mobileOpen, toggleMobile, profileModalOpen, closeProfileModal } = useSidebar();
 
   return (
     <div className={`admin-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
@@ -33,6 +34,12 @@ const UniversalLayout = ({ Sidebar }) => {
           <Outlet />
         </div>
       </main>
+
+      {/* ProfileModal renderizado fora da sidebar para funcionar corretamente no mobile */}
+      <ProfileModal
+        isOpen={profileModalOpen}
+        onClose={closeProfileModal}
+      />
     </div>
   );
 };
