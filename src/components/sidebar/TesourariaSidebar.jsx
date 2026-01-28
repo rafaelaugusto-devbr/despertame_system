@@ -45,17 +45,12 @@ const TesourariaSidebar = () => {
       <nav className="sidebar-nav">
         <NavLink to="/tesouraria/dashboard" onClick={handleNavClick}>
           <FinanceIcon />
-          <span>Dashboard Financeiro</span>
+          <span>Dashboard</span>
         </NavLink>
 
         <NavLink to="/tesouraria/adicionar" onClick={handleNavClick}>
           <PlusIcon />
-          <span>Novo Lançamento</span>
-        </NavLink>
-
-        <NavLink to="/tesouraria/categorias" onClick={handleNavClick}>
-          <TagIcon />
-          <span>Categorias</span>
+          <span>Adicionar</span>
         </NavLink>
 
         <NavLink to="/tesouraria/vendas" onClick={handleNavClick}>
@@ -70,7 +65,7 @@ const TesourariaSidebar = () => {
 
         <NavLink to="/tesouraria/inscritos" onClick={handleNavClick}>
           <UsersIcon />
-          <span>Inscritos do Retiro</span>
+          <span>Inscritos</span>
         </NavLink>
 
         <NavLink to="/tesouraria/operarios" onClick={handleNavClick}>
@@ -91,6 +86,11 @@ const TesourariaSidebar = () => {
         <NavLink to="/tesouraria/relatorios" onClick={handleNavClick}>
           <ChartIcon />
           <span>Relatórios</span>
+        </NavLink>
+
+        <NavLink to="/tesouraria/categorias" onClick={handleNavClick}>
+          <TagIcon />
+          <span>Categorias</span>
         </NavLink>
       </nav>
 
