@@ -6,83 +6,83 @@
 /* ==========================================================================
    1. FUNDAMENTOS (Variables & Base)
    ========================================================================== */
-@import './styles/variables.css';
-@import './styles/base.css';
+@import './variables.css';
+@import './base.css';
 
 /* ==========================================================================
    2. LAYOUT & ESTRUTURA
    ========================================================================== */
-@import './styles/layout.css';
-@import './styles/components/layout.css';
-@import './styles/components/sidebar.css';
+@import './layout.css';
+@import './components/layout.css';
+@import './components/sidebar.css';
 
 /* ==========================================================================
    3. COMPONENTES GLOBAIS
    ========================================================================== */
-@import './styles/components.css';
-@import './styles/components/toast.css';
-@import './styles/components/avatar-upload.css';
-@import './styles/components/user-avatar.css';
+@import './components.css';
+@import './components/toast.css';
+@import './components/avatar-upload.css';
+@import './components/user-avatar.css';
 
 /* ==========================================================================
    4. MODALS & OVERLAYS
    ========================================================================== */
-@import './styles/modals.css';
-@import './styles/components/password-modal.css';
-@import './styles/components/profile-modal.css';
-@import './styles/components/inscrito-detalhes.css';
+@import './modals.css';
+@import './components/password-modal.css';
+@import './components/profile-modal.css';
+@import './components/inscrito-detalhes.css';
 
 /* ==========================================================================
    5. COMPONENTES DE PÁGINAS ESPECÍFICAS
    ========================================================================== */
-@import './styles/components/calendario-manager.css';
-@import './styles/components/lista-fluxo.css';
-@import './styles/components/block-editor.css';
+@import './components/calendario-manager.css';
+@import './components/lista-fluxo.css';
+@import './components/block-editor.css';
 
 /* ==========================================================================
    6. PÁGINAS - PÚBLICO
    ========================================================================== */
-@import './styles/pages/super-dashboard.css';
-@import './styles/pages/calendario-visualizacao.css';
-@import './styles/pages/links.css';
+@import './pages/super-dashboard.css';
+@import './pages/calendario-visualizacao.css';
+@import './pages/links.css';
 
 /* ==========================================================================
    7. PÁGINAS - TESOURARIA
    ========================================================================== */
-@import './styles/pages/tesouraria-dashboard.css';
-@import './styles/pages/financeiro.css';
-@import './styles/pages/contas-pagar.css';
+@import './pages/tesouraria-dashboard.css';
+@import './pages/financeiro.css';
+@import './pages/contas-pagar.css';
 
 /* ==========================================================================
    8. PÁGINAS - MARKETING
    ========================================================================== */
-@import './styles/pages/blog-manager.css';
-@import './styles/pages/leads-manager.css';
+@import './pages/blog-manager.css';
+@import './pages/leads-manager.css';
 
 /* ==========================================================================
    9. PÁGINAS - CONFIG
    ========================================================================== */
-@import './styles/pages/senhas.css';
+@import './pages/senhas.css';
 
 /* ==========================================================================
    10. PÁGINAS - PERFIL
    ========================================================================== */
-@import './styles/pages/profile.css';
+@import './pages/profile.css';
 
 /* ==========================================================================
    11. TABELAS
    ========================================================================== */
-@import './styles/tables.css';
+@import './tables.css';
 
 /* ==========================================================================
    12. LOGIN & AUTENTICAÇÃO
    ========================================================================== */
-@import './styles/login.css';
+@import './login.css';
 
 /* ==========================================================================
    13. RESPONSIVIDADE (DEVE SER SEMPRE O ÚLTIMO)
    ========================================================================== */
-@import './styles/responsive.css';
+@import './responsive.css';
 
 /* ==========================================================================
    FIM DAS IMPORTAÇÕES
