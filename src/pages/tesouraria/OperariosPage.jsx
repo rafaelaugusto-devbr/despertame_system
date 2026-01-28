@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
 import OperarioPhotoUpload from '../../components/OperarioPhotoUpload';
+import { useModal } from '../../contexts/ModalContext';
 import {
   FiPlus,
   FiEdit2,
@@ -23,6 +24,7 @@ import {
 import './Financeiro.css';
 
 const OperariosPage = () => {
+  const { showModal } = useModal();
   const [operarios, setOperarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,7 +67,11 @@ const OperariosPage = () => {
       setOperarios(data);
     } catch (error) {
       console.error('Erro ao buscar operários:', error);
-      alert('Erro ao carregar operários');
+      showModal({
+        title: 'Erro ao Carregar',
+        message: 'Erro ao carregar operários',
+        type: 'danger'
+      });
     } finally {
       setLoading(false);
     }
@@ -126,7 +132,11 @@ const OperariosPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.nome.trim()) {
-      alert('Nome é obrigatório');
+      showModal({
+        title: 'Campo Obrigatório',
+        message: 'Nome é obrigatório',
+        type: 'danger'
+      });
       return;
     }
 
@@ -146,7 +156,11 @@ const OperariosPage = () => {
       await fetchStats();
     } catch (error) {
       console.error('Erro ao salvar operário:', error);
-      alert('Erro ao salvar operário');
+      showModal({
+        title: 'Erro ao Salvar',
+        message: 'Erro ao salvar operário',
+        type: 'danger'
+      });
     }
   };
 
@@ -159,13 +173,21 @@ const OperariosPage = () => {
       await fetchStats();
     } catch (error) {
       console.error('Erro ao excluir operário:', error);
-      alert('Erro ao excluir operário');
+      showModal({
+        title: 'Erro ao Excluir',
+        message: 'Erro ao excluir operário',
+        type: 'danger'
+      });
     }
   };
 
   const handleExport = () => {
     if (operarios.length === 0) {
-      alert('Nenhum operário para exportar');
+      showModal({
+        title: 'Lista Vazia',
+        message: 'Nenhum operário para exportar',
+        type: 'info'
+      });
       return;
     }
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { doc, onSnapshot, setDoc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../../../services/firebase';
+import { useModal } from '../../../contexts/ModalContext';
 import Button from '../../../components/ui/Button';
 
 const LinkCard = ({ type, title, placeholder }) => {
+  const { showModal } = useModal();
   const [data, setData] = useState({ url: '', history: [], deleted: [] });
   const [newUrl, setNewUrl] = useState('');
   const [loadingUpdate, setLoadingUpdate] = useState(false);
@@ -24,7 +26,11 @@ const LinkCard = ({ type, title, placeholder }) => {
 
   const handleUpdate = async () => {
     if (!newUrl.trim() || !newUrl.startsWith('https://' )) {
-      alert('Por favor, insira uma URL válida começando com https://' );
+      showModal({
+        title: 'URL Inválida',
+        message: 'Por favor, insira uma URL válida começando com https://',
+        type: 'danger'
+      });
       return;
     }
     setLoadingUpdate(true);
@@ -39,7 +45,11 @@ const LinkCard = ({ type, title, placeholder }) => {
       setNewUrl('');
     } catch (error) {
       console.error("Erro ao atualizar link: ", error);
-      alert("Falha ao atualizar o link.");
+      showModal({
+        title: 'Erro',
+        message: 'Falha ao atualizar o link.',
+        type: 'danger'
+      });
     } finally {
       setLoadingUpdate(false);
     }
@@ -47,22 +57,32 @@ const LinkCard = ({ type, title, placeholder }) => {
 
   const handleDelete = async () => {
     if (!data.url) return;
-    if (!window.confirm(`Tem certeza que deseja excluir o link ${type}?`)) return;
-    setLoadingDelete(true);
-    const docRef = doc(db, type, 'config');
-    try {
-      await updateDoc(docRef, {
-        url: '',
-        lastUpdated: serverTimestamp(),
-        updatedBy: auth.currentUser.email,
-        deleted: arrayUnion({ url: data.url, timestamp: new Date(), deletedBy: auth.currentUser.email }),
-      });
-    } catch (error) {
-      console.error("Erro ao excluir link: ", error);
-      alert("Falha ao excluir o link.");
-    } finally {
-      setLoadingDelete(false);
-    }
+    showModal({
+      title: 'Confirmar Exclusão',
+      message: `Tem certeza que deseja excluir o link ${type}?`,
+      type: 'danger',
+      onConfirm: async () => {
+        setLoadingDelete(true);
+        const docRef = doc(db, type, 'config');
+        try {
+          await updateDoc(docRef, {
+            url: '',
+            lastUpdated: serverTimestamp(),
+            updatedBy: auth.currentUser.email,
+            deleted: arrayUnion({ url: data.url, timestamp: new Date(), deletedBy: auth.currentUser.email }),
+          });
+        } catch (error) {
+          console.error("Erro ao excluir link: ", error);
+          showModal({
+            title: 'Erro',
+            message: 'Falha ao excluir o link.',
+            type: 'danger'
+          });
+        } finally {
+          setLoadingDelete(false);
+        }
+      }
+    });
   };
 
   const formatDate = (timestamp) => {

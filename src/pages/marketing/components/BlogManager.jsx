@@ -14,6 +14,7 @@ import {
   orderBy
 } from 'firebase/firestore';
 
+import { useModal } from '../../../contexts/ModalContext';
 import { uploadFile, BUCKETS } from '../../../services/storageApi';
 import BlockEditor from './BlockEditor';
 import WYSIWYGEditor from '../../../components/ui/WYSIWYGEditor';
@@ -34,6 +35,7 @@ import {
 } from 'react-icons/fi';
 
 const BlogManager = () => {
+  const { showModal } = useModal();
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,13 +126,21 @@ const BlogManager = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Por favor, selecione apenas arquivos de imagem.');
+      showModal({
+        title: 'Tipo de Arquivo Inválido',
+        message: 'Por favor, selecione apenas arquivos de imagem.',
+        type: 'danger'
+      });
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('A imagem não pode ser maior que 5MB.');
+      showModal({
+        title: 'Arquivo Muito Grande',
+        message: 'A imagem não pode ser maior que 5MB.',
+        type: 'danger'
+      });
       return;
     }
 
@@ -145,26 +155,43 @@ const BlogManager = () => {
         imagemUrl: uploadResponse.url
       });
 
-      alert('✓ Imagem enviada com sucesso!');
+      showModal({
+        title: 'Sucesso',
+        message: 'Imagem enviada com sucesso!',
+        type: 'info'
+      });
     } catch (error) {
       console.error('Erro ao fazer upload da imagem:', error);
-      alert(`✗ Erro ao fazer upload da imagem: ${error.message}`);
+      showModal({
+        title: 'Erro',
+        message: `Erro ao fazer upload da imagem: ${error.message}`,
+        type: 'danger'
+      });
     } finally {
       setUploadingImage(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.')) {
-      try {
-        const postDoc = doc(db, 'posts', id);
-        await deleteDoc(postDoc);
-        setPosts(posts.filter(p => p.id !== id));
-      } catch (error) {
-        console.error('Erro ao excluir post:', error);
-        alert('Erro ao excluir post. Tente novamente.');
+    showModal({
+      title: 'Confirmar Exclusão',
+      message: 'Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.',
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          const postDoc = doc(db, 'posts', id);
+          await deleteDoc(postDoc);
+          setPosts(posts.filter(p => p.id !== id));
+        } catch (error) {
+          console.error('Erro ao excluir post:', error);
+          showModal({
+            title: 'Erro',
+            message: 'Erro ao excluir post. Tente novamente.',
+            type: 'danger'
+          });
+        }
       }
-    }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -193,7 +220,11 @@ const BlogManager = () => {
       resetForm();
     } catch (error) {
       console.error('Erro ao salvar post:', error);
-      alert('Erro ao salvar post. Tente novamente.');
+      showModal({
+        title: 'Erro',
+        message: 'Erro ao salvar post. Tente novamente.',
+        type: 'danger'
+      });
     }
 
     setLoading(false);

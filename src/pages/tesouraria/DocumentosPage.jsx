@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/layout/Header';
 import Button from '../../components/ui/Button';
 import { FiUpload, FiFile, FiTrash2, FiExternalLink, FiFolder, FiImage, FiRefreshCw } from 'react-icons/fi';
+import { useModal } from '../../contexts/ModalContext';
 import {
   listFiles,
   uploadFile,
@@ -14,6 +15,7 @@ import {
 import './Financeiro.css';
 
 const DocumentosPage = () => {
+  const { showModal } = useModal();
   const [financeiroFiles, setFinanceiroFiles] = useState([]);
   const [tesourariaFiles, setTesourariaFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +42,11 @@ const DocumentosPage = () => {
       setTesourariaFiles(tesourariaData.files || []);
     } catch (error) {
       console.error('Erro ao carregar documentos:', error);
-      alert('Erro ao carregar documentos: ' + error.message);
+      showModal({
+        title: 'Erro ao Carregar',
+        message: 'Erro ao carregar documentos: ' + error.message,
+        type: 'danger'
+      });
     } finally {
       setLoading(false);
     }
@@ -57,7 +63,11 @@ const DocumentosPage = () => {
         setUploadProgress(progress);
       });
 
-      alert('✓ Documento enviado com sucesso!');
+      showModal({
+        title: 'Sucesso',
+        message: 'Documento enviado com sucesso!',
+        type: 'info'
+      });
       setShowUploadModal(false);
       setFileToUpload(null);
       setSelectedBucket('');
@@ -65,23 +75,40 @@ const DocumentosPage = () => {
       await loadDocuments();
     } catch (error) {
       console.error('Erro ao fazer upload:', error);
-      alert('✗ Erro ao fazer upload: ' + error.message);
+      showModal({
+        title: 'Erro no Upload',
+        message: 'Erro ao fazer upload: ' + error.message,
+        type: 'danger'
+      });
     } finally {
       setUploading(false);
     }
   };
 
   const handleDelete = async (bucketName, filename) => {
-    if (!confirm(`Tem certeza que deseja excluir "${filename}"?`)) return;
-
-    try {
-      await deleteFile(bucketName, filename);
-      alert('✓ Documento excluído com sucesso!');
-      await loadDocuments();
-    } catch (error) {
-      console.error('Erro ao deletar documento:', error);
-      alert('✗ Erro ao deletar documento: ' + error.message);
-    }
+    showModal({
+      title: 'Confirmar Exclusão',
+      message: `Tem certeza que deseja excluir "${filename}"?`,
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          await deleteFile(bucketName, filename);
+          showModal({
+            title: 'Sucesso',
+            message: 'Documento excluído com sucesso!',
+            type: 'info'
+          });
+          await loadDocuments();
+        } catch (error) {
+          console.error('Erro ao deletar documento:', error);
+          showModal({
+            title: 'Erro ao Excluir',
+            message: 'Erro ao deletar documento: ' + error.message,
+            type: 'danger'
+          });
+        }
+      }
+    });
   };
 
   const getFileIcon = (filename) => {

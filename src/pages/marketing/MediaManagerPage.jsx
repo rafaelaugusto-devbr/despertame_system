@@ -10,9 +10,11 @@ import {
   isImageFile,
   BUCKETS,
 } from '../../services/storageApi';
+import { useModal } from '../../contexts/ModalContext';
 import '../tesouraria/Financeiro.css';
 
 const MediaManagerPage = () => {
+  const { showModal } = useModal();
   const [blogFiles, setBlogFiles] = useState([]);
   const [logoFiles, setLogoFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +42,11 @@ const MediaManagerPage = () => {
       setLogoFiles(logoData.files || []);
     } catch (error) {
       console.error('Erro ao carregar mídias:', error);
-      alert('Erro ao carregar mídias: ' + error.message);
+      showModal({
+        title: 'Erro ao Carregar Mídias',
+        message: 'Erro ao carregar mídias: ' + error.message,
+        type: 'danger'
+      });
     } finally {
       setLoading(false);
     }
@@ -57,7 +63,11 @@ const MediaManagerPage = () => {
         setUploadProgress(progress);
       });
 
-      alert('✓ Mídia enviada com sucesso!');
+      showModal({
+        title: 'Sucesso',
+        message: 'Mídia enviada com sucesso!',
+        type: 'info'
+      });
       setShowUploadModal(false);
       setFileToUpload(null);
       setSelectedBucket('');
@@ -65,31 +75,56 @@ const MediaManagerPage = () => {
       await loadMedias();
     } catch (error) {
       console.error('Erro ao fazer upload:', error);
-      alert('✗ Erro ao fazer upload: ' + error.message);
+      showModal({
+        title: 'Erro ao Fazer Upload',
+        message: 'Erro ao fazer upload: ' + error.message,
+        type: 'danger'
+      });
     } finally {
       setUploading(false);
     }
   };
 
   const handleDelete = async (bucketName, filename) => {
-    if (!confirm(`Tem certeza que deseja excluir "${filename}"?`)) return;
-
-    try {
-      await deleteFile(bucketName, filename);
-      alert('✓ Mídia excluída com sucesso!');
-      await loadMedias();
-    } catch (error) {
-      console.error('Erro ao deletar mídia:', error);
-      alert('✗ Erro ao deletar mídia: ' + error.message);
-    }
+    showModal({
+      title: 'Confirmar Exclusão',
+      message: `Tem certeza que deseja excluir "${filename}"?`,
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          await deleteFile(bucketName, filename);
+          showModal({
+            title: 'Sucesso',
+            message: 'Mídia excluída com sucesso!',
+            type: 'info'
+          });
+          await loadMedias();
+        } catch (error) {
+          console.error('Erro ao deletar mídia:', error);
+          showModal({
+            title: 'Erro ao Deletar Mídia',
+            message: 'Erro ao deletar mídia: ' + error.message,
+            type: 'danger'
+          });
+        }
+      }
+    });
   };
 
   const handleCopyUrl = (url) => {
     navigator.clipboard.writeText(url).then(() => {
-      alert('✓ URL copiada para a área de transferência!');
+      showModal({
+        title: 'Sucesso',
+        message: 'URL copiada para a área de transferência!',
+        type: 'info'
+      });
     }).catch(err => {
       console.error('Erro ao copiar URL:', err);
-      alert('✗ Erro ao copiar URL. Tente novamente.');
+      showModal({
+        title: 'Erro',
+        message: 'Erro ao copiar URL. Tente novamente.',
+        type: 'danger'
+      });
     });
   };
 

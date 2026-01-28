@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button';
 import { FiFilter, FiDownload, FiBarChart2, FiPieChart } from 'react-icons/fi';
 import { LineChart, Line, AreaChart, Area, Pie, PieChart as RePieChart, Cell, Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import * as XLSX from 'xlsx';
+import { useModal } from '../../contexts/ModalContext';
 import './Financeiro.css';
 
 const KpiCard = ({ title, value }) => (
@@ -20,6 +21,8 @@ const KpiCard = ({ title, value }) => (
 );
 
 const RelatoriosVendasPage = () => {
+    const { showModal } = useModal();
+
     // Estados para filtros
     const [filtroCampanha, setFiltroCampanha] = useState('todas');
     const [filtroDataInicio, setFiltroDataInicio] = useState('');
@@ -69,7 +72,11 @@ const RelatoriosVendasPage = () => {
             setDadosFiltrados(transacoesData);
         } catch (error) {
             console.error("Erro ao aplicar filtro:", error);
-            alert("Erro ao buscar dados. Verifique se o índice necessário foi criado no Firestore. O console pode ter mais detalhes.");
+            showModal({
+                title: 'Erro ao Buscar Dados',
+                message: 'Erro ao buscar dados. Verifique se o índice necessário foi criado no Firestore. O console pode ter mais detalhes.',
+                type: 'danger'
+            });
         } finally {
             setLoading(false);
         }
@@ -92,7 +99,11 @@ const RelatoriosVendasPage = () => {
 
     const handleExport = () => {
         if (dadosFiltrados.length === 0) {
-            alert("Não há dados filtrados para exportar.");
+            showModal({
+                title: 'Aviso',
+                message: 'Não há dados filtrados para exportar.',
+                type: 'info'
+            });
             return;
         }
         const dataToExport = dadosFiltrados.map(t => {

@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../ui/Button';
 import { FiSave, FiXCircle, FiTrash2 } from 'react-icons/fi';
+import { useModal } from '../../contexts/ModalContext';
 
 // Recebe a lista de categorias como uma nova propriedade
 const EventModal = ({ eventInfo, categories, onClose, onSave, onDelete }) => {
+    const { showModal } = useModal();
     const [title, setTitle] = useState('');
     const [categoryId, setCategoryId] = useState(''); // <-- Estado para a categoria selecionada
 
@@ -27,14 +29,23 @@ const EventModal = ({ eventInfo, categories, onClose, onSave, onDelete }) => {
         if (title.trim()) {
             onSave(title, categoryId); // <-- Envia o categoryId ao salvar
         } else {
-            alert('O nome do evento não pode ser vazio.');
+            showModal({
+                title: 'Campo Obrigatório',
+                message: 'O nome do evento não pode ser vazio.',
+                type: 'info'
+            });
         }
     };
 
     const handleDelete = () => {
-        if (window.confirm(`Tem certeza que deseja excluir o evento "${eventInfo.event.title}"?`)) {
-            onDelete();
-        }
+        showModal({
+            title: 'Confirmar Exclusão',
+            message: `Tem certeza que deseja excluir o evento "${eventInfo.event.title}"?`,
+            type: 'danger',
+            onConfirm: () => {
+                onDelete();
+            }
+        });
     };
 
     return (

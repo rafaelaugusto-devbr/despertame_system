@@ -5,8 +5,10 @@ import Header from '../../components/layout/Header';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import Button from '../../components/ui/Button';
+import { useModal } from '../../contexts/ModalContext';
 
 const EmailDashboardPage = () => {
+  const { showModal } = useModal();
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,8 +42,16 @@ const EmailDashboardPage = () => {
 
   const handleCopyEmail = (email) => {
     navigator.clipboard.writeText(email)
-      .then(() => alert(`E-mail "${email}" copiado!`))
-      .catch(() => alert("Falha ao copiar."));
+      .then(() => showModal({
+        title: 'Sucesso',
+        message: `E-mail "${email}" copiado!`,
+        type: 'info'
+      }))
+      .catch(() => showModal({
+        title: 'Erro',
+        message: 'Falha ao copiar.',
+        type: 'danger'
+      }));
   };
 
   return (

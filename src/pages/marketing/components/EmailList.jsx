@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
+import { useModal } from '../../../contexts/ModalContext';
 
 const EmailList = () => {
+  const { showModal } = useModal();
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,8 +39,16 @@ const EmailList = () => {
 
   const handleCopyEmail = (email) => {
     navigator.clipboard.writeText(email)
-      .then(() => alert(`E-mail "${email}" copiado para a área de transferência!`))
-      .catch(() => alert("Falha ao copiar e-mail."));
+      .then(() => showModal({
+        title: 'Sucesso',
+        message: `E-mail "${email}" copiado para a área de transferência!`,
+        type: 'info'
+      }))
+      .catch(() => showModal({
+        title: 'Erro',
+        message: 'Falha ao copiar e-mail.',
+        type: 'danger'
+      }));
   };
 
   return (

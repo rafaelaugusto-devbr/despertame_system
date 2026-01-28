@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../ui/Button';
 import { FiSave, FiXCircle } from 'react-icons/fi';
+import { useModal } from '../../contexts/ModalContext';
 
 const CategoryModal = ({ isOpen, onClose, onSave }) => {
+    const { showModal } = useModal();
     const [name, setName] = useState('');
     const [color, setColor] = useState('#3788d8'); // Cor padrão
 
@@ -22,7 +24,11 @@ const CategoryModal = ({ isOpen, onClose, onSave }) => {
         if (name.trim()) {
             onSave(name, color);
         } else {
-            alert('O nome da categoria não pode ser vazio.');
+            showModal({
+                title: 'Campo Obrigatório',
+                message: 'O nome da categoria não pode ser vazio.',
+                type: 'info'
+            });
         }
     };
 
